@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.DocCloud.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_corner</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_corner</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_corner</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_corner</item>
+    </style>
+
+    <style name="MaterialButton.InvertColors" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorPrimaryVariant</item>
+    </style>
+</resources>
