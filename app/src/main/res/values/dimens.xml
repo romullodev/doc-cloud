@@ -1,3 +1,26 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="text_size_very_small">14sp</dimen>
+    <dimen name="text_size_small">17sp</dimen>
+    <dimen name="text_size_medium">21sp</dimen>
+    <dimen name="text_size_large">24sp</dimen>
+    <dimen name="text_size_very_large">28sp</dimen>
+    <dimen name="text_size_extra_large">35sp</dimen>
+    <dimen name="card_radius_corner">15dp</dimen>
+    <dimen name="card_elevation">5dp</dimen>
+
+
+
+    <dimen name="margin_padding_default">20dp</dimen>
+    <dimen name="margin_padding_large">40dp</dimen>
+    <dimen name="top_marin_padding">10dp</dimen>
+    <dimen name="between_marin_padding">2dp</dimen>
+
+    <dimen name="height_text_field">50dp</dimen>
+
+    <dimen name="radius_corner">28dp</dimen>
+    <dimen name="height_appbar">70dp</dimen>
+    <dimen name="height_toolbar">60dp</dimen>
+    <dimen name="height_button">50dp</dimen>
+    <dimen name="elevation_toolbar">5dp</dimen>
+    <dimen name="button_radius_corner">40dp</dimen>
 </resources>

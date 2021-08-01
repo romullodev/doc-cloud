@@ -1,12 +1,25 @@
 <resources>
     <string name="app_name">DocCloud</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <!-- Login Screen -->
+    <string name="login_doc_cloud_name">Doc Cloud</string>
+    <string name="login_password_hint">Senha</string>
+    <string name="login_email_hint">E-mail</string>
+    <string name="login_sign_in">entrar</string>
+    <string name="login_sign_in_google">continuar com o google</string>
+    <string name="login_no_account">Não tem conta?</string>
+    <string name="login_sign_up">Cadastre-se</string>
+    <string name="login_forgot_password">Esqueci minha senha</string>
+    <string name="login_input_layout_error_invalid">Insira seu login</string>
+    <string name="login_input_password_error">Insira sua senha</string>
+    <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
+
+    <!-- Home Screen -->
+    <string name="menu_logout">Sair</string>
+
+    <!-- Loading dialog messages -->
+    <string name="loading_dialog_message_login">Entrando …</string>
+    <string name="loading_dialog_message_logout">Saindo …</string>
+    <string name="loading_dialog_message_searching">Buscando …</string>
+    <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
 </resources>
