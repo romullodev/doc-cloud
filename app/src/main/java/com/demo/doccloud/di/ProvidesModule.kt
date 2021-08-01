@@ -2,6 +2,7 @@ package com.demo.doccloud.di
 
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.data.repository.RepositoryImpl
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -15,6 +16,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ProvidesModule {
+
+    @Provides
+    fun providesFirebaseAuth() = FirebaseAuth.getInstance()
 
     @DefaultDispatcher
     @Provides

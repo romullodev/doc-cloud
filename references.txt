@@ -1,0 +1,5 @@
+update startActivityForResult
+https://forums.bignerdranch.com/t/solution-for-startactivityforresult-deprecated-in-fragment-1-3-0/18664
+
+update singIn or singUp with Google 
+https://developers.google.com/identity/sign-in/android/sign-in-identity

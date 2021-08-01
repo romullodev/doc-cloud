@@ -94,6 +94,8 @@ dependencies {
 
     implementation dependencies.timber
 
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.1'
+
     // Tests
     testImplementation testDependencies.jUnit
     testImplementation testDependencies.hamcrest

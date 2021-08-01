@@ -115,15 +115,3 @@ class LoadingDialogView @JvmOverloads constructor(
 fun LoadingDialogView.bindText(dialogViewModel: LoadingDialogViewModel? = null) {
     bindingData = dialogViewModel
 }
-
-
-class CustomDialog(context: Context, @StyleRes dialogStyle: Int) : Dialog(context, dialogStyle) {
-    init {
-        // Set Semi-Transparent Color for Dialog Background
-        window?.decorView?.rootView?.setBackgroundResource(R.color.a_20_black)
-        @Suppress("DEPRECATION")
-        window?.decorView?.setOnApplyWindowInsetsListener { _, insets ->
-            insets.consumeSystemWindowInsets()
-        }
-    }
-}

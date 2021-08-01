@@ -43,7 +43,7 @@ ext {
             // Add the dependency for the Firebase SDK for Google Analytics
             // When using the BoM, don't specify versions in Firebase dependencies
             firebaseAnalytics     : 'com.google.firebase:firebase-analytics-ktx',
-            fireBaseAuth          : 'com.google.firebase:firebase-auth',
+            fireBaseAuth          : 'com.google.firebase:firebase-auth-ktx',
             //Timber
             timber                : "com.jakewharton.timber:timber:$timber_version"
 

@@ -6,6 +6,7 @@
     <color name="catskill_white">#EBF2F6</color>
     <color name="a_60_black">#99000000</color>
     <color name="a_20_black">#33000000</color>
+    <color name="a_10_black">#1A000000</color>
 
     <color name="white">#FFFFFFFF</color>
 </resources>

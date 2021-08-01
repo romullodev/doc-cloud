@@ -1,17 +1,17 @@
 package com.demo.doccloud.ui.login
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST
 import androidx.core.widget.addTextChangedListener
@@ -23,14 +23,15 @@ import com.demo.doccloud.databinding.FragmentLoginBinding
 import com.demo.doccloud.utils.errorDismiss
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-    private lateinit var loginGoogleContract: ActivityResultContract<IntentSenderRequest, ActivityResult>
-    private lateinit var loginGoogleCallback: ActivityResultCallback<ActivityResult>
-    private lateinit var loginGoogleLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private lateinit var loginGoogleLauncher: ActivityResultLauncher<Intent>
 
     //help validate the credentials
     private lateinit var validationFields: Map<String, TextInputLayout>
@@ -62,30 +63,12 @@ class LoginFragment : Fragment() {
         }
     }
 
+
+
     private fun setupGoogleLogin() {
-        //this code below could be changed to loginGoogleContract = StartIntentSenderForResult()
-        //this is just for a default implementation
-        loginGoogleContract =
-            object : ActivityResultContract<IntentSenderRequest, ActivityResult>() {
-                override fun createIntent(context: Context, input: IntentSenderRequest): Intent {
-                    //Log.d(TAG, “createIntent() called”)
-                    return Intent(ACTION_INTENT_SENDER_REQUEST)
-                        .putExtra(EXTRA_INTENT_SENDER_REQUEST, input);
-                }
-
-                override fun parseResult(resultCode: Int, intent: Intent?): ActivityResult {
-                    //Log.d(LOG_TAG, “parseResult() called”)
-                    return ActivityResult(resultCode, intent)
-                }
-            }
-
-        //could get result  on registerForActivityResult directly by lambda function
-        loginGoogleCallback = ActivityResultCallback<ActivityResult> { result: ActivityResult? ->
-            //Log.d(LOG_TAG, “onActivityResult() called with result: $result”)
-            result?.data
+        loginGoogleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            loginViewModel.doLoginWithGoogle(it.data)
         }
-
-        loginGoogleLauncher = registerForActivityResult(loginGoogleContract, loginGoogleCallback)
     }
 
     private fun setupBindingVariable() {
@@ -106,23 +89,13 @@ class LoginFragment : Fragment() {
         }
 
         binding.buttonLoginSignInGoogle.setOnClickListener {
-
-            val request = GetSignInIntentRequest.builder()
-                //.setServerClientId(getString(R.string.server_client_id))
-                .setServerClientId(getString(R.string.default_web_client_id))
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
                 .build()
 
-            Identity.getSignInClient(requireActivity())
-                .getSignInIntent(request)
-                .addOnSuccessListener { result ->
-                    loginGoogleLauncher.launch(
-                        IntentSenderRequest.Builder(result.intentSender)
-                            .build()
-                    )
-                }
-                .addOnFailureListener {
-                    //e -> Log.e(TAG, "Google Sign-in failed", e)
-                }
+            val googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+            loginGoogleLauncher.launch(googleSignInClient.signInIntent)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.demo.doccloud.ui.login
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,9 +9,13 @@ import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.Event
 import com.demo.doccloud.ui.dialogs.LoadingDialogViewModel
+import com.demo.doccloud.utils.GlobalUtil
+import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
+
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -32,6 +37,30 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableLiveData<Event<LoginState>>()
     val loginState: LiveData<Event<LoginState>>
         get() = _loginState
+
+    fun doLoginWithGoogle(data: Intent?){
+        showDialog(R.string.loading_dialog_message_login)
+        viewModelScope.launch {
+            val result = repository.doLoginWithGoogle(data)
+            when(result.status){
+                Result.Status.SUCCESS -> {
+                    GlobalUtil.user = result.data
+                    _loginState.value = Event(
+                        LoginState.Authenticated
+                    )
+                }
+                Result.Status.ERROR -> {
+                    Timber.e(result.exception)
+                    //_loginState.value = Event(
+                    //    LoginState.CustomAppAlertDialog(
+                    //        DialogParamsHelperUtil.generalParams(resource.message ?: UNKNOWN_ERROR_MESSAGE)
+                    //    )
+                    //)
+                }
+            }
+            hideDialog()
+        }
+    }
 
     //called from fragment_login.xml directly
     fun doLogin() {

@@ -15,10 +15,11 @@
     <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
 
     <!-- Home Screen -->
-
+    <string name="menu_logout">Sair</string>
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
+    <string name="loading_dialog_message_logout">Saindo …</string>
     <string name="loading_dialog_message_searching">Buscando …</string>
     <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
 </resources>

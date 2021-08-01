@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
                 binding.contentMain.appBar.visibility = View.GONE
             } else {
                 binding.contentMain.appBar.visibility = View.VISIBLE
-
             }
         }
     }

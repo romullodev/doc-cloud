@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.DocCloud" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.DocCloud" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/oxford_blue_700</item>
         <item name="colorPrimaryVariant">@color/oxford_blue_900</item>
