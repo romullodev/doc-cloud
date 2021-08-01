@@ -2,6 +2,7 @@
   <dictionary name="Rômulo">
     <words>
       <w>datasource</w>
+      <w>gson</w>
       <w>livedata</w>
       <w>viewmodel</w>
     </words>

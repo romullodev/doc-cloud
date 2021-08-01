@@ -8,5 +8,7 @@
     <color name="a_20_black">#33000000</color>
     <color name="a_10_black">#1A000000</color>
 
+    <color name="thunder_bird">#B51A1B</color>
+
     <color name="white">#FFFFFFFF</color>
 </resources>

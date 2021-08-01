@@ -1,5 +1,6 @@
 package com.demo.doccloud.data.datasource
 
+import android.accounts.NetworkErrorException
 import android.content.Context
 import android.content.Intent
 import com.demo.doccloud.R
@@ -19,6 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class FirebaseServices @Inject constructor(
@@ -37,8 +39,15 @@ class FirebaseServices @Inject constructor(
                 val signInCredentialTask = auth.signInWithCredential(credential)
                 signInCredentialTask.await()
                 return@withContext Result.success(auth.currentUser?.asDomain()!!)
-            } catch (e: ApiException) {
-                return@withContext Result.error(e)
+            } catch (e: Exception) {
+                if(e is ApiException){
+                    return@withContext Result.error(context.getString(R.string.login_error_api_google))
+                }
+                if (e is NetworkErrorException || e is HttpException){
+                    return@withContext Result.error(context.getString(R.string.common_no_internet))
+                }
+                return@withContext Result.error(context.getString(R.string.login_unknown_error))
+
             }
         }
     }
@@ -49,7 +58,7 @@ class FirebaseServices @Inject constructor(
             GlobalUtil.user = user
             return Result.success(user)
         }
-        return Result.error(Exception("Usuário não encontrado"))
+        return Result.error(context.getString(R.string.login_user_not_logged_in))
     }
 
     override suspend fun doLogout(): Result<Boolean> {
@@ -67,7 +76,7 @@ class FirebaseServices @Inject constructor(
                 taskGoogleClient.await()
                 return@withContext Result.success(true)
             } catch (e: Exception) {
-                return@withContext Result.error(e)
+                return@withContext Result.error(context.getString(R.string.login_revokeAccess))
             }
         }
     }

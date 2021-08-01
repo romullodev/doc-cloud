@@ -13,6 +13,13 @@
     <string name="login_input_layout_error_invalid">Insira seu login</string>
     <string name="login_input_password_error">Insira sua senha</string>
     <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
+    <string name="login_user_not_logged_in">O usuário não está logado</string>
+    <string name="login_error_api_google">Houve um erro com o Google. Tente novamente!</string>
+    <string name="login_unknown_error">Houve um erro. Tente novamente!</string>
+    <string name="login_revokeAccess">Erro ao revogar acesso do google durante o logout</string>
+
+    <!-- Common -->
+    <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>
 
     <!-- Home Screen -->
     <string name="menu_logout">Sair</string>
@@ -22,4 +29,8 @@
     <string name="loading_dialog_message_logout">Saindo …</string>
     <string name="loading_dialog_message_searching">Buscando …</string>
     <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
+
+    <!-- Alerts Dialogs -->
+    <string name="alert_dialog_default_tittle">Atenção</string>
+    <string name="alert_dialog_default_ok_button">OK</string>
 </resources>

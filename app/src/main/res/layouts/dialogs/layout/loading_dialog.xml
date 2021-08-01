@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
-            type="com.demo.doccloud.ui.dialogs.LoadingDialogViewModel" />
+            type="com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel" />
 
     </data>
 
@@ -14,14 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.demo.doccloud.ui.dialogs.LoadingDialogView
+        <com.demo.doccloud.ui.dialogs.loading.LoadingDialogView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:dialogLayout="@layout/dialog_layout"
             app:dialogStyle="@style/Theme.AppCompat.Dialog"
             app:dialogViewModel="@{viewModel}"
             app:visibleOrGone="@{viewModel.isDialogVisible}"
-            tools:ignore="MissingConstraints"
-            android:layout_width="0dp"
-            android:layout_height="0dp" />
+            tools:ignore="MissingConstraints" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

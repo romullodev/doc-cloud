@@ -18,6 +18,7 @@
         tools:context=".ui.login.LoginFragment">
 
         <include
+            android:id="@+id/include2"
             layout="@layout/loading_dialog"
             bind:viewModel="@{loginViewModel}" />
 

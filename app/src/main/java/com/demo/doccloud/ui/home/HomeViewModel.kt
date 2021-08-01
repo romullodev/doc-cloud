@@ -8,8 +8,7 @@ import androidx.navigation.NavDirections
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.Event
-import com.demo.doccloud.ui.dialogs.LoadingDialogViewModel
-import com.demo.doccloud.utils.GlobalUtil
+import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -45,7 +44,7 @@ class HomeViewModel @Inject constructor(
                     navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
                 }
                 Result.Status.ERROR -> {
-                    Timber.i(result.exception)
+                    //Timber.i(result.exception)
                 }
             }
             hideDialog()
@@ -65,7 +64,7 @@ class HomeViewModel @Inject constructor(
                     Timber.i("User authenticated")
                 }
                 Result.Status.ERROR -> {
-                    Timber.i(result.exception)
+                    //Timber.i(result.exception)
                     navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
                 }
             }

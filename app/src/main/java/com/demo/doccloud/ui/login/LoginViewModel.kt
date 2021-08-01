@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.Event
-import com.demo.doccloud.ui.dialogs.LoadingDialogViewModel
+import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.utils.GlobalUtil
 import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +31,7 @@ class LoginViewModel @Inject constructor(
     sealed class LoginState {
         object Authenticated : LoginState()
         class InvalidCredentials(val fields: List<Pair<String, Int>>) : LoginState()
+        class LoginAlertDialog(val msg: String) : LoginState()
     }
 
     //initialize the state variable
@@ -50,12 +51,9 @@ class LoginViewModel @Inject constructor(
                     )
                 }
                 Result.Status.ERROR -> {
-                    Timber.e(result.exception)
-                    //_loginState.value = Event(
-                    //    LoginState.CustomAppAlertDialog(
-                    //        DialogParamsHelperUtil.generalParams(resource.message ?: UNKNOWN_ERROR_MESSAGE)
-                    //    )
-                    //)
+                    _loginState.value = Event(
+                        LoginState.LoginAlertDialog(result.msg!!)
+                    )
                 }
             }
             hideDialog()
@@ -65,28 +63,7 @@ class LoginViewModel @Inject constructor(
     //called from fragment_login.xml directly
     fun doLogin() {
         if (isValidLoginPassword(login.trim(), password.trim())) {
-            showDialog(R.string.loading_dialog_message_login)
-            /*
-            viewModelScope.launch {
-                val resource = repository.doLogin(LoginRequest(login = login, password = password))
-                when(resource.status){
-                    Status.SUCCESS -> {
-                        //could also return a result with resource.data
-                        _loginState.value = Event(
-                            LoginState.Authenticated
-                        )
-                    }
-                    Status.ERROR -> {
-                        _loginState.value = Event(
-                            LoginState.CustomAppAlertDialog(
-                                DialogParamsHelperUtil.generalParams(resource.message ?: UNKNOWN_ERROR_MESSAGE)
-                            )
-                        )
-                    }
-                }
-                hideDialog()
-            }
-             */
+            //showDialog(R.string.loading_dialog_message_login)
         }
     }
 

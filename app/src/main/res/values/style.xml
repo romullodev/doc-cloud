@@ -11,4 +11,35 @@
         <item name="backgroundTint">?attr/colorSurface</item>
         <item name="android:textColor">?attr/colorPrimaryVariant</item>
     </style>
+
+    <!-- ******************************************************************** -->
+    <!-- >>>>>>>>>>>>>>>>>>>>Material Alert Dialog Default>>>>>>>>>>>>>>>>>>> -->
+    <!-- ******************************************************************** -->
+
+    <style name="ThemeOverlay.DocCloud.MaterialComponents.MaterialAlertDialog.Default" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Body.Text</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Text</item>
+        <item name="materialAlertDialogTitleIconStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Icon</item>
+        <item name="buttonBarPositiveButtonStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/thunder_bird</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Icon" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
+        <item name="android:tint">@color/thunder_bird</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="rippleColor">@color/a_20_black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
+    </style>
 </resources>

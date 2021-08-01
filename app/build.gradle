@@ -64,6 +64,13 @@ android {
             }
         }
     }
+
+    testOptions {
+        unitTests {
+            // Always show the result of every unit test when running via command line, even if it passes.
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -93,14 +100,22 @@ dependencies {
     implementation dependencies.fireBaseAuth
 
     implementation dependencies.timber
+    //to use await()
+    implementation dependencies.coroutPlayServices
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.1'
+    implementation dependencies.gsonConverter
 
     // Tests
     testImplementation testDependencies.jUnit
     testImplementation testDependencies.hamcrest
     testImplementation testDependencies.mockito
     testImplementation testDependencies.robolectric
+    testImplementation testDependencies.testCore
+    testImplementation testDependencies.coroutinesLib
+    testImplementation testDependencies.truthLib
+    //Architecture Components core testing library (to use InstantTaskExecutorRule)
+    testImplementation testDependencies.archCore
+
     androidTestImplementation testDependencies.espressoCore
     androidTestImplementation testDependencies.espressoContrib
     androidTestImplementation testDependencies.espressoIdling

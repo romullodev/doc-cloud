@@ -1,4 +1,4 @@
-package com.demo.doccloud.ui.dialogs
+package com.demo.doccloud.ui.dialogs.loading
 
 import androidx.lifecycle.LiveData
 
