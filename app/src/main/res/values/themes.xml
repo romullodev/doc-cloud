@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.DocCloud" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/oxford_blue_700</item>
+        <item name="colorPrimary">@color/oxford_blue_800</item>
         <item name="colorPrimaryVariant">@color/oxford_blue_900</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -20,8 +20,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="Theme.DocCloud.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.DocCloud.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

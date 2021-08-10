@@ -4,4 +4,11 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/radius_corner</item>
     </style>
+
+    <style name="ShapeAppearanceOverlay.DocCloud.Card.Custom" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSizeBottomLeft">25dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
 </resources>

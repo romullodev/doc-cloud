@@ -22,7 +22,11 @@
     <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>
 
     <!-- Home Screen -->
-    <string name="menu_logout">Sair</string>
+    <string name="home_menu_logout">Sair</string>
+    <string name="home_doc_name">Nome: %1$s</string>
+    <string name="home_doc_date">Data: %1$s</string>
+    <string name="home_doc_status">Status: %1$s</string>
+
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
