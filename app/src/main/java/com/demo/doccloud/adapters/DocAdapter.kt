@@ -1,6 +1,7 @@
 package com.demo.doccloud.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -50,10 +51,9 @@ class DocAdapter(
             binding.doc = doc
             binding.number = if (position + 1 < 10) "0${(position + 1)}" else (position + 1).toString()
             binding.executePendingBindings()
-
-            //binding.palletCard.setOnClickListener {
-            //    action.onLoadsClick(pallet, position)
-            //}
+            binding.moreOptions.setOnClickListener {
+                action.onDocClick(doc, it)
+            }
         }
 
         companion object {
@@ -66,7 +66,7 @@ class DocAdapter(
     }
 
     interface OnDocClickListener {
-        fun onDocClick(doc: Doc, position: Int)
+        fun onDocClick(doc: Doc, view: View)
     }
 
     override fun getFilter(): Filter {

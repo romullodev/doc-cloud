@@ -42,4 +42,16 @@
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
     </style>
+
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:backgroundDimAmount">0.8</item>
+    </style>
+
+    <!--    reference: https://philio.me/styling-the-searchview-with-appcompat-v21/amp/-->
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_search_solid</item>
+        <item name="closeIcon">@drawable/ic_close_24</item>
+        <item name="hintTextColor">@color/a_60_white</item>
+    </style>
 </resources>

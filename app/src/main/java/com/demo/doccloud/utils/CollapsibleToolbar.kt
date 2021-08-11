@@ -18,6 +18,8 @@ package com.demo.doccloud.utils
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.motion.widget.MotionLayout
 import com.google.android.material.appbar.AppBarLayout
 

@@ -14,15 +14,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <!-- title START -->
-        <Constraint
-            android:id="@+id/pageTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+<!--        &lt;!&ndash; title START &ndash;&gt;-->
+<!--        <Constraint-->
+<!--            android:id="@+id/pageTitle"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginBottom="15dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
 
         <Constraint
             android:id="@+id/title"
@@ -35,32 +35,49 @@
             android:id="@+id/subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="15dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Constraint
-            android:id="@+id/logoutButton"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="20dp"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+<!--        <Constraint-->
+<!--            android:id="@+id/logoutButton"-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginTop="15dp"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <Constraint-->
+<!--            android:id="@+id/searchBtn"-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginTop="15dp"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/logoutButton"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
-        <!-- title END -->
-        <Constraint
-            android:id="@+id/pageTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="15dp"
-            android:alpha="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+<!--        &lt;!&ndash; title END &ndash;&gt;-->
+<!--        <Constraint-->
+<!--            android:id="@+id/pageTitle"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginBottom="15dp"-->
+<!--            android:alpha="1"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
 
         <Constraint
             android:id="@+id/title"
@@ -74,20 +91,12 @@
             android:id="@+id/subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="15dp"
             android:layout_marginBottom="10dp"
             android:alpha="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <Constraint
-            android:id="@+id/logoutButton"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
         <Constraint
             android:id="@+id/background"
             android:alpha="0.0"
@@ -98,20 +107,46 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <Constraint
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+<!--        <Constraint-->
+<!--            android:id="@+id/logoutButton"-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginBottom="15dp"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+<!--        <Constraint-->
+<!--            android:id="@+id/searchBtn"-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginBottom="15dp"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/logoutButton"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
     </ConstraintSet>
 
     <Transition
         app:constraintSetEnd="@id/end"
         app:constraintSetStart="@+id/start">
         <KeyFrameSet>
-            <KeyAttribute
-                android:alpha="0.0"
-                app:framePosition="0"
-                app:motionTarget="@id/pageTitle" />
-            <KeyAttribute
-                android:alpha="0.0"
-                app:framePosition="90"
-                app:motionTarget="@id/pageTitle" />
+<!--            <KeyAttribute-->
+<!--                android:alpha="0.0"-->
+<!--                app:framePosition="0"-->
+<!--                app:motionTarget="@id/pageTitle" />-->
+<!--            <KeyAttribute-->
+<!--                android:alpha="0.0"-->
+<!--                app:framePosition="90"-->
+<!--                app:motionTarget="@id/pageTitle" />-->
 
             <KeyAttribute
                 android:alpha="1.0"

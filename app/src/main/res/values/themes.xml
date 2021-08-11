@@ -14,12 +14,6 @@
 <!--        <item name="colorSurface">@color/catskill_white</item>-->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
         <item name="textInputStyle">@style/Widget.DocCloud.TextInputLayout.FilledBox</item>
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
     </style>
-
-    <style name="Theme.DocCloud.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.DocCloud.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

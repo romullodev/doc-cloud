@@ -26,7 +26,12 @@
     <string name="home_doc_name">Nome: %1$s</string>
     <string name="home_doc_date">Data: %1$s</string>
     <string name="home_doc_status">Status: %1$s</string>
-
+    <string name="home_new_doc_menu">Novo Documento</string>
+    <string name="home_doc_item_share">Compartilhar</string>
+    <string name="home_doc_item_edit">Editar</string>
+    <string name="home_doc_item_delete">Excluir</string>
+    <string name="home_new_doc_dialog_camera">Câmera</string>
+    <string name="home_new_doc_dialog_gallery">Galeria</string>
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
