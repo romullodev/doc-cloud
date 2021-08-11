@@ -9,11 +9,10 @@ import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.Event
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
-import com.demo.doccloud.utils.GlobalUtil
+import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -45,7 +44,7 @@ class LoginViewModel @Inject constructor(
             val result = repository.doLoginWithGoogle(data)
             when(result.status){
                 Result.Status.SUCCESS -> {
-                    GlobalUtil.user = result.data
+                    Global.user = result.data
                     _loginState.value = Event(
                         LoginState.Authenticated
                     )

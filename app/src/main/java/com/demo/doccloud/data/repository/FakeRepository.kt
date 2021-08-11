@@ -57,12 +57,16 @@ class FakeRepository @Inject constructor(
     }
 
 
-    override suspend fun getUser(): Result<User> {
-        TODO("Not yet implemented")
+    override suspend fun getUser() = runBlocking {
+        return@runBlocking Result.success(User("any", "any"))
     }
 
-    override suspend fun doLogout(): Result<Boolean> {
-        TODO("Not yet implemented")
+    override suspend fun doLogout() = runBlocking {
+        if(shouldReturnErrorOnLogout){
+            return@runBlocking Result.error(context.getString(R.string.login_revokeAccess), null)
+        }else{
+            return@runBlocking Result.success(true)
+        }
     }
 
 

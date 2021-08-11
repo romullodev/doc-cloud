@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="oxford_blue_700">#344955</color>
+    <color name="corn_flower_blue">#EBF2F6</color>
+    <color name="oxford_blue_700">#435B69</color>
+    <color name="oxford_blue_800">#344955</color>
     <color name="oxford_blue_900">#23343E</color>
     <color name="sunglow">#FCC13B</color>
     <color name="catskill_white">#EBF2F6</color>
     <color name="a_60_black">#99000000</color>
+    <color name="black">#000000</color>
     <color name="a_20_black">#33000000</color>
     <color name="a_10_black">#1A000000</color>
 
     <color name="thunder_bird">#B51A1B</color>
 
     <color name="white">#FFFFFFFF</color>
+    <color name="a_60_white">#99FFFFFF</color>
 </resources>

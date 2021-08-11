@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         toolbar.setupToolbar(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.loginFragment) {
+            if (destination.id == R.id.loginFragment || destination.id == R.id.homeFragment) {
                 binding.contentMain.appBar.visibility = View.GONE
             } else {
                 binding.contentMain.appBar.visibility = View.VISIBLE
