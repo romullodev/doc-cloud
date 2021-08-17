@@ -2,15 +2,15 @@
 apply from: 'dependencies.gradle'
 
 buildscript {
-    ext.kotlin_version = '1.4.31'
-    ext.hilt_version = '2.33-beta'
+    ext.kotlin_version = '1.5.21'
+    ext.hilt_version = '2.38.1'
     ext.google_gm_version = '4.3.8'
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.2"
+        classpath "com.android.tools.build:gradle:4.1.3"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0"

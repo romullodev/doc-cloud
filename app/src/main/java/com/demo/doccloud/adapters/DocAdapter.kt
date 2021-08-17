@@ -79,8 +79,8 @@ class DocAdapter(
                     val resultList = ArrayList<Doc>()
                     for (row in docs) {
                         if (row.name.contains(charString)
-                            || row.date.toLowerCase(Locale.ROOT)
-                                .contains(charString.toLowerCase(Locale.ROOT))
+                            || row.date.lowercase(Locale.ROOT)
+                                .contains(charString.lowercase(Locale.ROOT))
                             || row.status.contains(charString)
                         ) {
                             resultList.add(row)

@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "359966686742-utjh5t2vtva60i8o2ajm64q5c1q43uj9.apps.googleusercontent.com",
+          "client_id": "359966686742-dqlbp4b7f49hhforvlj02nr5uil6n7ep.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.demo.doccloud",
-            "certificate_hash": "b4312693acccc9b1dcc8fdaa913ce8017f1e2253"
+            "certificate_hash": "e522e6f799891b065df2ec0c47e7a09e81d33ec3"
           }
         },
         {

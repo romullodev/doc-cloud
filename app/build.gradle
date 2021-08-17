@@ -60,7 +60,7 @@ android {
     sourceSets {
         main {
             res {
-                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs'
+                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\camera', 'src\\main\\res\\drawables\\home', 'src\\main\\res\\drawables\\login', 'src\\main\\res\\drawables\\camera'
             }
         }
     }
@@ -74,6 +74,26 @@ android {
 }
 
 dependencies {
+
+    // CameraX core library
+    def camerax_version = '1.1.0-alpha07'
+    implementation "androidx.camera:camera-core:$camerax_version"
+
+    // CameraX Camera2 extensions
+    implementation "androidx.camera:camera-camera2:$camerax_version"
+
+    // CameraX Lifecycle library
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
+
+    // CameraX View class
+    implementation 'androidx.camera:camera-view:1.0.0-alpha27'
+
+    //WindowManager
+    implementation 'androidx.window:window:1.0.0-alpha09'
+
+
+
+
     def dependencies = rootProject.ext.dependencies
     def testDependencies = rootProject.ext.testDependencies
 
