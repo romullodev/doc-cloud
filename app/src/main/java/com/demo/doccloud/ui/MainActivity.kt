@@ -1,5 +1,6 @@
 package com.demo.doccloud.ui
 
+import android.content.Context
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -14,6 +15,7 @@ import com.demo.doccloud.databinding.ActivityMainBinding
 import com.demo.doccloud.utils.setupToolbar
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -31,11 +33,21 @@ class MainActivity : AppCompatActivity() {
         toolbar.setupToolbar(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.loginFragment || destination.id == R.id.homeFragment) {
+            if (destination.id == R.id.loginFragment || destination.id == R.id.homeFragment || destination.id == R.id.cameraFragment) {
                 binding.contentMain.appBar.visibility = View.GONE
             } else {
                 binding.contentMain.appBar.visibility = View.VISIBLE
             }
+        }
+    }
+
+    companion object{
+        fun getOutputDirectory(context: Context): File {
+            val mediaDir: File? = context.externalMediaDirs?.firstOrNull()?.let {
+                File(it, context.resources.getString(R.string.app_name)).apply { mkdirs() }
+            }
+            return if (mediaDir != null && mediaDir.exists())
+                mediaDir else context.filesDir
         }
     }
 }

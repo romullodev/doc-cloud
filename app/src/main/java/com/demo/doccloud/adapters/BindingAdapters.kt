@@ -7,21 +7,27 @@ import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
 import com.demo.doccloud.R
 import com.demo.doccloud.domain.Doc
 
-// hide or show a view based on a boolean flag
-@BindingAdapter("visibleOrGone")
-fun View.visibleOrGone(isVisible: Boolean?) {
-    if (isVisible != null) {
-        visibility = if (isVisible) View.VISIBLE else View.GONE
+
+/**
+ * camera_fragment.xml
+ */
+@BindingAdapter("hideIfZero")
+fun AppCompatImageButton.setHideIfZero(size: Int?) {
+    size?.let {
+        this.visibility = if (it > 0) View.VISIBLE else View.GONE
     }
 }
 
 /**
  * home_doc_item.xml
-*/
+ */
 //binds the route on recycler view
 @BindingAdapter("docDetails")
 fun TextView.setDocDetails(doc: Doc) {
@@ -55,6 +61,9 @@ fun TextView.setDocDetails(doc: Doc) {
     this.text = fullText
 }
 
+/**
+ * util functions
+ */
 private fun setBoldText(spannable: Spannable, startPoint: Int, endPoint: Int) {
     spannable.setSpan(
         StyleSpan(Typeface.BOLD),
@@ -62,3 +71,12 @@ private fun setBoldText(spannable: Spannable, startPoint: Int, endPoint: Int) {
         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
     )
 }
+
+@BindingAdapter("visibleOrGone")
+fun View.visibleOrGone(isVisible: Boolean?) {
+    isVisible?.let {
+        visibility = if (it) View.VISIBLE else View.GONE
+    }
+}
+
+

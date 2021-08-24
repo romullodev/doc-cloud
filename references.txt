@@ -3,3 +3,6 @@ https://forums.bignerdranch.com/t/solution-for-startactivityforresult-deprecated
 
 update singIn or singUp with Google 
 https://developers.google.com/identity/sign-in/android/sign-in-identity
+
+launch cropper updated
+https://github.com/CanHub/Android-Image-Cropper/issues/26

@@ -54,4 +54,9 @@
         <item name="closeIcon">@drawable/ic_close_24</item>
         <item name="hintTextColor">@color/a_60_white</item>
     </style>
+
+    <style name="ThemeOverlay.DocCloud.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

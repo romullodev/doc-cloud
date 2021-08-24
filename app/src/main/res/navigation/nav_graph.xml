@@ -17,5 +17,29 @@
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.demo.doccloud.ui.camera.CameraFragment"
+        android:label="CameraFragment"
+        tools:layout="@layout/camera_fragment">
+        <action
+            android:id="@+id/action_cameraFragment_to_cropFragment"
+            app:destination="@id/cropFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cropFragment"
+        android:name="com.demo.doccloud.ui.crop.CropFragment"
+        tools:layout="@layout/crop_fragment"
+        android:label="@string/crop_screen_title" >
+        <argument
+            android:name="photos"
+            app:argType="com.demo.doccloud.domain.ListPhotoArg" />
+        <action
+            android:id="@+id/action_cropFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>
