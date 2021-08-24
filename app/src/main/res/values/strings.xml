@@ -32,6 +32,17 @@
     <string name="home_doc_item_delete">Excluir</string>
     <string name="home_new_doc_dialog_camera">Câmera</string>
     <string name="home_new_doc_dialog_gallery">Galeria</string>
+    <string name="home_select_option_label">Selecione uma opção:</string>
+    <string name="home_recent_label">Recentes</string>
+
+    <!-- Crop Screen -->
+    <string name="crop_screen_title">Recortar</string>
+    <string name="crop_screen_touch_label">Toque na Foto</string>
+    <string name="crop_screen_continue_label">Continuar</string>
+    <string name="crop_screen_dialog_title_label">Insira um nome</string>
+    <string name="crop_screen_dialog_hint">Nome</string>
+    <string name="crop_screen_cancel_btn">Cancelar</string>
+    <string name="crop_screen_save_btn">Salvar</string>
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
@@ -42,4 +53,5 @@
     <!-- Alerts Dialogs -->
     <string name="alert_dialog_default_tittle">Atenção</string>
     <string name="alert_dialog_default_ok_button">OK</string>
+
 </resources>

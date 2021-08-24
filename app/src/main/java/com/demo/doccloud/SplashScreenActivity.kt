@@ -11,9 +11,13 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.demo.doccloud.databinding.ActivitySplashScreenBinding
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.utils.AppConstants.Companion.APP_PERMISSIONS
+import com.demo.doccloud.utils.AppConstants.Companion.IMMERSIVE_FLAG_TIMEOUT
 import com.demo.doccloud.utils.checkAllSelfPermissionsCompat
 import com.demo.doccloud.utils.requestPermissionsCompat
 import com.demo.doccloud.utils.shouldShowAllRequestPermissionsRationaleCompat
@@ -28,9 +32,18 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setFullScreenMode()
+        //setFullScreenMode()
         //Set full screen after setting layout content
         initMainActivity()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
+        // be trying to set app to immersive mode before it's ready and the flags do not stick
+        binding.splashContainer.postDelayed({
+            hideSystemUI()
+        }, IMMERSIVE_FLAG_TIMEOUT)
     }
 
     private fun initMainActivity() {
@@ -67,21 +80,11 @@ class SplashScreenActivity : AppCompatActivity() {
         }
     }
 
-    private fun setFullScreenMode() {
-        @Suppress("DEPRECATION")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val controller = window.insetsController
-
-            if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
+    private fun hideSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, binding.splashContainer).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 

@@ -181,6 +181,10 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 view.btnClose.setOnClickListener {
                     dialog.dismiss()
                 }
+                view.cameraTv.setOnClickListener {
+                    homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToCameraFragment())
+                    dialog.dismiss()
+                }
                 dialog.setView(view.root)
                 dialog.show()
                 true
@@ -228,6 +232,11 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 e.printStackTrace()
             }
         }
+    }
+
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
     }
 
 }

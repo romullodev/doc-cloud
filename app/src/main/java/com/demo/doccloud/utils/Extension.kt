@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -51,4 +52,24 @@ fun AppCompatActivity.requestPermissionsCompat(
     requestCode: Int
 ) {
     ActivityCompat.requestPermissions(this, permissionsArray, requestCode)
+}
+
+//liveData's extensions (MutableList version)
+fun <T> MutableLiveData<ArrayList<T>>.addNewItem(item: T) {
+    val oldValue = this.value ?: arrayListOf()
+    oldValue.add(item)
+    this.value = oldValue
+}
+
+//liveData's extensions (MutableList version)
+fun <T> MutableLiveData<ArrayList<T>>.removeItem(item: T) {
+    val oldValue = this.value ?: arrayListOf()
+    oldValue.remove(item)
+    this.value = oldValue
+}
+
+fun <T> MutableLiveData<ArrayList<T>>.updateItem(new: T, oldPosition: Int) {
+    val oldListValue = this.value ?: arrayListOf()
+    oldListValue[oldPosition] = new
+    this.value = oldListValue
 }

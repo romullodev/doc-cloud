@@ -76,8 +76,6 @@ class LoginFragment() : Fragment(), DefaultAlertDialog.DialogMaterialListener {
         }
     }
 
-
-
     private fun setupGoogleLogin() {
         loginGoogleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             loginViewModel.doLoginWithGoogle(it.data)
@@ -148,8 +146,8 @@ class LoginFragment() : Fragment(), DefaultAlertDialog.DialogMaterialListener {
     )
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
     override fun onDialogPositiveClick(dialog: DialogFragment) {

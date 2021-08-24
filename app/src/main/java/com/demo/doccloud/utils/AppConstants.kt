@@ -9,5 +9,11 @@ class AppConstants {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
         )
+
+        const val IMMERSIVE_FLAG_TIMEOUT = 500L
+
+        /** Milliseconds used for UI animations */
+        const val ANIMATION_FAST_MILLIS = 50L
+        const val ANIMATION_SLOW_MILLIS = 100L
     }
 }

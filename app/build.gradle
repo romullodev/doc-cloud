@@ -60,7 +60,7 @@ android {
     sourceSets {
         main {
             res {
-                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\camera', 'src\\main\\res\\drawables\\home', 'src\\main\\res\\drawables\\login', 'src\\main\\res\\drawables\\camera'
+                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\camera', 'src\\main\\res\\drawables\\home', 'src\\main\\res\\drawables\\login', 'src\\main\\res\\drawables\\camera', 'src\\main\\res\\layouts\\crop', 'src\\main\\res\\drawables\\crop'
             }
         }
     }
@@ -90,6 +90,12 @@ dependencies {
 
     //WindowManager
     implementation 'androidx.window:window:1.0.0-alpha09'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+
+    //Android-Image-Cropper
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
 
 

@@ -4,10 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="number"
+            type="String" />
 
     </data>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="2dp"
@@ -22,6 +26,7 @@
             app:layout_constraintWidth_percent="0.2">
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:background="@color/black" />
@@ -37,6 +42,7 @@
                 android:gravity="center"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
+                android:text="@{number}"
                 tools:text="01" />
 
         </androidx.cardview.widget.CardView>
