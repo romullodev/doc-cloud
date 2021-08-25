@@ -9,7 +9,6 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
@@ -22,6 +21,8 @@ import com.demo.doccloud.R
 import com.demo.doccloud.adapters.CropAdapter
 import com.demo.doccloud.databinding.CropFragmentBinding
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
+import com.demo.doccloud.utils.DialogsHelper
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,15 +87,12 @@ class CropFragment() : Fragment() {
                         val materialDialog = SaveDocNameDialog.newInstance(
                             object : SaveDocNameDialog.DialogDocNameListener {
                                 override fun onSaveClick(docName: String, dialog: DialogFragment) {
-                                    Toast.makeText(context, "Documento Salvo", Toast.LENGTH_SHORT)
-                                        .show()
-                                    viewModel.navigate(CropFragmentDirections.actionCropFragmentToHomeFragment())
+                                    viewModel.saveDocs(docName)
                                     dialog.dismiss()
 
                                 }
 
                                 override fun onCancelClick(dialog: DialogFragment) {
-                                    Toast.makeText(context, "Cancelado", Toast.LENGTH_SHORT).show()
                                     dialog.dismiss()
                                 }
                             }
@@ -105,6 +103,21 @@ class CropFragment() : Fragment() {
                             null
                         )
                     }
+                    is CropViewModel.CropState.CropAlertDialog -> {
+                        DialogsHelper.showAlertDialog(
+                            DialogsHelper.getInfoAlertParams(msg = state.msg),
+                            object : AppAlertDialog.DialogMaterialListener {
+                                override fun onDialogPositiveClick(dialog: DialogFragment) {
+                                    dialog.dismiss()
+                                }
+
+                                override fun onDialogNegativeClick(dialog: DialogFragment) {
+                                    dialog.dismiss()
+                                }
+                            },
+                            requireActivity(),
+                        )
+                    }
                 }
             }
         }
@@ -112,8 +125,8 @@ class CropFragment() : Fragment() {
         viewModel.navigationCommands.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is CropViewModel.NavigationCommand.To -> {
-                        navController.navigate(state.directions)
+                    is CropViewModel.NavigationCommand.ToHome -> {
+                        navController.popBackStack(R.id.homeFragment, false)
                     }
                 }
             }

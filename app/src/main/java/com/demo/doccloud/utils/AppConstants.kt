@@ -15,5 +15,8 @@ class AppConstants {
         /** Milliseconds used for UI animations */
         const val ANIMATION_FAST_MILLIS = 50L
         const val ANIMATION_SLOW_MILLIS = 100L
+
+        const val INFO_DIALOG_TAG = "info.dialog.tag"
+        const val QUESTION_DIALOG_TAG = "question.dialog.tag"
     }
 }

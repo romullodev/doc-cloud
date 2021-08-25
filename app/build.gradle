@@ -60,7 +60,7 @@ android {
     sourceSets {
         main {
             res {
-                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\camera', 'src\\main\\res\\drawables\\home', 'src\\main\\res\\drawables\\login', 'src\\main\\res\\drawables\\camera', 'src\\main\\res\\layouts\\crop', 'src\\main\\res\\drawables\\crop'
+                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\camera', 'src\\main\\res\\drawables\\home', 'src\\main\\res\\drawables\\login', 'src\\main\\res\\drawables\\camera', 'src\\main\\res\\layouts\\crop', 'src\\main\\res\\drawables\\crop', 'src\\main\\res\\drawables\\common'
             }
         }
     }
@@ -96,6 +96,12 @@ dependencies {
 
     //Android-Image-Cropper
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+
+    // Room dependency
+    def room_version = "2.3.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation  "androidx.room:room-ktx:$room_version"
 
 
 

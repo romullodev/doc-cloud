@@ -2,8 +2,11 @@ package com.demo.doccloud.data.repository
 
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.LiveData
 import com.demo.doccloud.R
+import com.demo.doccloud.data.datasource.local.room.entities.DatabaseDoc
 import com.demo.doccloud.di.MainDispatcher
+import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.Result
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,6 +46,9 @@ class FakeRepository @Inject constructor(
         this.delayDuration = duration
     }
 
+    override val docs: LiveData<List<Doc>>
+        get() = TODO("Not yet implemented")
+
     override suspend fun doLoginWithGoogle(data: Intent?) = runBlocking {
         if (shouldThrowNetworkingException) {
             return@runBlocking Result.error(context.getString(R.string.common_no_internet))
@@ -67,6 +73,14 @@ class FakeRepository @Inject constructor(
         }else{
             return@runBlocking Result.success(true)
         }
+    }
+
+    override suspend fun saveDoc(doc: Doc): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteDoc(doc: Doc): Result<String> {
+        TODO("Not yet implemented")
     }
 
 

@@ -1,16 +1,22 @@
 package com.demo.doccloud.ui.crop
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
+import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
+import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.Event
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
+import com.demo.doccloud.ui.login.LoginViewModel
 import com.demo.doccloud.utils.Global
+import com.demo.doccloud.utils.Result
 import com.demo.doccloud.utils.removeItem
 import com.demo.doccloud.utils.updateItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,10 +31,12 @@ import javax.inject.Inject
 @HiltViewModel
 class CropViewModel @Inject constructor(
     private val repository: Repository
-) : ViewModel() {
+) : ViewModel(),
+    LoadingDialogViewModel {
 
     sealed class CropState {
-        object SaveDocNameDialog: CropState()
+        object SaveDocNameDialog : CropState()
+        class CropAlertDialog(val msg: String) : CropState()
     }
 
     private val _cropState = MutableLiveData<Event<CropState>>()
@@ -41,11 +49,38 @@ class CropViewModel @Inject constructor(
     //help to track current photo being cropped
     private var currCroppedPosition = -1
 
-
-
     //handle navigation between fragments
     sealed class NavigationCommand {
-        data class To(val directions: NavDirections) : NavigationCommand()
+        object ToHome : NavigationCommand()
+    }
+
+    //save documentation locally and schedule to send to the serve via workManager when connection is available
+    fun saveDocs(docName: String) {
+        showDialog(R.string.loading_dialog_message_please_wait)
+        viewModelScope.launch {
+            val pages: List<String>? = listPhoto.value?.map {
+                it.path
+            }
+            val result = repository.saveDoc(
+                Doc(
+                    name = docName,
+                    date = "01/01/2021",
+                    pages = pages!!,
+                    status = "não enviado"
+                )
+            )
+            when (result.status) {
+                Result.Status.SUCCESS -> {
+                    navigateToHome()
+                }
+                Result.Status.ERROR -> {
+                    _cropState.value = Event(
+                        CropState.CropAlertDialog(result.msg!!)
+                    )
+                }
+            }
+            hideDialog()
+        }
     }
 
     private val _navigationCommands = MutableLiveData<Event<NavigationCommand>>()
@@ -53,8 +88,8 @@ class CropViewModel @Inject constructor(
         get() = _navigationCommands
 
     //helper method to help navigate using navigation command
-    fun navigate(directions: NavDirections) {
-        _navigationCommands.value = Event(NavigationCommand.To(directions))
+    fun navigateToHome() {
+        _navigationCommands.value = Event(NavigationCommand.ToHome)
     }
 
     fun setCurrCroppedPosition(pos: Int) {
@@ -66,13 +101,14 @@ class CropViewModel @Inject constructor(
         this.listPhoto.removeItem(photo)
     }
 
+    //called from xml
     fun saveDocName() {
         _cropState.value = Event(CropState.SaveDocNameDialog)
     }
 
     fun saveCropPhoto(uri: Uri, context: Context) {
         viewModelScope.launch {
-            try{
+            try {
                 val newPath = copyNewFileDeleteOldOne(uri.path, context)
                 _listPhoto.updateItem(
                     Photo(
@@ -80,7 +116,7 @@ class CropViewModel @Inject constructor(
                         path = newPath
                     ), currCroppedPosition
                 )
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Timber.e("an error occurred saving cropped image. Details:\n $e")
             }
         }
@@ -108,6 +144,22 @@ class CropViewModel @Inject constructor(
     //retrieve the same list reference from the previous screen
     fun setListPhoto(list: ArrayList<Photo>) {
         this._listPhoto.value = list
+    }
+
+    //handle loading dialog to show feedback to user (this approaches does not depend on Fragments)
+    private var _loadingMessage = MutableLiveData(R.string.loading_dialog_message_please_wait)
+    override val loadingMessage: LiveData<Int> get() = _loadingMessage
+    private var _isDialogVisible = MutableLiveData(false)
+    override val isDialogVisible: LiveData<Boolean> get() = _isDialogVisible
+
+    override fun showDialog(message: Int?) {
+        _loadingMessage.value = message
+        _isDialogVisible.value = true
+    }
+
+
+    override fun hideDialog() {
+        _isDialogVisible.value = false
     }
 
 }

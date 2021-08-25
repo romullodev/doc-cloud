@@ -34,6 +34,7 @@
     <string name="home_new_doc_dialog_gallery">Galeria</string>
     <string name="home_select_option_label">Selecione uma opção:</string>
     <string name="home_recent_label">Recentes</string>
+    <string name="home_toast_delete_success">%1$s foi excluído</string>
 
     <!-- Crop Screen -->
     <string name="crop_screen_title">Recortar</string>
@@ -51,7 +52,11 @@
     <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
 
     <!-- Alerts Dialogs -->
-    <string name="alert_dialog_default_tittle">Atenção</string>
-    <string name="alert_dialog_default_ok_button">OK</string>
+    <string name="alert_dialog_info_tittle">Atenção</string>
+    <string name="alert_dialog_info_ok_button">OK</string>
+    <string name="alert_dialog_yes_button">SIM</string>
+    <string name="alert_dialog_No_button">NÃO</string>
+    <string name="alert_dialog_question_delete_tittle">Excluir</string>
+    <string name="alert_dialog_question_delete_msg">Deseja realmente excluir?</string>
 
 </resources>

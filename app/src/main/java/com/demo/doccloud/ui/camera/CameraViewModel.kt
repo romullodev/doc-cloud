@@ -17,9 +17,7 @@ import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class CameraViewModel @Inject constructor(
-    private val repository: Repository
-) : ViewModel() {
+class CameraViewModel @Inject constructor() : ViewModel() {
 
     private val _listThumbnail = MutableLiveData<ArrayList<Photo>>()
     val listThumbnail: LiveData<ArrayList<Photo>>
@@ -30,9 +28,9 @@ class CameraViewModel @Inject constructor(
         _listThumbnail.addNewItem(photo)
     }
 
-    fun deleteAllItem(){
-        listThumbnail.value?.let {list->
-            if(list.isNotEmpty()){
+    fun deleteAllItem() {
+        listThumbnail.value?.let { list ->
+            if (list.isNotEmpty()) {
                 viewModelScope.launch(Dispatchers.IO) {
                     list.forEach {
                         File(it.path).delete()

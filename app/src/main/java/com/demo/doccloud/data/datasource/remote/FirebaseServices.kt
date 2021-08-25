@@ -1,4 +1,4 @@
-package com.demo.doccloud.data.datasource
+package com.demo.doccloud.data.datasource.remote
 
 import android.accounts.NetworkErrorException
 import android.content.Context
@@ -27,7 +27,7 @@ class FirebaseServices @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val auth: FirebaseAuth,
     @ApplicationContext private val context: Context
-) : DataSource {
+) : RemoteDataSource {
     override suspend fun doLoginWithGoogle(data: Intent?): Result<User> {
         return withContext(dispatcher) {
             try {

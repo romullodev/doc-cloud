@@ -1,15 +1,15 @@
 package com.demo.doccloud.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.NavDirections
 import com.demo.doccloud.R
+import com.demo.doccloud.data.datasource.local.room.entities.asDomain
 import com.demo.doccloud.data.repository.Repository
+import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.Event
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.ui.login.LoginViewModel
+import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -22,8 +22,15 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel(),
     LoadingDialogViewModel {
 
+    //this liveData is used from xml
+    var docs: LiveData<List<Doc>> = repository.docs
+    //this liveData will be used from xml
+    val listDocSize: LiveData<Int> = Transformations.map(docs) { list ->
+        list.size
+    }
+
     sealed class HomeState {
-        //class SearchListResultState(val result: List<Load>) : HomeState()
+        class HomeToastMessage(val msg: String) : HomeState()
         class HomeAlertDialog(val msg: String) : HomeState()
     }
 
@@ -31,6 +38,8 @@ class HomeViewModel @Inject constructor(
     val homeState: LiveData<Event<HomeState>>
         get() = _homeState
 
+    //to help retrieve current doc select from popup menu item
+    var currDoc : Doc? = null
 
     //handle navigation between fragments
     sealed class NavigationCommand {
@@ -62,6 +71,26 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteDoc(){
+        showDialog(R.string.loading_dialog_message_please_wait)
+        viewModelScope.launch {
+            val result = repository.deleteDoc(currDoc!!)
+            when(result.status){
+                Result.Status.SUCCESS -> {
+                    _homeState.value = Event(HomeState.HomeToastMessage(
+                        result.data!!
+                    ))
+                }
+                Result.Status.ERROR -> {
+                    _homeState.value = Event(HomeState.HomeAlertDialog(
+                        result.msg!!
+                    ))
+                }
+            }
+            hideDialog()
+        }
+    }
+
 
     //verify the user authentication when start the app
     //we're using a sessionManager object to check user authentication
@@ -74,7 +103,6 @@ class HomeViewModel @Inject constructor(
                     Timber.i("User authenticated")
                 }
                 Result.Status.ERROR -> {
-                    //Timber.i(result.exception)
                     navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
                 }
             }

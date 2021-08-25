@@ -14,16 +14,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DocAdapter(
-    private var docs: ArrayList<Doc>,
     private var clickListener: OnDocClickListener
 ) :
     ListAdapter<Doc, DocAdapter.DocAdapterViewHolder>(DeliveryDiffCallback()), Filterable {
 
-    var docsFilterList = ArrayList<Doc>()
+    var docs = mutableListOf<Doc>()
 
-    init {
-        docsFilterList = docs
-        submitList(docsFilterList.toMutableList())
+    fun setList(list: MutableList<Doc>){
+        this.docs = list
+        submitList(list)
     }
 
     class DeliveryDiffCallback : DiffUtil.ItemCallback<Doc>() {
@@ -71,27 +70,26 @@ class DocAdapter(
 
     override fun getFilter(): Filter {
         return object : Filter() {
+
             override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val filteredList = mutableListOf<Doc>()
                 val charString = charSequence.toString()
-                docsFilterList = if (charString.isEmpty()) {
-                    docs
+                if (charString == "") {
+                    filteredList.addAll(docs)
                 } else {
-                    val resultList = ArrayList<Doc>()
                     for (row in docs) {
                         if (row.name.contains(charString)
-                            || row.date.lowercase(Locale.ROOT)
+                                    || row.date.lowercase(Locale.ROOT)
                                 .contains(charString.lowercase(Locale.ROOT))
-                            || row.status.contains(charString)
-                        ) {
-                            resultList.add(row)
+                                    || row.status.contains(charString)
+                                    ) {
+                            filteredList.add(row)
                         }
                     }
-                    resultList
                 }
-
-                val filterResults = FilterResults()
-                filterResults.values = docsFilterList
-                return filterResults
+                val results = FilterResults()
+                results.values = filteredList
+                return results
             }
 
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {

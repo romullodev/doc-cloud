@@ -4,6 +4,8 @@ package com.demo.doccloud.ui.home
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -11,6 +13,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,6 +22,9 @@ import com.demo.doccloud.adapters.DocAdapter
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.databinding.HomeFragmentBinding
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
+import com.demo.doccloud.utils.AppConstants
+import com.demo.doccloud.utils.DialogsHelper
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,9 +33,15 @@ import java.lang.reflect.Method
 
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
+class HomeFragment() :
+    Fragment(),
+    PopupMenu.OnMenuItemClickListener,
+    AppAlertDialog.DialogMaterialListener {
     private var _binding: HomeFragmentBinding? = null
     private val binding get() = _binding!!
+    //workaround on searchView for configuration changes
+    //problem:  when configuration changes, setOnQueryTextListener triggers making data just go away
+    private var searchViewHasTrigger = false
 
     private val homeViewModel: HomeViewModel by viewModels()
 
@@ -45,9 +57,9 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupObservers()
         setupBindingVariable()
         setupListeners()
+        setupObservers()
         setupToolbar()
     }
 
@@ -68,21 +80,28 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         editText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
         editText.setHintTextColor(ContextCompat.getColor(binding.root.context, R.color.a_60_white))
         editText.hint = "Pesquisar"
-        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+        searchView.apply {
+            setOnQueryTextFocusChangeListener { _, hasFocus ->
+                searchViewHasTrigger = hasFocus
             }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isEmpty()) {
-                    adapter.filter.filter("")
-                } else {
-                    adapter.filter.filter(newText)
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
                 }
-                return true
-            }
-        })
+
+                override fun onQueryTextChange(newText: String): Boolean {
+                    if(searchViewHasTrigger){
+                        if (newText.isEmpty()) {
+                            adapter.filter.filter("")
+                        } else {
+                            adapter.filter.filter(newText)
+                        }
+                    }
+                    return true
+                }
+            })
+            imeOptions = EditorInfo.IME_ACTION_DONE
+        }
 
         //reference: https://stackoverflow.com/questions/31662416/show-collapsingtoolbarlayout-title-only-when-collapsed
         binding.appBar.addOnOffsetChangedListener(object : OnOffsetChangedListener {
@@ -105,19 +124,32 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun setupListeners() {
-//        binding.logoutButton.setOnClickListener {
-//            homeViewModel.doLogout()
-//        }
         binding.addButton.setOnClickListener {
+            val dialog = MaterialAlertDialogBuilder(
+                requireContext(),
+                R.style.ThemeOverlay_App_MaterialAlertDialog
+            ).create()//AlertDialog.Builder(requireContext()).create()
+            val layoutInflater = LayoutInflater.from(requireContext())
+            val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
+            view.btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+            view.cameraTv.setOnClickListener {
+                homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToCameraFragment())
+                dialog.dismiss()
+            }
+            dialog.setView(view.root)
+            dialog.show()
+
+        /*
             val popup = PopupMenu(requireContext(), it)
             val inflater: MenuInflater = popup.menuInflater
             inflater.inflate(R.menu.home_new_doc_menu, popup.menu)
             popup.setOnMenuItemClickListener(this)
             forceIconOnMenu(popup)
             popup.show()
+             */
         }
-
-
     }
 
     private fun setupBindingVariable() {
@@ -125,26 +157,10 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         //require to kill binding objects when this fragment is destroyed (lifecycle aware)
         binding.lifecycleOwner = viewLifecycleOwner
         adapter = DocAdapter(
-            arrayListOf(
-                Doc(1, "nome 1", "10/10/2021", "enviado"),
-                Doc(2, "nome 1", "10/10/2021", "enviado"),
-                Doc(3, "nome 1", "10/10/2021", "enviado"),
-                Doc(4, "nome 1", "10/10/2021", "enviado"),
-                Doc(5, "nome 1", "10/10/2021", "enviado"),
-                Doc(6, "nome 1", "10/10/2021", "enviado"),
-                Doc(7, "nome 1", "10/10/2021", "enviado"),
-                Doc(8, "nome 1", "10/10/2021", "enviado"),
-                Doc(9, "nome 1", "10/10/2021", "enviado"),
-                Doc(10, "nome 1", "10/10/2021", "enviado"),
-                Doc(11, "nome 1", "10/10/2021", "enviado"),
-                Doc(12, "nome 1", "10/10/2021", "enviado"),
-                Doc(13, "nome 1", "10/10/2021", "enviado"),
-                Doc(14, "nome 1", "10/10/2021", "enviado"),
-                Doc(15, "nome 1", "10/10/2021", "enviado"),
-                Doc(16, "nome 1", "10/10/2021", "enviado")
-            ),
             object : DocAdapter.OnDocClickListener {
                 override fun onDocClick(doc: Doc, view: View) {
+                    //this doc could be used to share/delete/edit on onMenuItemClick() method
+                    homeViewModel.currDoc = doc
                     val popup = PopupMenu(requireContext(), view)
                     val inflater: MenuInflater = popup.menuInflater
                     inflater.inflate(R.menu.home_doc_item, popup.menu)
@@ -168,27 +184,34 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 true
             }
             R.id.delete -> {
-                Toast.makeText(requireContext(), "Excluir", Toast.LENGTH_SHORT).show()
+                DialogsHelper.showAlertDialog(
+                    DialogsHelper.getQuestionDeleteAlertParams(
+                        msg = "Deseja realmente excluir?"
+                    ),
+                    this,
+                    requireActivity(),
+                    tag = AppConstants.QUESTION_DIALOG_TAG
+                )
                 true
             }
-            R.id.newDoc -> {
-                val dialog = MaterialAlertDialogBuilder(
-                    requireContext(),
-                    R.style.ThemeOverlay_App_MaterialAlertDialog
-                ).create()//AlertDialog.Builder(requireContext()).create()
-                val layoutInflater = LayoutInflater.from(requireContext())
-                val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
-                view.btnClose.setOnClickListener {
-                    dialog.dismiss()
-                }
-                view.cameraTv.setOnClickListener {
-                    homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToCameraFragment())
-                    dialog.dismiss()
-                }
-                dialog.setView(view.root)
-                dialog.show()
-                true
-            }
+//            R.id.newDoc -> {
+//                val dialog = MaterialAlertDialogBuilder(
+//                    requireContext(),
+//                    R.style.ThemeOverlay_App_MaterialAlertDialog
+//                ).create()//AlertDialog.Builder(requireContext()).create()
+//                val layoutInflater = LayoutInflater.from(requireContext())
+//                val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
+//                view.btnClose.setOnClickListener {
+//                    dialog.dismiss()
+//                }
+//                view.cameraTv.setOnClickListener {
+//                    homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToCameraFragment())
+//                    dialog.dismiss()
+//                }
+//                dialog.setView(view.root)
+//                dialog.show()
+//                true
+//            }
             else -> false
         }
     }
@@ -204,6 +227,26 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                     }
                 }
         })
+
+        homeViewModel.homeState.observe(viewLifecycleOwner){
+            it.getContentIfNotHandled()?.let { state ->
+                when(state){
+                    is HomeViewModel.HomeState.HomeAlertDialog -> {
+                        DialogsHelper.showAlertDialog(
+                            DialogsHelper.getInfoAlertParams(
+                                msg = state.msg
+                            ),
+                            this,
+                            requireActivity(),
+                            tag = AppConstants.INFO_DIALOG_TAG
+                        )
+                    }
+                    is HomeViewModel.HomeState.HomeToastMessage -> {
+                        Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun forceIconOnMenu(popup: PopupMenu) {
@@ -237,6 +280,36 @@ class HomeFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     override fun onDestroy() {
         _binding = null
         super.onDestroy()
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        when (dialog.tag) {
+            AppConstants.QUESTION_DIALOG_TAG -> homeViewModel.deleteDoc()
+        }
+        dialog.dismiss()
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        dialog.dismiss()
+    }
+
+    constructor(parcel: Parcel) : this() {
+        searchViewHasTrigger = parcel.readByte() != 0.toByte()
+    }
+
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        super.writeToParcel(dest, flags)
+        dest.writeByte(if (searchViewHasTrigger) 1 else 0)
+    }
+
+    companion object CREATOR : Parcelable.Creator<HomeFragment> {
+        override fun createFromParcel(parcel: Parcel): HomeFragment {
+            return HomeFragment(parcel)
+        }
+
+        override fun newArray(size: Int): Array<HomeFragment?> {
+            return arrayOfNulls(size)
+        }
     }
 
 }

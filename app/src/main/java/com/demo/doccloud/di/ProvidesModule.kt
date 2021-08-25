@@ -1,5 +1,8 @@
 package com.demo.doccloud.di
 
+import android.content.Context
+import androidx.room.Room
+import com.demo.doccloud.data.datasource.local.room.AppDatabase
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.data.repository.RepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
@@ -7,6 +10,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +20,17 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ProvidesModule {
+
+    @Singleton
+    @Provides
+    fun provideSigDatabase(@ApplicationContext app: Context): AppDatabase {
+        return Room.databaseBuilder(
+            app,
+            AppDatabase::class.java,
+            "app_database"
+        )
+            .build()
+    }
 
     @Provides
     fun providesFirebaseAuth() = FirebaseAuth.getInstance()

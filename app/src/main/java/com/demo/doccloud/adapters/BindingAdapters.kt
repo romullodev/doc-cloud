@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.demo.doccloud.R
 import com.demo.doccloud.domain.Doc
@@ -22,6 +23,19 @@ import com.demo.doccloud.domain.Doc
 fun AppCompatImageButton.setHideIfZero(size: Int?) {
     size?.let {
         this.visibility = if (it > 0) View.VISIBLE else View.GONE
+    }
+}
+
+
+
+/**
+ * home_fragment.xml
+ */
+@BindingAdapter("loadDocs")
+fun setLoadDocs(recyclerView: RecyclerView, data: List<Doc>?) {
+    data?.let {
+        val adapter = recyclerView.adapter as DocAdapter
+        adapter.setList(it.toMutableList())
     }
 }
 

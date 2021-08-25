@@ -1,26 +1,13 @@
 package com.demo.doccloud.ui.login
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.*
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.activity.addCallback
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST
-import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -28,22 +15,17 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.databinding.FragmentLoginBinding
-import com.demo.doccloud.ui.dialogs.alert.DefaultAlertDialog
-import com.demo.doccloud.ui.dialogs.alert.DefaultAlertParams
+import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
+import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.DialogsHelper
 import com.demo.doccloud.utils.errorDismiss
-import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
-import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.dialog.MaterialDialogs
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
-class LoginFragment() : Fragment(), DefaultAlertDialog.DialogMaterialListener {
+class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
     private lateinit var loginGoogleLauncher: ActivityResultLauncher<Intent>
 
     //help validate the credentials
@@ -127,8 +109,8 @@ class LoginFragment() : Fragment(), DefaultAlertDialog.DialogMaterialListener {
                     }
                     is LoginViewModel.LoginState.LoginAlertDialog -> {
                         DialogsHelper.showAlertDialog(
-                            DefaultAlertParams(
-                                message = state.msg
+                            DialogsHelper.getInfoAlertParams(
+                                msg = state.msg
                             ),
                             this,
                             requireActivity(),
@@ -151,6 +133,10 @@ class LoginFragment() : Fragment(), DefaultAlertDialog.DialogMaterialListener {
     }
 
     override fun onDialogPositiveClick(dialog: DialogFragment) {
+        dialog.dismiss()
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
         dialog.dismiss()
     }
 
