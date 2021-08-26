@@ -6,6 +6,8 @@ import com.demo.doccloud.data.datasource.local.room.AppDatabase
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.data.repository.RepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -34,6 +36,12 @@ object ProvidesModule {
 
     @Provides
     fun providesFirebaseAuth() = FirebaseAuth.getInstance()
+
+    @Provides
+    fun providesFirebaseStorage() = FirebaseStorage.getInstance()
+
+    @Provides
+    fun providesFirebaseDatabase() = FirebaseDatabase.getInstance()
 
     @DefaultDispatcher
     @Provides

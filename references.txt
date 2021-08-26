@@ -6,3 +6,7 @@ https://developers.google.com/identity/sign-in/android/sign-in-identity
 
 launch cropper updated
 https://github.com/CanHub/Android-Image-Cropper/issues/26
+
+last news on WorkManager (about cancel jobs due to no connection)
+https://medium.com/@debuggingisfun/workmanager-gotchas-b7204b4b36fe
+https://developer.android.com/topic/libraries/architecture/workmanager/how-to/managing-work?hl=pt-br

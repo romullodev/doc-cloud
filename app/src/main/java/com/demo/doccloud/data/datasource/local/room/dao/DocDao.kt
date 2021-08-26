@@ -7,7 +7,13 @@ import com.demo.doccloud.data.datasource.local.room.entities.DatabaseDoc
 @Dao
 interface DocDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(doc: DatabaseDoc)
+    fun insert(doc: DatabaseDoc) : Long
+
+    @Query("SELECT * FROM doc_table WHERE localId = :id")
+    fun getDoc(id: Int): DatabaseDoc
+
+    @Update
+    fun update(databaseDoc: DatabaseDoc)
 
     @Delete
     fun delete(doc: DatabaseDoc)

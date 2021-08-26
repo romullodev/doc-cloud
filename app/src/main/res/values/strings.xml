@@ -35,6 +35,9 @@
     <string name="home_select_option_label">Selecione uma opção:</string>
     <string name="home_recent_label">Recentes</string>
     <string name="home_toast_delete_success">%1$s foi excluído</string>
+    <string name="home_doc_status_sent">Enviado</string>
+    <string name="home_doc_status_sending">Enviando…</string>
+    <string name="home_doc_status_not_sent">Não Enviado</string>
 
     <!-- Crop Screen -->
     <string name="crop_screen_title">Recortar</string>

@@ -51,6 +51,8 @@ ext {
             // When using the BoM, don't specify versions in Firebase dependencies
             firebaseAnalytics     : 'com.google.firebase:firebase-analytics-ktx',
             fireBaseAuth          : 'com.google.firebase:firebase-auth-ktx',
+            fireBaseStorage       : 'com.google.firebase:firebase-storage-ktx',
+            fireBaseDatabase      : 'com.google.firebase:firebase-database-ktx',
             //Timber
             timber                : "com.jakewharton.timber:timber:$timber_version",
             coroutPlayServices    : "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_play_service_version",

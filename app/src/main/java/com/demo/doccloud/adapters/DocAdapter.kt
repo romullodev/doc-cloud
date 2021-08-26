@@ -27,7 +27,7 @@ class DocAdapter(
 
     class DeliveryDiffCallback : DiffUtil.ItemCallback<Doc>() {
         override fun areItemsTheSame(oldItem: Doc, newItem: Doc): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.localId == newItem.localId
         }
 
         override fun areContentsTheSame(oldItem: Doc, newItem: Doc): Boolean {
@@ -81,7 +81,6 @@ class DocAdapter(
                         if (row.name.contains(charString)
                                     || row.date.lowercase(Locale.ROOT)
                                 .contains(charString.lowercase(Locale.ROOT))
-                                    || row.status.contains(charString)
                                     ) {
                             filteredList.add(row)
                         }

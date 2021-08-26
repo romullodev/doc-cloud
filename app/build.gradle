@@ -104,6 +104,17 @@ dependencies {
     implementation  "androidx.room:room-ktx:$room_version"
 
 
+    // Hilt and WorkManager
+    def hilt_work_manager_version = '1.0.0-alpha03'
+    implementation "androidx.hilt:hilt-work:$hilt_work_manager_version"
+    kapt "androidx.hilt:hilt-compiler:$hilt_work_manager_version"
+
+    // WorkManager dependency
+    def work_version = "2.5.0"
+    implementation "android.arch.work:work-runtime-ktx:$work_version"
+
+    // kotlin extensions for WorkManager
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 
 
     def dependencies = rootProject.ext.dependencies
@@ -130,6 +141,8 @@ dependencies {
     implementation platform(dependencies.firebaseBom)
     implementation dependencies.firebaseAnalytics
     implementation dependencies.fireBaseAuth
+    implementation dependencies.fireBaseStorage
+    implementation dependencies.fireBaseDatabase
 
     implementation dependencies.timber
     //to use await()

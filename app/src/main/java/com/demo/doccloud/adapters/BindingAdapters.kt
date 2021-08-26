@@ -1,5 +1,6 @@
 package com.demo.doccloud.adapters
 
+import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.demo.doccloud.R
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.utils.Global
 
 
 /**
@@ -25,7 +28,6 @@ fun AppCompatImageButton.setHideIfZero(size: Int?) {
         this.visibility = if (it > 0) View.VISIBLE else View.GONE
     }
 }
-
 
 
 /**
@@ -47,7 +49,7 @@ fun setLoadDocs(recyclerView: RecyclerView, data: List<Doc>?) {
 fun TextView.setDocDetails(doc: Doc) {
     val name = this.context.getString(R.string.home_doc_name, doc.name)
     val date = this.context.getString(R.string.home_doc_date, doc.date)
-    val status = this.context.getString(R.string.home_doc_status, doc.status)
+    val status = this.context.getString(R.string.home_doc_status, Global.getDocStatus(doc.status, this.context))
     val spannableName = SpannableString(name)
     var startPoint = 0
     var endPoint = name.length - doc.name.length
@@ -60,7 +62,7 @@ fun TextView.setDocDetails(doc: Doc) {
 
     val spannableStatus = SpannableString(status)
     startPoint = 0
-    endPoint = status.length - doc.status.length
+    endPoint = status.length - Global.getDocStatus(doc.status, this.context).length
     setBoldText(spannableStatus, startPoint, endPoint)
 
     val fullText = SpannableStringBuilder()// = "$spannableName\n$spannableDate"

@@ -11,10 +11,12 @@ import androidx.navigation.NavDirections
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.DocStatus
 import com.demo.doccloud.domain.Event
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.ui.login.LoginViewModel
+import com.demo.doccloud.utils.AppConstants.Companion.TIMESTAMP_FORMAT_BR
 import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
 import com.demo.doccloud.utils.removeItem
@@ -26,7 +28,10 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class CropViewModel @Inject constructor(
@@ -63,10 +68,11 @@ class CropViewModel @Inject constructor(
             }
             val result = repository.saveDoc(
                 Doc(
+                    remoteId = System.currentTimeMillis(),
                     name = docName,
-                    date = "01/01/2021",
+                    date = SimpleDateFormat(TIMESTAMP_FORMAT_BR, Locale.US).format(System.currentTimeMillis()),
                     pages = pages!!,
-                    status = "não enviado"
+                    status = DocStatus.NOT_SENT
                 )
             )
             when (result.status) {
