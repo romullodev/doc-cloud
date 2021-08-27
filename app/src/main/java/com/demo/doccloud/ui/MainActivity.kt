@@ -35,11 +35,6 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.loginFragment || destination.id == R.id.homeFragment || destination.id == R.id.cameraFragment) {
-                requestedOrientation = if(destination.id == R.id.cameraFragment){
-                    ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
-                }else{
-                    ActivityInfo.SCREEN_ORIENTATION_SENSOR
-                }
                 binding.contentMain.appBar.visibility = View.GONE
             } else {
                 binding.contentMain.appBar.visibility = View.VISIBLE

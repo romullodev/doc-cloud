@@ -1,5 +1,7 @@
 package com.demo.doccloud.ui.camera
 
+import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -62,6 +64,19 @@ class CameraFragment : Fragment() {
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
 
+    override fun onResume() {
+        super.onResume()
+        hideSystemUI()
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+        showSystemUI()
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -93,20 +108,6 @@ class CameraFragment : Fragment() {
                     }
                 }
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
-        // be trying to set app to immersive mode before it's ready and the flags do not stick
-        binding.cameraContainer.postDelayed({
-            hideSystemUI()
-        }, IMMERSIVE_FLAG_TIMEOUT)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        showSystemUI()
     }
 
     private fun hideSystemUI() {
@@ -233,7 +234,7 @@ class CameraFragment : Fragment() {
         val screenAspectRatio = aspectRatio(metrics.width(), metrics.height())
         Timber.i("Preview aspect ratio: $screenAspectRatio")
 
-        val rotation = binding.viewFinder.display.rotation
+//        val rotation = binding.viewFinder.display.rotation
 
         // CameraProvider
         val cameraProvider = cameraProvider
@@ -247,7 +248,7 @@ class CameraFragment : Fragment() {
             // We request aspect ratio but no resolution
             .setTargetAspectRatio(screenAspectRatio)
             // Set initial target rotation
-            .setTargetRotation(rotation)
+            //.setTargetRotation(rotation)
             .build()
 
         // ImageCapture
@@ -258,7 +259,7 @@ class CameraFragment : Fragment() {
             .setTargetAspectRatio(screenAspectRatio)
             // Set initial target rotation, we will have to call this again if rotation changes
             // during the lifecycle of this use case
-            .setTargetRotation(rotation)
+            //.setTargetRotation(rotation)
             .build()
 
         // Must unbind the use-cases before rebinding them
