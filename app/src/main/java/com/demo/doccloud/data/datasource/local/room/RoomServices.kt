@@ -26,8 +26,8 @@ class RoomServices @Inject constructor(
         }
     }
 
-    override suspend fun getDoc(id: Long): Doc {
-        return appDatabase.docDao.getDoc(id.toInt()).asDomain()
+    override suspend fun getDoc(id: Long) = withContext(dispatcher){
+        appDatabase.docDao.getDoc(id.toInt()).asDomain()
     }
 
     override suspend fun updateDoc(doc: Doc) {

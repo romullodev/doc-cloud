@@ -83,5 +83,9 @@ class FakeRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getDoc(id: Long): Result<Doc> {
+        TODO("Not yet implemented")
+    }
+
 
 }

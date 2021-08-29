@@ -47,6 +47,11 @@ class RepositoryImpl @Inject constructor(
         return Result.success(context.getString(R.string.home_toast_delete_success, doc.name))
     }
 
+    override suspend fun getDoc(id: Long): Result<Doc> {
+        val doc =  localDatasource.getDoc(id)
+        return Result.success(doc)
+    }
+
     private fun setupSendDocSchedule(rowNumber: Long) {
         val data =
             workDataOf(

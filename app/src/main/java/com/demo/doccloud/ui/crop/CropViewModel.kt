@@ -59,6 +59,11 @@ class CropViewModel @Inject constructor(
         object ToHome : NavigationCommand()
     }
 
+    //retrieve the same list reference from the previous screen
+    fun setListPhoto(list: ArrayList<Photo>) {
+        this._listPhoto.value = list
+    }
+
     //save documentation locally and schedule to send to the serve via workManager when connection is available
     fun saveDocs(docName: String) {
         showDialog(R.string.loading_dialog_message_please_wait)
@@ -145,11 +150,6 @@ class CropViewModel @Inject constructor(
             oldFileOnFilesDir.delete()
             return@withContext newFileOnFilesDir.absolutePath
         }
-    }
-
-    //retrieve the same list reference from the previous screen
-    fun setListPhoto(list: ArrayList<Photo>) {
-        this._listPhoto.value = list
     }
 
     //handle loading dialog to show feedback to user (this approaches does not depend on Fragments)

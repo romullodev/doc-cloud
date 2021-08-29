@@ -16,4 +16,5 @@ interface Repository {
     suspend fun doLogout() : Result<Boolean>
     suspend fun saveDoc(doc: Doc) : Result<Boolean>
     suspend fun deleteDoc(doc: Doc) : Result<String>
+    suspend fun getDoc(id: Long) : Result<Doc>
 }
