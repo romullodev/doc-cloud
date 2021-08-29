@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.demo.doccloud.R
+import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.User
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.shape.CornerFamily
@@ -59,6 +60,15 @@ fun <T> MutableLiveData<ArrayList<T>>.addNewItem(item: T) {
     val oldValue = this.value ?: arrayListOf()
     oldValue.add(item)
     this.value = oldValue
+}
+
+//add an item with different id
+fun MutableList<Photo>.addWithDiffId(item: Photo) {
+    this.forEach {
+        if(it.id == item.id)
+            return
+    }
+    this.add(item)
 }
 
 //liveData's extensions (MutableList version)

@@ -24,7 +24,10 @@
             android:id="@+id/action_homeFragment_to_editFragment"
             app:destination="@id/edit_navigation">
             <argument
-                android:name="docId"
+                android:name="docLocalId"
+                app:argType="long" />
+            <argument
+                android:name="docRemoteId"
                 app:argType="long" />
         </action>
     </fragment>
@@ -58,7 +61,10 @@
             android:name="com.demo.doccloud.ui.edit.EditFragment"
             tools:layout="@layout/edit_fragment">
             <argument
-                android:name="docId"
+                android:name="docLocalId"
+                app:argType="long" />
+            <argument
+                android:name="docRemoteId"
                 app:argType="long" />
             <action
                 android:id="@+id/action_editFragment_to_editCropFragment"

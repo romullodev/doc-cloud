@@ -2,9 +2,11 @@ package com.demo.doccloud.data.datasource.local.room
 
 import androidx.lifecycle.map
 import com.demo.doccloud.data.datasource.local.LocalDataSource
+import com.demo.doccloud.data.datasource.local.room.entities.DatabaseDoc
 import com.demo.doccloud.data.datasource.local.room.entities.asDomain
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.asDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -26,15 +28,30 @@ class RoomServices @Inject constructor(
         }
     }
 
-    override suspend fun getDoc(id: Long) = withContext(dispatcher){
-        appDatabase.docDao.getDoc(id.toInt()).asDomain()
+    override suspend fun getDoc(id: Long) = withContext(dispatcher) {
+        appDatabase.docDao.getDoc(id).asDomain()
     }
 
-    override suspend fun updateDoc(doc: Doc) {
+    override suspend fun updateDoc(doc: Doc) = withContext(dispatcher) {
         appDatabase.docDao.update(doc.asDatabase(copyIdFlag = true))
     }
 
     override fun getSavedDocs() = appDatabase.docDao.getDocs().map {
         it.asDomain()
     }
+
+    override suspend fun updateDocName(id: Long, name: String) = withContext(dispatcher) {
+        appDatabase.docDao.updateDocName(id, name)
+    }
+
+
+    override suspend fun updateDocPhoto(localId: Long, photo: Photo) = withContext(dispatcher) {
+        val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
+        val pages = ArrayList(doc.pages)
+        pages[photo.id.toInt()] = photo.path
+        val databaseDoc: DatabaseDoc =
+            doc.copy(pages = pages.toList()).asDatabase(copyIdFlag = true)
+        appDatabase.docDao.update(databaseDoc)
+    }
+
 }

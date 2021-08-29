@@ -8,6 +8,7 @@ import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.utils.AppConstants
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -16,7 +17,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @HiltWorker
-class UploadDocWorker @AssistedInject constructor(
+class UpdateDocPageWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
@@ -29,23 +30,38 @@ class UploadDocWorker @AssistedInject constructor(
         return withContext(dispatcher) {
             // Retrieve localId
             val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
+            val photoId: Long = inputData.getLong(AppConstants.PHOTO_ID_KEY, -1L)
+            val photoPath: String = inputData.getString(AppConstants.PHOTO_PATH_KEY) ?: ""
+
             val doc = localDataSource.getDoc(localId)
             try {
                 //in case of deletion
-                if (localId != -1L) {
+                if (localId != -1L && photoId != -1L && photoPath != "") {
                     localDataSource.updateDoc(
                         doc.copy(status = DocStatus.SENDING)
                     )
                     //upload to server
-                    remoteDataSource.uploadDocFirebase(
-                        localDataSource.getDoc(localId)
+                    val result = remoteDataSource.updateDocPhotos(
+                        remoteId = localDataSource.getDoc(localId).remoteId,
+                        photo = Photo(id = photoId, path = photoPath)
                     )
-                    localDataSource.updateDoc(
-                        doc.copy(status = DocStatus.SENT)
-                    )
-                    return@withContext Result.success()
+                    when(result.status){
+                        com.demo.doccloud.utils.Result.Status.SUCCESS -> {
+                            localDataSource.updateDoc(
+                                doc.copy(status = DocStatus.SENT)
+                            )
+                            return@withContext Result.success()
+                        }
+                        com.demo.doccloud.utils.Result.Status.ERROR -> {
+                            Timber.d("ocorreu um problema ao atualizar a página do documento. \nDetalhes: ${result.msg}")
+                            localDataSource.updateDoc(
+                                doc.copy(status = DocStatus.NOT_SENT)
+                            )
+                            return@withContext Result.failure()
+                        }
+                    }
                 } else {
-                    Timber.d("documento não encontrado")
+                    Timber.d("erro ao recuperar informações do documento")
                     localDataSource.updateDoc(
                         doc.copy(status = DocStatus.NOT_SENT)
                     )

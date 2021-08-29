@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,6 +22,7 @@ import com.demo.doccloud.R
 import com.demo.doccloud.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -33,8 +36,6 @@ class EditFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //load doc from database
-        viewModel.getDocById(args.docId)
     }
 
     override fun onCreateView(
@@ -50,6 +51,37 @@ class EditFragment : Fragment() {
         setupBindingVariables()
         setupObservables()
         setupToolbar()
+        setupOnCLickListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //load doc from database
+        viewModel.getDocById(args.docLocalId)
+    }
+
+    private fun setupOnCLickListener() {
+        binding.toolbarTitle.setOnClickListener {
+            val materialDialog = CatchDocNameDialog.newInstance(
+                object : CatchDocNameDialog.DialogDocNameListener {
+                    override fun onSaveClick(docName: String, dialog: DialogFragment) {
+                        binding.toolbarTitle.text = docName
+                        viewModel.updateNameDoc(localId = args.docLocalId, remoteId = args.docRemoteId, docName)
+                        dialog.dismiss()
+                    }
+
+                    override fun onCancelClick(dialog: DialogFragment) {
+                        dialog.dismiss()
+                    }
+                },
+                getString(R.string.edit_screen_rename_doc_dialog)
+            )
+
+            materialDialog.show(
+                requireActivity().supportFragmentManager,
+                null
+            )
+        }
     }
 
     private fun setupToolbar() {
@@ -58,11 +90,6 @@ class EditFragment : Fragment() {
         shareIcon = DrawableCompat.wrap(shareIcon)
         DrawableCompat.setTint(shareIcon, ContextCompat.getColor(requireContext(), R.color.white))
         binding.toolbar.menu.findItem(R.id.edit_share).icon = shareIcon
-        //set white color for edit icon
-        var editIcon: Drawable = binding.toolbar.menu.findItem(R.id.edit_name).icon
-        editIcon = DrawableCompat.wrap(editIcon)
-        DrawableCompat.setTint(editIcon, ContextCompat.getColor(requireContext(), R.color.white))
-        binding.toolbar.menu.findItem(R.id.edit_name).icon = editIcon
 
         //setup our navigation system for this toolbar
         val navController = findNavController()
@@ -70,13 +97,12 @@ class EditFragment : Fragment() {
             navController,
             AppBarConfiguration(navController.graph)
         )
-
     }
 
     private fun setupObservables() {
         viewModel.doc.observe(viewLifecycleOwner) {
             //set into toolbar doc name
-            binding.toolbar.title = it.name
+            binding.toolbarTitle.text = it.name
             val photos: List<Photo> = it.pages.mapIndexed { index, data ->
                 Photo(
                     id = index.toLong(),
@@ -85,7 +111,7 @@ class EditFragment : Fragment() {
             }
             val mutablePhotos = photos.toMutableList()
 
-            viewModel.setNewPhotos(mutablePhotos)
+            //viewModel.keepDocPhotos(mutablePhotos)
             (binding.editContent.rvDocPhotos.adapter as EditAdapter).submitList(mutablePhotos)
         }
 
@@ -99,7 +125,6 @@ class EditFragment : Fragment() {
                     }
                 }
         })
-
     }
 
     private fun setupBindingVariables() {
@@ -110,12 +135,10 @@ class EditFragment : Fragment() {
                 widthScreen = WindowManager(binding.root.context).getCurrentWindowMetrics().bounds.width(),
                 onClick = object : EditAdapter.OnEditClickListener {
                     override fun onEditClick(photo: Photo, view: View) {
-                        viewModel.selectedPhoto = photo
+                        viewModel.setSelectedPhoto(photo)
                         viewModel.navigate(EditFragmentDirections.actionEditFragmentToEditCropFragment())
                     }
-
                 }
-
             )
             layoutManager = GridLayoutManager(
                 activity,

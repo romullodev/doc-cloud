@@ -48,6 +48,9 @@
     <string name="crop_screen_cancel_btn">Cancelar</string>
     <string name="crop_screen_save_btn">Salvar</string>
 
+    <!-- Edit Screen -->
+    <string name="edit_screen_rename_doc_dialog">Renomear para</string>
+
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
     <string name="loading_dialog_message_logout">Saindo …</string>

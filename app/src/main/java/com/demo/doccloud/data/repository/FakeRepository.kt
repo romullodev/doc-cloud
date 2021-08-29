@@ -7,6 +7,7 @@ import com.demo.doccloud.R
 import com.demo.doccloud.data.datasource.local.room.entities.DatabaseDoc
 import com.demo.doccloud.di.MainDispatcher
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.Result
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -84,6 +85,22 @@ class FakeRepository @Inject constructor(
     }
 
     override suspend fun getDoc(id: Long): Result<Doc> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateDocName(
+        localId: Long,
+        remoteId: Long,
+        name: String
+    ){
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateDocPhotos(
+        localId: Long,
+        remoteId: Long,
+        photo: Photo
+    ){
         TODO("Not yet implemented")
     }
 

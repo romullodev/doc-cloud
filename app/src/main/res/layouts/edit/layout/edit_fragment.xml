@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.demo.doccloud.ui.edit.EditViewModel" />
@@ -19,14 +20,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+
+            <!--            tools:title="Nome do Documento"-->
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:title="Nome do Documento"
-                app:titleTextColor="@color/white"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:menu="@menu/edit_menu_init">
+                app:menu="@menu/edit_menu_init"
+                app:titleTextColor="@color/white">
+
+                <TextView
+                    android:id="@+id/toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    tools:text="Nome do Documento" />
             </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.AppBarLayout>

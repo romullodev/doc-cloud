@@ -22,6 +22,7 @@ import com.demo.doccloud.adapters.CropAdapter
 import com.demo.doccloud.databinding.CropFragmentBinding
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
+import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
 import com.demo.doccloud.utils.DialogsHelper
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -84,8 +85,8 @@ class CropFragment() : Fragment() {
             it.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     CropViewModel.CropState.SaveDocNameDialog -> {
-                        val materialDialog = SaveDocNameDialog.newInstance(
-                            object : SaveDocNameDialog.DialogDocNameListener {
+                        val materialDialog = CatchDocNameDialog.newInstance(
+                            object : CatchDocNameDialog.DialogDocNameListener {
                                 override fun onSaveClick(docName: String, dialog: DialogFragment) {
                                     viewModel.saveDocs(docName)
                                     dialog.dismiss()
@@ -95,7 +96,8 @@ class CropFragment() : Fragment() {
                                 override fun onCancelClick(dialog: DialogFragment) {
                                     dialog.dismiss()
                                 }
-                            }
+                            },
+                            getString(R.string.crop_screen_dialog_title_label)
                         )
 
                         materialDialog.show(

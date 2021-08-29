@@ -183,7 +183,8 @@ class HomeFragment() :
             }
             R.id.edit -> {
                 homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToEditFragment(
-                    docId = homeViewModel.currDoc?.localId!!)
+                    docLocalId = homeViewModel.currDoc?.localId!!,
+                    docRemoteId = homeViewModel.currDoc?.remoteId!!)
                 )
                 true
             }

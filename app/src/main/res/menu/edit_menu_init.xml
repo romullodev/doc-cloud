@@ -8,11 +8,4 @@
         android:title="Share"
         tools:iconTint="@color/white"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/edit_name"
-        android:icon="@drawable/ic_edit_24"
-        app:showAsAction="always"
-        tools:iconTint="@color/white"
-        android:title="edit" />
 </menu>
