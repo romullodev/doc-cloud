@@ -20,4 +20,5 @@ interface Repository {
     suspend fun getDoc(id: Long) : Result<Doc>
     suspend fun updateDocPhotos(localId: Long, remoteId: Long, photo: Photo)
     suspend fun updateDocName(localId: Long, remoteId: Long, name: String)
+    suspend fun deleteDocPhoto(localId: Long, remoteId: Long, photo: Photo)
 }

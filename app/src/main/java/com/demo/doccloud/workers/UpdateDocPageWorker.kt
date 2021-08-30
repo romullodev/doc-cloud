@@ -41,7 +41,7 @@ class UpdateDocPageWorker @AssistedInject constructor(
                         doc.copy(status = DocStatus.SENDING)
                     )
                     //upload to server
-                    val result = remoteDataSource.updateDocPhotos(
+                    val result = remoteDataSource.updateDocPhotosFirebase(
                         remoteId = localDataSource.getDoc(localId).remoteId,
                         photo = Photo(id = photoId, path = photoPath)
                     )
@@ -72,8 +72,7 @@ class UpdateDocPageWorker @AssistedInject constructor(
                 localDataSource.updateDoc(
                     doc.copy(status = DocStatus.NOT_SENT)
                 )
-                //updateUploadStatus(localId, msg = DocStatus.NOT_SENT)
-                // this result is ignored
+                // this result is ignored in case of cancelling
                 return@withContext Result.failure()
             }
         }

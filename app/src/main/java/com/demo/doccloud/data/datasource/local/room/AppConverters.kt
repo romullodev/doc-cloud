@@ -3,14 +3,15 @@ package com.demo.doccloud.data.datasource.local.room
 import androidx.room.TypeConverter
 import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.domain.Photo
 import com.google.gson.Gson
 
 class AppConverters {
     @TypeConverter
-    fun listToJson(value: List<String>): String = Gson().toJson(value)
+    fun photoListToJson(value: List<Photo>): String = Gson().toJson(value)
 
     @TypeConverter
-    fun jsonToList(value: String) = Gson().fromJson(value, Array<String>::class.java).toList()
+    fun jsonToPhotoList(value: String) = Gson().fromJson(value, Array<Photo>::class.java).toList()
 
     //convert UserType into Int and vice-versa
     @TypeConverter

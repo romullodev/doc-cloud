@@ -68,15 +68,12 @@ class CropViewModel @Inject constructor(
     fun saveDocs(docName: String) {
         showDialog(R.string.loading_dialog_message_please_wait)
         viewModelScope.launch {
-            val pages: List<String>? = listPhoto.value?.map {
-                it.path
-            }
             val result = repository.saveDoc(
                 Doc(
                     remoteId = System.currentTimeMillis(),
                     name = docName,
                     date = SimpleDateFormat(TIMESTAMP_FORMAT_BR, Locale.US).format(System.currentTimeMillis()),
-                    pages = pages!!,
+                    pages = listPhoto.value!!,
                     status = DocStatus.NOT_SENT
                 )
             )

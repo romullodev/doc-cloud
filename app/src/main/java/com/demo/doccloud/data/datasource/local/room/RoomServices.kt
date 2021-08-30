@@ -24,7 +24,7 @@ class RoomServices @Inject constructor(
     override suspend fun deleteDocOnDevice(doc: Doc) = withContext(dispatcher) {
         appDatabase.docDao.delete(doc.asDatabase(copyIdFlag = true))
         doc.pages.forEach {
-            File(it).delete()
+            File(it.path).delete()
         }
     }
 
@@ -47,10 +47,21 @@ class RoomServices @Inject constructor(
 
     override suspend fun updateDocPhoto(localId: Long, photo: Photo) = withContext(dispatcher) {
         val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
-        val pages = ArrayList(doc.pages)
-        pages[photo.id.toInt()] = photo.path
+        val pages = doc.pages.map {
+            if(it.id == photo.id) photo else it
+        }
         val databaseDoc: DatabaseDoc =
-            doc.copy(pages = pages.toList()).asDatabase(copyIdFlag = true)
+            doc.copy(pages = pages).asDatabase(copyIdFlag = true)
+        appDatabase.docDao.update(databaseDoc)
+    }
+
+    override suspend fun deleteDocPhoto(localId: Long, photo: Photo) = withContext(dispatcher) {
+        val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
+        val newPages = doc.pages.filter{ photoFromDoc: Photo ->
+            photoFromDoc.id != photo.id
+        }
+        val databaseDoc: DatabaseDoc =
+            doc.copy(pages = newPages).asDatabase(copyIdFlag = true)
         appDatabase.docDao.update(databaseDoc)
     }
 

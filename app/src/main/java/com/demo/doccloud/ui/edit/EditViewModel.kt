@@ -43,8 +43,43 @@ class EditViewModel @Inject constructor(
         data class To(val directions: NavDirections) : NavigationCommand()
     }
 
-    fun setSelectedPhoto(photo: Photo){
+    fun setSelectedPhoto(photo: Photo) {
         _selectedPhoto.value = photo
+    }
+
+    fun updateNameDoc(localId: Long, remoteId: Long, newName: String) {
+        viewModelScope.launch {
+            repository.updateDocName(localId = localId, remoteId = remoteId, newName)
+        }
+    }
+
+    //retrieve the same list reference from the previous screen
+    fun getDocById(id: Long) {
+        viewModelScope.launch {
+            val result = repository.getDoc(id)
+            when (result.status) {
+                Result.Status.SUCCESS -> {
+                    _doc.value = result.data!!
+                }
+                Result.Status.ERROR -> {
+                    TODO()
+                }
+            }
+        }
+    }
+
+    /**
+     * these methods above are called from EditFragment and these ones bellow are called from EditCropFragment
+     */
+
+    fun deleteSelectedDocPhoto() {
+        viewModelScope.launch {
+            repository.deleteDocPhoto(
+                localId = doc.value?.localId!!,
+                remoteId = doc.value?.remoteId!!,
+                photo = selectedPhoto.value!!
+            )
+        }
     }
 
     fun getSelectedPhoto() = selectedPhoto.value
@@ -56,12 +91,6 @@ class EditViewModel @Inject constructor(
     //helper method to help navigate using navigation command
     fun navigate(directions: NavDirections) {
         _navigationCommands.value = Event(NavigationCommand.To(directions))
-    }
-
-    fun updateNameDoc(localId: Long, remoteId: Long, newName: String) {
-        viewModelScope.launch {
-            repository.updateDocName(localId = localId, remoteId = remoteId, newName)
-        }
     }
 
     fun updateDocPhoto(uri: Uri, context: Context) {
@@ -96,21 +125,6 @@ class EditViewModel @Inject constructor(
             //delete old file from Files Dir
             oldFileOnFilesDir.delete()
             return@withContext newFileOnFilesDir.absolutePath
-        }
-    }
-
-    //retrieve the same list reference from the previous screen
-    fun getDocById(id: Long) {
-        viewModelScope.launch {
-            val result = repository.getDoc(id)
-            when (result.status) {
-                Result.Status.SUCCESS -> {
-                    _doc.value = result.data!!
-                }
-                Result.Status.ERROR -> {
-                    TODO()
-                }
-            }
         }
     }
 }

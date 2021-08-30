@@ -169,8 +169,8 @@ class CameraFragment : Fragment() {
                             requireActivity().runOnUiThread {
                                 viewModel.addItem(
                                     Photo(
-                                        System.currentTimeMillis(),
-                                        photoFile.absolutePath
+                                        id = System.currentTimeMillis(),
+                                        path = photoFile.absolutePath
                                     )
                                 )
                             }

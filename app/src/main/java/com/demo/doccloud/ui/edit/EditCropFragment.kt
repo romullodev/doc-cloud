@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.AppBarConfiguration
@@ -22,8 +23,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.demo.doccloud.R
 import com.demo.doccloud.databinding.FragmentEditCropBinding
+import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
 import com.demo.doccloud.ui.home.HomeViewModel
+import com.demo.doccloud.utils.AppConstants
+import com.demo.doccloud.utils.DialogsHelper
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +40,7 @@ class EditCropFragment : Fragment() {
     private val viewModel: EditViewModel by navGraphViewModels(R.id.edit_navigation)
     private var _binding: FragmentEditCropBinding? = null
     private val binding get() = _binding!!
+    private lateinit var navController: NavController
 
     //to launch cropper activity
     private lateinit var cropperLauncher: ActivityResultLauncher<Intent>
@@ -76,7 +81,6 @@ class EditCropFragment : Fragment() {
             }
     }
 
-
     private fun setupListeners() {
         binding.toolbar.setOnMenuItemClickListener { item->
             if (item?.itemId == R.id.edit_crop) {
@@ -92,6 +96,26 @@ class EditCropFragment : Fragment() {
                 return@setOnMenuItemClickListener true
             }
             if (item?.itemId == R.id.edit_delete) {
+                DialogsHelper.showAlertDialog(
+                    DialogsHelper.getQuestionDeleteAlertParams(
+                        msg = "Deseja realmente excluir?"
+                    ),
+                    object : AppAlertDialog.DialogMaterialListener{
+                        override fun onDialogPositiveClick(dialog: DialogFragment) {
+                            viewModel.deleteSelectedDocPhoto()
+                            activity?.runOnUiThread{
+                                navController.popBackStack()
+                            }
+                            dialog.dismiss()
+                        }
+
+                        override fun onDialogNegativeClick(dialog: DialogFragment) {
+                            dialog.dismiss()
+                        }
+                    },
+                    requireActivity(),
+                    tag = AppConstants.QUESTION_DIALOG_TAG
+                )
                 return@setOnMenuItemClickListener true
             }
 
@@ -107,7 +131,7 @@ class EditCropFragment : Fragment() {
         binding.toolbar.menu.findItem(R.id.edit_crop).icon = cropIcon
 
         //setup our navigation system for this toolbar
-        val navController = findNavController()
+        navController = findNavController()
         binding.toolbar.setupWithNavController(
             navController,
             AppBarConfiguration(navController.graph)

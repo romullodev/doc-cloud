@@ -103,16 +103,8 @@ class EditFragment : Fragment() {
         viewModel.doc.observe(viewLifecycleOwner) {
             //set into toolbar doc name
             binding.toolbarTitle.text = it.name
-            val photos: List<Photo> = it.pages.mapIndexed { index, data ->
-                Photo(
-                    id = index.toLong(),
-                    path = data
-                )
-            }
-            val mutablePhotos = photos.toMutableList()
-
             //viewModel.keepDocPhotos(mutablePhotos)
-            (binding.editContent.rvDocPhotos.adapter as EditAdapter).submitList(mutablePhotos)
+            (binding.editContent.rvDocPhotos.adapter as EditAdapter).submitList(it.pages.toMutableList())
         }
 
         viewModel.navigationCommands.observe(viewLifecycleOwner, {

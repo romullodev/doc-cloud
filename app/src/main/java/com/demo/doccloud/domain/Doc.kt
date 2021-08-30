@@ -7,7 +7,7 @@ data class Doc(
     val name: String,
     val date: String,
     //photo's paths
-    val pages: List<String>,
+    val pages: List<Photo>,
     val status: DocStatus,
     val localId: Long = 0,
 )

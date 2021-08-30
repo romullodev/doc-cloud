@@ -11,7 +11,8 @@ interface RemoteDataSource {
     suspend fun getUser() : Result<User>
     suspend fun doLogout() : Result<Boolean>
     suspend fun uploadDocFirebase(doc: Doc)
-    suspend fun deleteDocFirebase(remoteId: Long, pagesNumber: Int)
-    suspend fun updateDocName(remoteId: Long, name: String) : Result<Boolean>
-    suspend fun updateDocPhotos(remoteId: Long, photo: Photo) : Result<Boolean>
+    suspend fun deleteDocFirebase(remoteId: Long, pages: List<Photo>)
+    suspend fun updateDocNameFirebase(remoteId: Long, name: String) : Result<Boolean>
+    suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo) : Result<Boolean>
+    suspend fun deleteDocPhotosFirebase(remoteId: Long, photo: Photo, jsonPages: String) : Result<Boolean>
 }

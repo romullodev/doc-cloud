@@ -12,4 +12,5 @@ interface LocalDataSource {
     fun getSavedDocs() : LiveData<List<Doc>>
     suspend fun updateDocName(id: Long, name: String)
     suspend fun updateDocPhoto(localId: Long, photo: Photo)
+    suspend fun deleteDocPhoto(localId: Long, photo: Photo)
 }

@@ -13,10 +13,8 @@ import com.demo.doccloud.domain.DocStatus
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.Result
-import com.demo.doccloud.workers.DeleteDocWorker
-import com.demo.doccloud.workers.UpdateDocNameWorker
-import com.demo.doccloud.workers.UpdateDocPageWorker
-import com.demo.doccloud.workers.UploadDocWorker
+import com.demo.doccloud.workers.*
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -47,12 +45,12 @@ class RepositoryImpl @Inject constructor(
     override suspend fun deleteDoc(doc: Doc): Result<String> {
         localDatasource.deleteDocOnDevice(doc)
         //schedule to delete docs from server
-        setupDeleteDocSchedule(doc.remoteId, doc.pages.size)
+        setupDeleteDocSchedule(doc.remoteId, Gson().toJson(doc.pages))
         return Result.success(context.getString(R.string.home_toast_delete_success, doc.name))
     }
 
     override suspend fun getDoc(id: Long): Result<Doc> {
-        val doc =  localDatasource.getDoc(id)
+        val doc = localDatasource.getDoc(id)
         return Result.success(doc)
     }
 
@@ -65,6 +63,18 @@ class RepositoryImpl @Inject constructor(
         setupUpdateDocNameSchedule(localId = localId, remoteId = remoteId, name = name)
     }
 
+    override suspend fun deleteDocPhoto(localId: Long, remoteId: Long, photo: Photo) {
+        localDatasource.deleteDocPhoto(
+            localId = localId,
+            photo = photo
+        )
+        val doc = localDatasource.getDoc(localId)
+        localDatasource.updateDoc(
+            doc.copy(status = DocStatus.NOT_SENT)
+        )
+        setupDeleteDocPhotoSchedule(localId, photo)
+    }
+
     override suspend fun updateDocPhotos(localId: Long, remoteId: Long, photo: Photo) {
         localDatasource.updateDocPhoto(localId = localId, photo = photo)
         val doc = localDatasource.getDoc(localId)
@@ -74,6 +84,34 @@ class RepositoryImpl @Inject constructor(
         setupUpdateDocPhotosSchedule(localId = localId, photo = photo)
     }
 
+    private fun setupDeleteDocPhotoSchedule(localId: Long, photo: Photo){
+        val data =
+            workDataOf(
+                AppConstants.LOCAL_ID_KEY to localId,
+                AppConstants.PHOTO_ID_KEY to photo.id,
+                AppConstants.PHOTO_PATH_KEY to photo.path
+                )
+
+        //setup constraint to workManager (only send if network is available)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        //setup the request work to send
+        val deleteDocPhotoWorkRequest =
+            OneTimeWorkRequestBuilder<DeleteDocPageWorker>()
+                .setInputData(data)
+                .setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .build()
+
+        //schedule the work to be done
+        WorkManager.getInstance(context).enqueue(deleteDocPhotoWorkRequest)
+    }
 
     private fun setupUpdateDocNameSchedule(localId: Long, remoteId: Long, name: String) {
         val data =
@@ -82,7 +120,7 @@ class RepositoryImpl @Inject constructor(
                 AppConstants.REMOTE_ID_KEY to remoteId,
                 AppConstants.DOC_NAME_ID_KEY to name,
 
-            )
+                )
 
         //setup constraint to workManager (only send if network is available)
         val constraints = Constraints.Builder()
@@ -116,7 +154,7 @@ class RepositoryImpl @Inject constructor(
                 AppConstants.LOCAL_ID_KEY to localId,
                 AppConstants.PHOTO_ID_KEY to photo.id,
                 AppConstants.PHOTO_PATH_KEY to photo.path,
-                )
+            )
 
         //setup constraint to workManager (only send if network is available)
         val constraints = Constraints.Builder()
@@ -170,11 +208,11 @@ class RepositoryImpl @Inject constructor(
         WorkManager.getInstance(context).enqueue(uploadWorkRequest)
     }
 
-    private fun setupDeleteDocSchedule(remoteId: Long, pagesNumber: Int){
+    private fun setupDeleteDocSchedule(remoteId: Long, jsonPages: String) {
         val data =
             workDataOf(
                 AppConstants.REMOTE_ID_KEY to remoteId,
-                AppConstants.PAGES_NUMBER_KEY to pagesNumber,
+                AppConstants.JSON_PAGES_KEY to jsonPages,
             )
 
         //setup constraint to workManager (only send if network is available)

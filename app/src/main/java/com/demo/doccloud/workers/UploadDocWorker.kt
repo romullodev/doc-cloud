@@ -57,7 +57,6 @@ class UploadDocWorker @AssistedInject constructor(
                     doc.copy(status = DocStatus.NOT_SENT)
                 )
                 //updateUploadStatus(localId, msg = DocStatus.NOT_SENT)
-                // this result is ignored
                 return@withContext Result.failure()
             }
         }

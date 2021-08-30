@@ -96,6 +96,10 @@ class FakeRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun deleteDocPhoto(localId: Long, remoteId: Long, photo: Photo) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun updateDocPhotos(
         localId: Long,
         remoteId: Long,
