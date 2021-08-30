@@ -4,20 +4,32 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/drawables/common/drawable/ic_baseline_info_24.xml" value="0.36153846153846153" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/drawables/common/drawable/ic_edit_24.xml" value="0.35833333333333334" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/drawables/common/drawable/ic_share_24.xml" value="0.35833333333333334" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/drawables/edit/drawable/ic_baseline_arrow_back_24.xml" value="0.36018518518518516" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/drawables/home/drawable/ic_delete_24.xml" value="0.36153846153846153" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layout/activity_main.xml" value="0.30277777777777776" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layout/activity_splash_screen.xml" value="0.35104166666666664" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layout/content_main.xml" value="0.30277777777777776" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layout/crop_fragment.xml" value="0.35104166666666664" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layout/edit_fragment.xml" value="0.35104166666666664" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layout/fragment_edit_crop.xml" value="0.35104166666666664" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/camera/layout/camera_fragment.xml" value="0.22" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/camera/layout/picture_item.xml" value="0.21822916666666667" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/crop/layout/catch_doc_name_layout.xml" value="0.25" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/crop/layout/crop_fragment.xml" value="0.25" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/crop/layout/crop_item.xml" value="0.25" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/crop/layout/save_doc_name_layout.xml" value="0.22" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/dialogs/layout/home_dialog_new_doc.xml" value="0.33" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/edit/layout/content_edit.xml" value="0.33" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/edit/layout/edit_fragment.xml" value="0.25" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/edit/layout/edit_item.xml" value="0.22" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/edit/layout/fragment_edit_crop.xml" value="0.33" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/home/layout/home_doc_item.xml" value="0.35104166666666664" />
-        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/home/layout/home_fragment.xml" value="0.30277777777777776" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/home/layout/home_fragment.xml" value="0.2" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/layouts/login/layout/fragment_login.xml" value="0.30277777777777776" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/menu/edit_menu_crop.xml" value="0.35104166666666664" />
+        <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/menu/edit_menu_init.xml" value="0.35104166666666664" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/menu/home_doc_item.xml" value="0.3453703703703704" />
         <entry key="..\:/workspace/Projetos_Androids/DocCloud/app/src/main/res/menu/home_menu.xml" value="0.3453703703703704" />
       </map>

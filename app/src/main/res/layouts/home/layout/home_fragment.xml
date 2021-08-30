@@ -6,7 +6,6 @@
 
 
     <data>
-
         <variable
             name="homeViewModel"
             type="com.demo.doccloud.ui.home.HomeViewModel" />
@@ -74,6 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:titleTextColor="@color/white"
+                    android:theme="@style/ThemeOverlay.App.Toolbar"
                     app:menu="@menu/home_menu"/>
 
                 <!--                    <com.google.android.material.imageview.ShapeableImageView-->

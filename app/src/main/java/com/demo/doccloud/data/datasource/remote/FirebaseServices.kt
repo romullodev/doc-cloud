@@ -7,12 +7,13 @@ import android.net.Uri
 import com.demo.doccloud.R
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOC_NAME_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_JSON_PAGES_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_REMOTE_ID_KEY
-import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_TOTAL_PAGES_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_USERS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_IMAGES_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_USERS_DIRECTORY
@@ -28,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
@@ -56,10 +58,10 @@ class FirebaseServices @Inject constructor(
                 signInCredentialTask.await()
                 return@withContext Result.success(auth.currentUser?.asDomain()!!)
             } catch (e: Exception) {
-                if(e is ApiException){
+                if (e is ApiException) {
                     return@withContext Result.error(context.getString(R.string.login_error_api_google))
                 }
-                if (e is NetworkErrorException || e is HttpException){
+                if (e is NetworkErrorException || e is HttpException) {
                     return@withContext Result.error(context.getString(R.string.common_no_internet))
                 }
                 return@withContext Result.error(context.getString(R.string.login_unknown_error))
@@ -98,24 +100,25 @@ class FirebaseServices @Inject constructor(
     }
 
     //triggers from UploadDocWorker
-    override suspend fun uploadDocFirebase(doc: Doc){
-        withContext(dispatcher){
-            val userId : String = auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+    override suspend fun uploadDocFirebase(doc: Doc) {
+        withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
             //Firebase Storage
             val fireStorage = storage.reference
             //send all photos to cloud
-            doc.pages.forEachIndexed { index, filePath ->
+            doc.pages.forEach{ photo ->
                 //reference to save image into Storage
                 val refStorageImage = fireStorage.child(
-                    "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${doc.remoteId}_$index.jpg"
+                    "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${doc.remoteId}_${photo.id}.jpg"
                 )
                 //this code bellow can throw an exception
                 //use a try catch block when invoke this function
                 try {
-                    val uriFile = Uri.fromFile(File(filePath))
+                    val uriFile = Uri.fromFile(File(photo.path))
                     val task1 = refStorageImage.putFile(uriFile)
                     task1.await()
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     Timber.d("Erro ao enviar imagens do documento para o servidor. \nDetalhes: $e")
                 }
             }
@@ -133,34 +136,36 @@ class FirebaseServices @Inject constructor(
                 DATABASE_DATE_KEY to doc.date,
                 DATABASE_REMOTE_ID_KEY to doc.remoteId.toString(),
                 DATABASE_DOC_NAME_KEY to doc.name,
-                DATABASE_TOTAL_PAGES_KEY to doc.pages.size.toString(),
+                DATABASE_JSON_PAGES_KEY to Gson().toJson(doc.pages),
             )
             try {
                 val task = refDatabase.setValue(mapDatabase)
                 task.await()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Timber.d("Erro ao enviar dados do documento para o servidor. \nDetalhes: $e")
             }
         }
     }
 
-    override suspend fun deleteDocFirebase(remoteId: Long, pagesNumber: Int){
-        withContext(dispatcher){
-            val userId : String = auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+    override suspend fun deleteDocFirebase(remoteId: Long, pages: List<Photo>) {
+        withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
             //Firebase Storage
             val fireStorage = storage.reference
             //delete all photos from server
-            for (index in 0 until pagesNumber){
+            pages.forEach {
                 //reference to delete images from Storage
                 val refStorageImage = fireStorage.child(
-                    "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_$index.jpg"
+                    "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${it.id}.jpg"
                 )
                 try {
                     val task1 = refStorageImage.delete()
                     task1.await()
-                }catch (e: Exception){
-                    Timber.d("Erro ao deletar a imagem ${remoteId}_$index.jpg do servidor. \nDetalhes: $e")
+                } catch (e: Exception) {
+                    Timber.d("Erro ao deletar a imagem ${remoteId}_${it.id}.jpg do servidor. \nDetalhes: $e")
                 }
+
             }
             //Firebase Database
             val database = database.reference
@@ -173,9 +178,112 @@ class FirebaseServices @Inject constructor(
             try {
                 val task2 = refDatabase.removeValue()
                 task2.await()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Timber.d("Erro ao deletar dados do documento no servidor. \nDetalhes: $e")
             }
+        }
+    }
+
+    override suspend fun updateDocNameFirebase(remoteId: Long, name: String): Result<Boolean> {
+        return withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+            //Firebase Database
+            val database = database.reference
+            //reference to save values into database
+            val refDatabase =
+                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_DOCUMENTS_DIRECTORY/$remoteId")
+            //update doc name on Real Database
+            val mapDatabase: HashMap<String, Any> = HashMap()
+            mapDatabase[DATABASE_DOC_NAME_KEY] = name
+            try {
+                val task = refDatabase.updateChildren(mapDatabase)
+                task.await()
+            } catch (e: Exception) {
+                return@withContext Result.error(
+                    "Erro ao enviar dados do documento para o servidor. Detalhes: $e",
+                    null
+                )
+            }
+            return@withContext Result.success(true)
+        }
+    }
+
+    override suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo): Result<Boolean> {
+        return withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+            //Firebase Storage
+            val fireStorage = storage.reference
+            //delete old photo from server
+            val index = photo.id
+            val refStorageImage = fireStorage.child(
+                "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${photo.id}.jpg"
+            )
+            try {
+                val task1 = refStorageImage.delete()
+                task1.await()
+            } catch (e: Exception) {
+                return@withContext Result.error(
+                    "Erro ao deletar a imagem ${remoteId}_$index.jpg do servidor. \nDetalhes: $e",
+                    null
+                )
+            }
+
+            //upload new photo to server
+            try {
+                val uriFile = Uri.fromFile(File(photo.path))
+                val task2 = refStorageImage.putFile(uriFile)
+                task2.await()
+            } catch (e: Exception) {
+                return@withContext Result.error(
+                    "Erro ao enviar imagens do documento para o servidor. \nDetalhes: $e",
+                    null
+                )
+            }
+            return@withContext Result.success(true)
+        }
+    }
+
+    override suspend fun deleteDocPhotosFirebase(remoteId: Long, photo: Photo, jsonPages: String): Result<Boolean> {
+        return withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+            //Firebase Storage
+            val fireStorage = storage.reference
+            //delete photo from server
+            val index = photo.id
+            val refStorageImage = fireStorage.child(
+                "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${photo.id}.jpg"
+            )
+            try {
+                val task = refStorageImage.delete()
+                task.await()
+            } catch (e: Exception) {
+                return@withContext Result.error(
+                    "Erro ao deletar a imagem ${remoteId}_${photo.id}.jpg do servidor. \nDetalhes: $e",
+                    null
+                )
+            }
+
+            //Firebase Database
+            val database = database.reference
+            //reference to save values into database
+            val refDatabase =
+                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_DOCUMENTS_DIRECTORY/$remoteId")
+            //update doc pages on Real Database
+            val mapDatabase: HashMap<String, Any> = HashMap()
+            mapDatabase[DATABASE_JSON_PAGES_KEY] = jsonPages
+            try {
+                val task = refDatabase.updateChildren(mapDatabase)
+                task.await()
+            } catch (e: Exception) {
+                return@withContext Result.error(
+                    "Erro ao atualizar dados do documento no servidor. Detalhes: $e",
+                    null
+                )
+            }
+            return@withContext Result.success(true)
         }
     }
 }

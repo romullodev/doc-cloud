@@ -8,8 +8,10 @@ import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.Result
+import com.google.gson.Gson
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,12 +30,15 @@ class DeleteDocWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return withContext(dispatcher) {
+            //AppConstants.JSON_PAGES_KEY to jsonPages,
             // Retrieve doc data
             val remoteId: Long = inputData.getLong(AppConstants.REMOTE_ID_KEY, -1L)
-            val pagesNumber = inputData.getInt(AppConstants.PAGES_NUMBER_KEY, -1)
+            val jsonPages = inputData.getString(AppConstants.JSON_PAGES_KEY) ?: ""
             try {
-                if (remoteId != -1L && pagesNumber != -1) {
-                    remoteDataSource.deleteDocFirebase(remoteId, pagesNumber)
+                if (remoteId != -1L && jsonPages != "") {
+                    //could be Array<String>
+                    val pages = Gson().fromJson(jsonPages, Array<Photo>::class.java).toList()
+                    remoteDataSource.deleteDocFirebase(remoteId, pages)
                     return@withContext Result.success()
                 }else{
                     Timber.d("Falha ao recuperar dados para exclusão na nuvem")
@@ -42,6 +47,7 @@ class DeleteDocWorker @AssistedInject constructor(
 
             }catch (e: Exception){
                 Timber.d("ocorreu um problema no worker. Detalhes: $e")
+                // this result is ignored in case of cancelling
                 return@withContext Result.failure()
             }
         }

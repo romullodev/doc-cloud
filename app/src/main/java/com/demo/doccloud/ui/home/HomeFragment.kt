@@ -39,6 +39,7 @@ class HomeFragment() :
     AppAlertDialog.DialogMaterialListener {
     private var _binding: HomeFragmentBinding? = null
     private val binding get() = _binding!!
+
     //workaround on searchView for configuration changes
     //problem:  when configuration changes, setOnQueryTextListener triggers making data just go away
     private var searchViewHasTrigger = false
@@ -64,7 +65,8 @@ class HomeFragment() :
     }
 
     private fun setupToolbar() {
-        binding.toolbar.overflowIcon?.setTint(Color.WHITE)
+        //set 3 dots color to white
+        //binding.toolbar.overflowIcon?.setTint(Color.WHITE)
         binding.toolbar.setOnMenuItemClickListener { item ->
             if (item?.itemId == R.id.logout) {
                 homeViewModel.doLogout()
@@ -90,7 +92,7 @@ class HomeFragment() :
                 }
 
                 override fun onQueryTextChange(newText: String): Boolean {
-                    if(searchViewHasTrigger){
+                    if (searchViewHasTrigger) {
                         if (newText.isEmpty()) {
                             adapter.filter.filter("")
                         } else {
@@ -141,14 +143,14 @@ class HomeFragment() :
             dialog.setView(view.root)
             dialog.show()
 
-        /*
-            val popup = PopupMenu(requireContext(), it)
-            val inflater: MenuInflater = popup.menuInflater
-            inflater.inflate(R.menu.home_new_doc_menu, popup.menu)
-            popup.setOnMenuItemClickListener(this)
-            forceIconOnMenu(popup)
-            popup.show()
-             */
+            /*
+                val popup = PopupMenu(requireContext(), it)
+                val inflater: MenuInflater = popup.menuInflater
+                inflater.inflate(R.menu.home_new_doc_menu, popup.menu)
+                popup.setOnMenuItemClickListener(this)
+                forceIconOnMenu(popup)
+                popup.show()
+                 */
         }
     }
 
@@ -180,7 +182,10 @@ class HomeFragment() :
                 true
             }
             R.id.edit -> {
-                Toast.makeText(requireContext(), "Editar", Toast.LENGTH_SHORT).show()
+                homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToEditFragment(
+                    docLocalId = homeViewModel.currDoc?.localId!!,
+                    docRemoteId = homeViewModel.currDoc?.remoteId!!)
+                )
                 true
             }
             R.id.delete -> {
@@ -228,9 +233,9 @@ class HomeFragment() :
                 }
         })
 
-        homeViewModel.homeState.observe(viewLifecycleOwner){
+        homeViewModel.homeState.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { state ->
-                when(state){
+                when (state) {
                     is HomeViewModel.HomeState.HomeAlertDialog -> {
                         DialogsHelper.showAlertDialog(
                             DialogsHelper.getInfoAlertParams(

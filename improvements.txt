@@ -1,0 +1,3 @@
+- create photo model for send only the necessary data
+
+- 

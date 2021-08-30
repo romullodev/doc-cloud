@@ -10,7 +10,10 @@ interface DocDao {
     fun insert(doc: DatabaseDoc) : Long
 
     @Query("SELECT * FROM doc_table WHERE localId = :id")
-    fun getDoc(id: Int): DatabaseDoc
+    fun getDoc(id: Long): DatabaseDoc
+
+    @Query("UPDATE doc_table SET name = :name WHERE localId = :id")
+    fun updateDocName(id: Long, name: String)
 
     @Update
     fun update(databaseDoc: DatabaseDoc)

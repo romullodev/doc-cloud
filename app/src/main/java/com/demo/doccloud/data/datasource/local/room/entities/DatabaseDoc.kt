@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.domain.Photo
 
 @Entity(tableName = "doc_table")
 data class DatabaseDoc constructor(
@@ -11,7 +12,7 @@ data class DatabaseDoc constructor(
     val name: String,
     val date: String,
     //photo's paths
-    val pages: List<String>,
+    val pages: List<Photo>,
     val status: DocStatus,
     @PrimaryKey(autoGenerate = true)
     val localId: Long = 0,

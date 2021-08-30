@@ -34,7 +34,11 @@ class MainActivity : AppCompatActivity() {
         toolbar.setupToolbar(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.loginFragment || destination.id == R.id.homeFragment || destination.id == R.id.cameraFragment) {
+            if (destination.id == R.id.loginFragment ||
+                destination.id == R.id.homeFragment ||
+                destination.id == R.id.cameraFragment ||
+                destination.id == R.id.editFragment ||
+                destination.id == R.id.editCropFragment) {
                 binding.contentMain.appBar.visibility = View.GONE
             } else {
                 binding.contentMain.appBar.visibility = View.VISIBLE

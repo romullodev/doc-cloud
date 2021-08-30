@@ -20,6 +20,7 @@
 
     <!-- Common -->
     <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>
+    <string name="common_delete_label">Excluir</string>
 
     <!-- Home Screen -->
     <string name="home_menu_logout">Sair</string>
@@ -29,7 +30,6 @@
     <string name="home_new_doc_menu">Novo Documento</string>
     <string name="home_doc_item_share">Compartilhar</string>
     <string name="home_doc_item_edit">Editar</string>
-    <string name="home_doc_item_delete">Excluir</string>
     <string name="home_new_doc_dialog_camera">Câmera</string>
     <string name="home_new_doc_dialog_gallery">Galeria</string>
     <string name="home_select_option_label">Selecione uma opção:</string>
@@ -47,6 +47,9 @@
     <string name="crop_screen_dialog_hint">Nome</string>
     <string name="crop_screen_cancel_btn">Cancelar</string>
     <string name="crop_screen_save_btn">Salvar</string>
+
+    <!-- Edit Screen -->
+    <string name="edit_screen_rename_doc_dialog">Renomear para</string>
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
