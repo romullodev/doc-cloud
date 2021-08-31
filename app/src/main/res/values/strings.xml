@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">DocCloud</string>
 
+    <!-- Shared Preference -->
+    <string name="share_preference_doc_cloud_app_file_key">SharePreferenceDocCloudFileKey</string>
+
     <!-- Login Screen -->
     <string name="login_doc_cloud_name">Doc Cloud</string>
     <string name="login_password_hint">Senha</string>

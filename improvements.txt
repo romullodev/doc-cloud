@@ -3,3 +3,21 @@
 - remove all try catch from viewModels
 
 - track progress when sync data
+
+- create sync strategy -- OK
+
+- analyze use of singleton on DI
+
+- change SharedPreference to DataStore
+
+- clear all data when make login
+
+- improve HomeScreen layout
+	- open edit when item is clicked
+	- remove 3 dots
+	- add longPressListener on doc item
+	- show menu option after onLongPress on itens
+	- improve colors
+
+- improve EditScreen layout
+	

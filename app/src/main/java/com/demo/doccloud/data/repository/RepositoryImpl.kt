@@ -10,6 +10,7 @@ import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.DocStatus
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.Result
 import com.demo.doccloud.workers.*
@@ -27,7 +28,18 @@ class RepositoryImpl @Inject constructor(
 ) : Repository {
     override val docs: LiveData<List<Doc>> get() = localDatasource.getSavedDocs()
 
-    override suspend fun doLoginWithGoogle(data: Intent?) = remoteDatasource.doLoginWithGoogle(data)
+    override suspend fun doLoginWithGoogle(data: Intent?) : Result<User>{
+        val result = localDatasource.saveCustomId()
+        return when(result.status){
+            Result.Status.SUCCESS -> {
+                remoteDatasource.doLoginWithGoogle(data, result.data!!)
+            }
+            Result.Status.ERROR -> {
+                //this error will be shown on Ui via Alert Dialog
+                Result.error(result.msg!!)
+            }
+        }
+    }
 
     override suspend fun getUser() = remoteDatasource.getUser()
 
@@ -72,7 +84,6 @@ class RepositoryImpl @Inject constructor(
         )
         setupDeleteDocPhotoSchedule(localId, photo)
     }
-
     override suspend fun scheduleToSyncData() {
         //setup constraint to workManager (only send if network is available)
         val constraints = Constraints.Builder()

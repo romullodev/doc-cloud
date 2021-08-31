@@ -3,6 +3,7 @@ package com.demo.doccloud.data.datasource.local
 import androidx.lifecycle.LiveData
 import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.utils.Result
 
 interface LocalDataSource {
     suspend fun saveDocOnDevice(doc: Doc) : Long
@@ -14,4 +15,6 @@ interface LocalDataSource {
     suspend fun updateDocPhoto(localId: Long, photo: Photo)
     suspend fun deleteDocPhoto(localId: Long, photo: Photo)
     suspend fun syncData(docs: List<Doc>)
+    suspend fun getSavedCustomId(): Long
+    suspend fun saveCustomId(): Result<Long>
 }

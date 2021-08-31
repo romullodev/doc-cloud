@@ -6,16 +6,17 @@ import android.content.Intent
 import android.net.Uri
 import com.demo.doccloud.R
 import com.demo.doccloud.di.IoDispatcher
-import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.DocStatus
-import com.demo.doccloud.domain.Photo
-import com.demo.doccloud.domain.User
+import com.demo.doccloud.domain.*
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOC_NAME_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_JSON_PAGES_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LAST_UPDATED_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_REMOTE_ID_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_SYNC_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_USERS_DIRECTORY
+import com.demo.doccloud.utils.AppConstants.Companion.REMOTE_DATABASE_CUSTOM_ID_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_IMAGES_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_USERS_DIRECTORY
 import com.demo.doccloud.utils.Global
@@ -51,7 +52,7 @@ class FirebaseServices @Inject constructor(
     private val database: FirebaseDatabase,
     @ApplicationContext private val context: Context
 ) : RemoteDataSource {
-    override suspend fun doLoginWithGoogle(data: Intent?): Result<User> {
+    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): Result<User> {
         return withContext(dispatcher) {
             try {
                 val signedInTask: Task<GoogleSignInAccount> =
@@ -61,6 +62,25 @@ class FirebaseServices @Inject constructor(
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 val signInCredentialTask = auth.signInWithCredential(credential)
                 signInCredentialTask.await()
+                //send customId to database
+                val userId: String =
+                    auth.currentUser?.uid
+                        ?: return@withContext Result.error("Usuário logado não possui id", null)
+                //Firebase Database
+                val database = database.reference
+                //reference to save values into database
+                val refDatabase = database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
+
+                //save into Real Database
+                //set lastUpdated (field from Sync Strategy Model) to 0 (TIMESTAMP) (See SyncDataWorker)
+                //set customId
+
+                val mapDatabase: HashMap<String, String> = hashMapOf(
+                    REMOTE_DATABASE_CUSTOM_ID_KEY to customId.toString(),
+                    DATABASE_LAST_UPDATED_KEY to 0L.toString()
+                )
+                val sendValuesTask = refDatabase.setValue(mapDatabase)
+                sendValuesTask.await()
                 return@withContext Result.success(auth.currentUser?.asDomain()!!)
             } catch (e: Exception) {
                 if (e is ApiException) {
@@ -70,7 +90,6 @@ class FirebaseServices @Inject constructor(
                     return@withContext Result.error(context.getString(R.string.common_no_internet))
                 }
                 return@withContext Result.error(context.getString(R.string.login_unknown_error))
-
             }
         }
     }
@@ -307,7 +326,7 @@ class FirebaseServices @Inject constructor(
     }
 
     //trigger from SyncDataWorker
-    override suspend fun syncData(): Result<List<Doc>> {
+    override suspend fun syncData(customId: Long): Result<List<Doc>> {
         return withContext(dispatcher) {
             val userId: String =
                 auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
@@ -353,7 +372,97 @@ class FirebaseServices @Inject constructor(
                     )
                 )
             }
+
+            //update sync strategy info on firebase
+            //reference to save values into database
+            val refSyncStrategy = database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY" )
+            //save into Real Database
+            //set lastUpdated (field from Sync Strategy Model) to NOW (TIMESTAMP) (See SyncDataWorker)
+            val mapDatabase: HashMap<String, Any> = HashMap()
+            mapDatabase[DATABASE_LAST_UPDATED_KEY] = System.currentTimeMillis().toString()
+            //update customId on firebase of THIS device
+            mapDatabase[REMOTE_DATABASE_CUSTOM_ID_KEY] = customId
+            val sendValuesTask = refSyncStrategy.updateChildren(mapDatabase)
+            sendValuesTask.await()
+
             return@withContext Result.success(docs)
+        }
+    }
+
+    override suspend fun getSyncStrategy(): Result<SyncStrategy> {
+        return withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+            //Firebase Database
+            val database = database.reference
+            //reference to get expiration info
+            val refDbExpiration = database.child(DATABASE_USERS_DIRECTORY)
+            //reference to get sync strategy info directory (users level)
+            val refDbSyncStrategy =
+                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
+
+            //to save expiration info query task
+            val expirationSource: TaskCompletionSource<Any> = TaskCompletionSource()
+            //to save sync strategy info query task
+            val syncSource: TaskCompletionSource<Any> = TaskCompletionSource()
+
+            refDbExpiration.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(p0: DataSnapshot) {
+                    expirationSource.setResult(p0)
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+                    expirationSource.setResult(p0)
+                }
+            })
+            refDbSyncStrategy.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(p0: DataSnapshot) {
+                    syncSource.setResult(p0)
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+                    syncSource.setResult(p0)
+                }
+            })
+
+            try {
+                //get expiration
+                val expirationTask = expirationSource.task
+                //this code bellow can throw an exception
+                expirationTask.await()
+                //get sync
+                val syncTask = syncSource.task
+                //this code bellow can throw an exception
+                syncTask.await()
+
+                //lastUpdated and customId are localed in users level on firebase
+                val syncDataSnapshot = (syncTask.result as DataSnapshot)
+                val expirationDataSnapshot = (expirationTask.result as DataSnapshot)
+                Timber.d("$syncDataSnapshot")
+                Timber.d("$expirationDataSnapshot")
+                val customId =
+                    syncDataSnapshot.child(REMOTE_DATABASE_CUSTOM_ID_KEY).value.toString()
+
+                val lastUpdated =
+                    syncDataSnapshot.child(DATABASE_LAST_UPDATED_KEY).value.toString()
+
+                //expiration is localed on app level directory on firebase
+                val expiration =
+                    expirationDataSnapshot.child(DATABASE_APP_LEVEL_EXPIRATION_KEY).value.toString()
+                val syncStrategy = SyncStrategy(
+                    expiration = expiration.toLong(),
+                    lastUpdated = lastUpdated.toLong(),
+                    customId = customId.toLong()
+                )
+
+                return@withContext Result.success(syncStrategy)
+
+            } catch (e: Exception) {
+                return@withContext Result.error(
+                    e.message ?: "unknown error whiling get sync info",
+                    null
+                )
+            }
         }
     }
 
@@ -361,7 +470,7 @@ class FirebaseServices @Inject constructor(
         //Firebase Storage
         val fireStorage = storage.reference
         val pages = ArrayList<Photo>()
-        ids.forEach { id->
+        ids.forEach { id ->
             //reference to delete images from Storage
             val refStorageImage = fireStorage.child(
                 "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${id}.jpg"
@@ -371,7 +480,7 @@ class FirebaseServices @Inject constructor(
 
             val task = refStorageImage.getFile(tempLocalFile)
             task.await()
-            if(task.isSuccessful){
+            if (task.isSuccessful) {
                 //here, is all things Local temp file has been created
                 val newFileOnFilesDir =
                     File(Global.getOutputDirectory(context), tempLocalFile.name)
@@ -385,7 +494,7 @@ class FirebaseServices @Inject constructor(
                         path = path
                     )
                 )
-            }else{
+            } else {
                 Timber.d("failure on download file. \nDetails: ${task.exception}")
             }
         }
