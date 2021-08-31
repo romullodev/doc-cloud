@@ -65,4 +65,9 @@ class RoomServices @Inject constructor(
         appDatabase.docDao.update(databaseDoc)
     }
 
+    override suspend fun syncData(docs: List<Doc>) = withContext(dispatcher){
+        appDatabase.docDao.clearTable()
+        appDatabase.docDao.insertAll(docs.asDatabase())
+    }
+
 }

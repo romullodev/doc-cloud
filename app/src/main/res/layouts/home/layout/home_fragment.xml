@@ -42,14 +42,6 @@
                     android:background="@drawable/profile_background"
                     android:scaleType="fitCenter" />
 
-<!--                <androidx.appcompat.widget.AppCompatTextView-->
-<!--                    android:id="@+id/pageTitle"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Início"-->
-<!--                    android:textColor="@color/white"-->
-<!--                    android:textSize="20sp" />-->
-
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
@@ -76,29 +68,8 @@
                     android:theme="@style/ThemeOverlay.App.Toolbar"
                     app:menu="@menu/home_menu"/>
 
-                <!--                    <com.google.android.material.imageview.ShapeableImageView-->
-                <!--                        android:id="@+id/logoutButton"-->
-                <!--                        android:layout_width="20dp"-->
-                <!--                        android:layout_height="20dp"-->
-                <!--                        app:srcCompat="@drawable/ic_sign_out_alt_solid"-->
-                <!--                        app:tint="@color/white" />-->
-
-                <!--                    <com.google.android.material.imageview.ShapeableImageView-->
-                <!--                        android:id="@+id/searchBtn"-->
-                <!--                        android:layout_width="20dp"-->
-                <!--                        android:layout_height="20dp"-->
-                <!--                        app:srcCompat="@drawable/ic_search_solid"-->
-                <!--                        app:tint="@color/white" />-->
-
-
-                <!--                    <androidx.appcompat.widget.SearchView-->
-                <!--                        android:id="@+id/searchView"-->
-                <!--                        android:layout_width="20dp"-->
-                <!--                        android:layout_height="20dp"/>-->
-
 
             </com.demo.doccloud.utils.CollapsibleToolbar>
-
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -130,6 +101,19 @@
                 app:srcCompat="@drawable/ic_plus_solid"
                 app:tint="?attr/colorSecondary" />
 
+            <ProgressBar
+                android:id="@+id/sync_data_progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:indeterminate="true"
+                android:indeterminateTintMode="src_atop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHome"
                 android:layout_width="match_parent"
@@ -143,41 +127,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/addButton"
                 tools:listitem="@layout/home_doc_item" />
 
-            <!--                <TextView-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/long_text" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:menu="@menu/home_menu" />-->
-
-    <!--        <com.google.android.material.imageview.ShapeableImageView-->
-    <!--            android:id="@+id/logoutButton"-->
-    <!--            android:layout_width="20dp"-->
-    <!--            android:layout_height="20dp"-->
-    <!--            android:layout_marginTop="15dp"-->
-    <!--            android:layout_marginEnd="20dp"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent"-->
-    <!--            app:srcCompat="@drawable/ic_sign_out_alt_solid"-->
-    <!--            app:tint="@color/white" />-->
-
-    <!--        <androidx.recyclerview.widget.RecyclerView-->
-    <!--            android:layout_width="100dp"-->
-    <!--            android:layout_height="100dp"-->
-    <!--            app:layout_constraintBottom_toBottomOf="@+id/coordinatorLayout"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintStart_toStartOf="@+id/coordinatorLayout" />-->
-
-    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 </layout>

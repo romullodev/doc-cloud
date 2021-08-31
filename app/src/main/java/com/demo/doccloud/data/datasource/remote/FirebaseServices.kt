@@ -7,6 +7,7 @@ import android.net.Uri
 import com.demo.doccloud.R
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.DocStatus
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
@@ -25,9 +26,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -71,12 +76,14 @@ class FirebaseServices @Inject constructor(
     }
 
     override suspend fun getUser(): Result<User> {
-        auth.currentUser?.let {
-            val user = it.asDomain()
-            Global.user = user
-            return Result.success(user)
+        return withContext(dispatcher) {
+            auth.currentUser?.let {
+                val user = it.asDomain()
+                Global.user = user
+                return@withContext Result.success(user)
+            }
+            return@withContext Result.error(context.getString(R.string.login_user_not_logged_in))
         }
-        return Result.error(context.getString(R.string.login_user_not_logged_in))
     }
 
     override suspend fun doLogout(): Result<Boolean> {
@@ -99,7 +106,7 @@ class FirebaseServices @Inject constructor(
         }
     }
 
-    //triggers from UploadDocWorker
+    //trigger from UploadDocWorker
     override suspend fun uploadDocFirebase(doc: Doc) {
         withContext(dispatcher) {
             val userId: String =
@@ -107,7 +114,7 @@ class FirebaseServices @Inject constructor(
             //Firebase Storage
             val fireStorage = storage.reference
             //send all photos to cloud
-            doc.pages.forEach{ photo ->
+            doc.pages.forEach { photo ->
                 //reference to save image into Storage
                 val refStorageImage = fireStorage.child(
                     "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${doc.remoteId}_${photo.id}.jpg"
@@ -136,7 +143,11 @@ class FirebaseServices @Inject constructor(
                 DATABASE_DATE_KEY to doc.date,
                 DATABASE_REMOTE_ID_KEY to doc.remoteId.toString(),
                 DATABASE_DOC_NAME_KEY to doc.name,
-                DATABASE_JSON_PAGES_KEY to Gson().toJson(doc.pages),
+                DATABASE_JSON_PAGES_KEY to Gson().toJson(
+                    doc.pages.map {
+                        it.id
+                    }
+                ),
             )
             try {
                 val task = refDatabase.setValue(mapDatabase)
@@ -147,6 +158,7 @@ class FirebaseServices @Inject constructor(
         }
     }
 
+    //trigger from DeleteDocWorker
     override suspend fun deleteDocFirebase(remoteId: Long, pages: List<Photo>) {
         withContext(dispatcher) {
             val userId: String =
@@ -184,6 +196,7 @@ class FirebaseServices @Inject constructor(
         }
     }
 
+    //trigger from UpdateDocNameWorker
     override suspend fun updateDocNameFirebase(remoteId: Long, name: String): Result<Boolean> {
         return withContext(dispatcher) {
             val userId: String =
@@ -209,6 +222,7 @@ class FirebaseServices @Inject constructor(
         }
     }
 
+    //trigger from UpdateDocPageWorker
     override suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo): Result<Boolean> {
         return withContext(dispatcher) {
             val userId: String =
@@ -245,7 +259,12 @@ class FirebaseServices @Inject constructor(
         }
     }
 
-    override suspend fun deleteDocPhotosFirebase(remoteId: Long, photo: Photo, jsonPages: String): Result<Boolean> {
+    //trigger from DeleteDocPageWorker
+    override suspend fun deleteDocPhotosFirebase(
+        remoteId: Long,
+        photo: Photo,
+        jsonPages: String
+    ): Result<Boolean> {
         return withContext(dispatcher) {
             val userId: String =
                 auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
@@ -285,5 +304,91 @@ class FirebaseServices @Inject constructor(
             }
             return@withContext Result.success(true)
         }
+    }
+
+    //trigger from SyncDataWorker
+    override suspend fun syncData(): Result<List<Doc>> {
+        return withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+            //Firebase Database
+            val database = database.reference
+            //reference to delete values from database
+            val refDatabase =
+                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_DOCUMENTS_DIRECTORY")
+
+            //save the Firebase query task
+            val source: TaskCompletionSource<Any> = TaskCompletionSource()
+
+            refDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(p0: DataSnapshot) {
+                    source.setResult(p0)
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+                    source.setResult(p0)
+                }
+            })
+            //get the saved task
+            val task = source.task
+            //this code bellow can throw an exception
+            task.await()
+            val values = task.result as DataSnapshot
+            val docs = ArrayList<Doc>()
+            for (snapshot in values.children) {
+                val remoteId = snapshot.child(DATABASE_REMOTE_ID_KEY).value.toString()
+                val name = snapshot.child(DATABASE_DOC_NAME_KEY).value.toString()
+                val date = snapshot.child(DATABASE_DATE_KEY).value.toString()
+                val jsonPages = snapshot.child(DATABASE_JSON_PAGES_KEY).value.toString()
+                val ids: List<Long> =
+                    Gson().fromJson(jsonPages, Array<Long>::class.java).toList()
+                val pages: List<Photo> = getPages(ids, userId, remoteId)
+                docs.add(
+                    Doc(
+                        remoteId = remoteId.toLong(),
+                        name = name,
+                        date = date,
+                        pages = pages,
+                        status = DocStatus.SENT,
+                    )
+                )
+            }
+            return@withContext Result.success(docs)
+        }
+    }
+
+    private suspend fun getPages(ids: List<Long>, userId: String, remoteId: String): List<Photo> {
+        //Firebase Storage
+        val fireStorage = storage.reference
+        val pages = ArrayList<Photo>()
+        ids.forEach { id->
+            //reference to delete images from Storage
+            val refStorageImage = fireStorage.child(
+                "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${id}.jpg"
+            )
+
+            val tempLocalFile = File.createTempFile("images", "jpg")
+
+            val task = refStorageImage.getFile(tempLocalFile)
+            task.await()
+            if(task.isSuccessful){
+                //here, is all things Local temp file has been created
+                val newFileOnFilesDir =
+                    File(Global.getOutputDirectory(context), tempLocalFile.name)
+                //copy file from cache Dir
+                tempLocalFile.copyTo(newFileOnFilesDir, true)
+                tempLocalFile.delete()
+                val path = newFileOnFilesDir.path
+                pages.add(
+                    Photo(
+                        id = id,
+                        path = path
+                    )
+                )
+            }else{
+                Timber.d("failure on download file. \nDetails: ${task.exception}")
+            }
+        }
+        return pages
     }
 }

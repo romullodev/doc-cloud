@@ -1,5 +1,6 @@
 package com.demo.doccloud.domain
 
+import androidx.room.PrimaryKey
 import com.demo.doccloud.data.datasource.local.room.entities.DatabaseDoc
 
 data class Doc(
@@ -12,8 +13,21 @@ data class Doc(
     val localId: Long = 0,
 )
 
+//transform without copy localId since it'll be generate automatically from database
+fun List<Doc>.asDatabase(): List<DatabaseDoc> {
+    return map {
+        DatabaseDoc(
+            remoteId = it.remoteId,
+            name = it.name,
+            date = it.date,
+            pages = it.pages,
+            status = it.status,
+        )
+    }
+}
+
 fun Doc.asDatabase(copyIdFlag: Boolean = false): DatabaseDoc {
-    return if(copyIdFlag){
+    return if (copyIdFlag) {
         DatabaseDoc(
             remoteId = this.remoteId,
             name = this.name,
@@ -22,7 +36,7 @@ fun Doc.asDatabase(copyIdFlag: Boolean = false): DatabaseDoc {
             status = this.status,
             localId = this.localId
         )
-    }else{
+    } else {
         DatabaseDoc(
             remoteId = this.remoteId,
             name = this.name,
@@ -33,6 +47,6 @@ fun Doc.asDatabase(copyIdFlag: Boolean = false): DatabaseDoc {
     }
 }
 
-enum class DocStatus{
+enum class DocStatus {
     SENT, SENDING, NOT_SENT
 }

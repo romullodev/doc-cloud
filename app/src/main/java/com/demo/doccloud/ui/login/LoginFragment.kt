@@ -11,11 +11,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.databinding.FragmentLoginBinding
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
+import com.demo.doccloud.ui.home.HomeViewModel
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.DialogsHelper
 import com.demo.doccloud.utils.errorDismiss
@@ -32,6 +34,8 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
     private lateinit var validationFields: Map<String, TextInputLayout>
 
     private val loginViewModel: LoginViewModel by viewModels()
+    //only for sync data when use make login successfully
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -98,6 +102,7 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
             it.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is LoginViewModel.LoginState.Authenticated -> {
+                        homeViewModel.syncData()
                         findNavController().popBackStack()
                     }
                     //notify in case of empty fields

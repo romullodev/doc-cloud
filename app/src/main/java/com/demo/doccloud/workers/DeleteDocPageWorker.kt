@@ -44,7 +44,9 @@ class DeleteDocPageWorker @AssistedInject constructor(
                     val result = remoteDataSource.deleteDocPhotosFirebase(
                         remoteId = localDataSource.getDoc(localId).remoteId,
                         photo = Photo(id = photoId, path = photoPath),
-                        jsonPages = Gson().toJson(doc.pages)//this pages is already updated
+                        jsonPages = Gson().toJson(doc.pages.map {
+                            it.id
+                        })//this pages is already updated
                     )
                     when(result.status){
                         com.demo.doccloud.utils.Result.Status.SUCCESS -> {

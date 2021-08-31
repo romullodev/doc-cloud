@@ -17,3 +17,7 @@ https://stackoverflow.com/questions/26780046/menuitem-tinting-on-appcompat-toolb
 passing arguments to nested graph
 https://stackoverflow.com/questions/54477573/passing-arguments-to-a-nested-navigation-architecture-component-graph
 
+LifecycleService as a Foreground Service
+https://www.youtube.com/watch?v=1euA5LeyLIg
+https://github.com/sriharsha1507/lifecycle_service_demo_yt
+

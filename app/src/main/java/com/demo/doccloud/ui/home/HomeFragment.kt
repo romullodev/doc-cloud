@@ -1,7 +1,5 @@
 package com.demo.doccloud.ui.home
 
-//import androidx.appcompat.widget.PopupMenu
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -15,6 +13,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
@@ -25,6 +24,7 @@ import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.DialogsHelper
+import com.demo.doccloud.workers.SyncDataWorker
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -44,7 +44,7 @@ class HomeFragment() :
     //problem:  when configuration changes, setOnQueryTextListener triggers making data just go away
     private var searchViewHasTrigger = false
 
-    private val homeViewModel: HomeViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     private lateinit var adapter: DocAdapter
 
@@ -250,6 +250,15 @@ class HomeFragment() :
                         Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+        }
+        //observe from SyncDataWorker to update view when sync data
+        SyncDataWorker.syncDataProgress.observe(viewLifecycleOwner){
+            //this will be improved soon
+            if(it != -1L){
+                binding.syncDataProgress.visibility = View.VISIBLE
+            }else{
+                binding.syncDataProgress.visibility = View.GONE
             }
         }
     }

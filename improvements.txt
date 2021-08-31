@@ -1,3 +1,5 @@
 - create photo model for send only the necessary data
 
-- 
+- remove all try catch from viewModels
+
+- track progress when sync data

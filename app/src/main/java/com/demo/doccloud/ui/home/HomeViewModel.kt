@@ -24,6 +24,7 @@ class HomeViewModel @Inject constructor(
 
     //this liveData is used from xml
     var docs: LiveData<List<Doc>> = repository.docs
+
     //this liveData will be used from xml
     val listDocSize: LiveData<Int> = Transformations.map(docs) { list ->
         list.size
@@ -39,7 +40,7 @@ class HomeViewModel @Inject constructor(
         get() = _homeState
 
     //to help retrieve current doc select from popup menu item
-    var currDoc : Doc? = null
+    var currDoc: Doc? = null
 
     //handle navigation between fragments
     sealed class NavigationCommand {
@@ -55,7 +56,7 @@ class HomeViewModel @Inject constructor(
         _navigationCommands.value = Event(NavigationCommand.To(directions))
     }
 
-    fun doLogout(){
+    fun doLogout() {
         showDialog(R.string.loading_dialog_message_logout)
         viewModelScope.launch {
             val result = repository.doLogout()
@@ -71,20 +72,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteDoc(){
+    fun deleteDoc() {
         showDialog(R.string.loading_dialog_message_please_wait)
         viewModelScope.launch {
             val result = repository.deleteDoc(currDoc!!)
-            when(result.status){
+            when (result.status) {
                 Result.Status.SUCCESS -> {
-                    _homeState.value = Event(HomeState.HomeToastMessage(
-                        result.data!!
-                    ))
+                    _homeState.value = Event(
+                        HomeState.HomeToastMessage(
+                            result.data!!
+                        )
+                    )
                 }
                 Result.Status.ERROR -> {
-                    _homeState.value = Event(HomeState.HomeAlertDialog(
-                        result.msg!!
-                    ))
+                    _homeState.value = Event(
+                        HomeState.HomeAlertDialog(
+                            result.msg!!
+                        )
+                    )
                 }
             }
             hideDialog()
@@ -101,6 +106,7 @@ class HomeViewModel @Inject constructor(
             when (result.status) {
                 Result.Status.SUCCESS -> {
                     Timber.i("User authenticated")
+                    syncData()
                 }
                 Result.Status.ERROR -> {
                     navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
@@ -109,6 +115,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun syncData() {
+        viewModelScope.launch {
+            repository.scheduleToSyncData()
+        }
+    }
     init {
         setupInitVariables()
     }
