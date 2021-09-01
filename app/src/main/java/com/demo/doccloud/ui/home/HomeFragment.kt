@@ -33,6 +33,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.reflect.Method
 import androidx.core.content.FileProvider
+import com.demo.doccloud.ui.MainActivity
+import com.demo.doccloud.utils.Global
 import java.io.File
 
 
@@ -254,19 +256,11 @@ class HomeFragment() :
                         Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
                     }
                     is HomeViewModel.HomeState.SharePdf -> {
-                        val shareIntent = Intent(Intent.ACTION_SEND)
-                        val sharingFile = state.data
-                        val outputPdfUri = FileProvider.getUriForFile(
-                            requireContext(),
-                            requireActivity().packageName.toString() + ".provider",
-                            sharingFile
+                        Global.sharedPdfDoc(
+                            file = state.data,
+                            context = requireContext(),
+                            act = requireActivity() as MainActivity
                         )
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, outputPdfUri)
-                        shareIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        //Write Permission might not be necessary
-                        shareIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                        shareIntent.type = "application/pdf"
-                        startActivity(Intent.createChooser(shareIntent, "Compartilhar com"))
                     }
                 }
             }

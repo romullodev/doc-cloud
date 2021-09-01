@@ -7,10 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
+import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.Event
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.ui.home.HomeViewModel
 import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
@@ -28,7 +30,19 @@ import javax.inject.Inject
 @HiltViewModel
 class EditViewModel @Inject constructor(
     private val repository: Repository
-) : ViewModel() {
+) : ViewModel(),
+    LoadingDialogViewModel {
+
+
+    sealed class EditState {
+        data class SharePdf(val data: File): EditState()
+    }
+
+    private val _editState = MutableLiveData<Event<EditState>>()
+    val editState: LiveData<Event<EditState>>
+        get() = _editState
+
+
 
     private var _doc = MutableLiveData<Doc>()
     val doc get() = _doc
@@ -65,6 +79,23 @@ class EditViewModel @Inject constructor(
                     TODO()
                 }
             }
+        }
+    }
+
+    fun shareDoc(){
+        showDialog(R.string.loading_dialog_message_generating_pdf)
+        viewModelScope.launch {
+            val result = repository.generatePdf(_doc.value!!)
+            when(result.status){
+                Result.Status.SUCCESS -> {
+                    _editState.value = Event(EditState.SharePdf(result.data!!))
+                    Timber.d("pdf generated on ${result.data.path}")
+                }
+                Result.Status.ERROR -> {
+                    Timber.d("failure on  generated pdf. \nDetails: ${result.msg}")
+                }
+            }
+            hideDialog()
         }
     }
 
@@ -126,5 +157,22 @@ class EditViewModel @Inject constructor(
             oldFileOnFilesDir.delete()
             return@withContext newFileOnFilesDir.absolutePath
         }
+    }
+
+
+    //handle loading dialog to show feedback to user (this approaches does not depend on Fragments)
+    private var _loadingMessage = MutableLiveData(R.string.loading_dialog_message_please_wait)
+    override val loadingMessage: LiveData<Int> get() = _loadingMessage
+    private var _isDialogVisible = MutableLiveData(false)
+    override val isDialogVisible: LiveData<Boolean> get() = _isDialogVisible
+
+    override fun showDialog(message: Int?) {
+        _loadingMessage.value = message
+        _isDialogVisible.value = true
+    }
+
+
+    override fun hideDialog() {
+        _isDialogVisible.value = false
     }
 }
