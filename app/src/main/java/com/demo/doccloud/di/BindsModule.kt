@@ -1,7 +1,9 @@
 package com.demo.doccloud.di
 
 import com.demo.doccloud.data.datasource.local.LocalDataSource
-import com.demo.doccloud.data.datasource.local.room.RoomServices
+import com.demo.doccloud.data.datasource.local.AppLocalServices
+import com.demo.doccloud.data.datasource.local.persist.PersistSimpleData
+import com.demo.doccloud.data.datasource.local.persist.SharedPreferenceImpl
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.data.datasource.remote.FirebaseServices
 import com.demo.doccloud.data.repository.Repository
@@ -24,5 +26,8 @@ abstract class BindsModule {
     abstract fun bindRemoteDataSource(remoteDatasource: FirebaseServices): RemoteDataSource
 
     @Binds
-    abstract fun bindLocalDataSource(localDatasource: RoomServices): LocalDataSource
+    abstract fun bindPersistSimpleData(persistSimpleData: SharedPreferenceImpl): PersistSimpleData
+
+    @Binds
+    abstract fun bindLocalDataSource(localDataSource: AppLocalServices): LocalDataSource
 }

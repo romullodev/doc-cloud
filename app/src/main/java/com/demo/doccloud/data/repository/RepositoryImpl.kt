@@ -2,19 +2,32 @@ package com.demo.doccloud.data.repository
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.demo.doccloud.R
 import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
+import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.DocStatus
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.AppConstants
+import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
 import com.demo.doccloud.workers.*
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,10 +37,22 @@ class RepositoryImpl @Inject constructor(
     private val remoteDatasource: RemoteDataSource,
     private val localDatasource: LocalDataSource,
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : Repository {
     override val docs: LiveData<List<Doc>> get() = localDatasource.getSavedDocs()
 
-    override suspend fun doLoginWithGoogle(data: Intent?) = remoteDatasource.doLoginWithGoogle(data)
+    override suspend fun doLoginWithGoogle(data: Intent?) : Result<User>{
+        val result = localDatasource.saveCustomId()
+        return when(result.status){
+            Result.Status.SUCCESS -> {
+                remoteDatasource.doLoginWithGoogle(data, result.data!!)
+            }
+            Result.Status.ERROR -> {
+                //this error will be shown on Ui via Alert Dialog
+                Result.error(result.msg!!)
+            }
+        }
+    }
 
     override suspend fun getUser() = remoteDatasource.getUser()
 
@@ -72,7 +97,6 @@ class RepositoryImpl @Inject constructor(
         )
         setupDeleteDocPhotoSchedule(localId, photo)
     }
-
     override suspend fun scheduleToSyncData() {
         //setup constraint to workManager (only send if network is available)
         val constraints = Constraints.Builder()
@@ -92,6 +116,62 @@ class RepositoryImpl @Inject constructor(
 
         //schedule the work to be done
         WorkManager.getInstance(context).enqueue(syncData)
+    }
+
+    override suspend fun generatePdf(doc: Doc): Result<File> {
+        return withContext(dispatcher){
+            val dir = Global.getInternalOutputDirectory(context)
+            //if (!dir.exists()) {
+            //    dir.mkdir()
+            //}
+            //save pdf
+            var bitmap: Bitmap
+            var pageInfo: PdfDocument.PageInfo
+            val document = PdfDocument()
+            var page: PdfDocument.Page
+            var canvas: Canvas
+            //calculates the larger width amongst photos
+            var majorWidth = Int.MIN_VALUE
+            doc.pages.forEach {
+                bitmap = BitmapFactory.decodeFile(it.path)
+                if(bitmap.width > majorWidth)
+                    majorWidth = bitmap.width
+            }
+
+            //create pdf with photos
+            for ((index, path) in doc.pages.withIndex()) {
+                bitmap = BitmapFactory.decodeFile(path.path)
+                //bitmap = ImageResizer.reduceBitmapSize(bitmap, MAX_SIZE_EACH_PHOTO_DOCUMENT)
+                pageInfo =
+                    PdfDocument.PageInfo.Builder(majorWidth, bitmap.height, index + 1) //A4 resolution
+                        .create()
+                page = document.startPage(pageInfo)
+                canvas = page.canvas
+                //bitmap = Bitmap.createScaledBitmap(
+                //    bitmap,
+                //    2480,
+                //    3508,
+                //    true
+                //)
+                val startPointCenter = (majorWidth - bitmap.width)/2.0f
+                canvas.drawBitmap(bitmap, startPointCenter, 0f, null)
+                document.finishPage(page)
+            }
+            // Create the pdf name + timeStamp
+            val formattedTimeStamp = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US).format(System.currentTimeMillis())
+            val pdfFilePath = "${dir.path}/${doc.name} ${formattedTimeStamp}.pdf"
+            // write the document content
+            val pdfFile = File(pdfFilePath)
+            //this code bellow can throw an exception (up to document.close())
+            //use a try catch block when invoke this function
+            try {
+                document.writeTo(FileOutputStream(pdfFile))
+                document.close()
+                return@withContext Result.success(pdfFile)
+            }catch (e: Exception){
+                return@withContext Result.error("Failure on save pdf file on the device. \nDetails: $e")
+            }
+        }
     }
 
     override suspend fun updateDocPhotos(localId: Long, remoteId: Long, photo: Photo) {

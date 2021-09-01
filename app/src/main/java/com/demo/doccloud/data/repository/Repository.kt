@@ -7,6 +7,7 @@ import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.User
 import com.demo.doccloud.utils.Result
+import java.io.File
 
 interface Repository {
     //A pointer to database for retrieving data when change automatically
@@ -22,4 +23,5 @@ interface Repository {
     suspend fun updateDocName(localId: Long, remoteId: Long, name: String)
     suspend fun deleteDocPhoto(localId: Long, remoteId: Long, photo: Photo)
     suspend fun scheduleToSyncData()
+    suspend fun generatePdf(doc: Doc): Result<File>
 }

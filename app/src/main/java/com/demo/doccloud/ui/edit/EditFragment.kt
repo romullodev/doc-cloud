@@ -22,7 +22,9 @@ import com.demo.doccloud.R
 import com.demo.doccloud.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
+import com.demo.doccloud.utils.Global
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -33,10 +35,6 @@ class EditFragment : Fragment() {
     private val args: EditFragmentArgs by navArgs()
     private var _binding: EditFragmentBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,6 +80,14 @@ class EditFragment : Fragment() {
                 null
             )
         }
+
+        binding.toolbar.setOnMenuItemClickListener { item->
+            if (item?.itemId == R.id.edit_share) {
+                viewModel.shareDoc()
+                return@setOnMenuItemClickListener true
+            }
+            return@setOnMenuItemClickListener true
+        }
     }
 
     private fun setupToolbar() {
@@ -100,6 +106,20 @@ class EditFragment : Fragment() {
     }
 
     private fun setupObservables() {
+        viewModel.editState.observe(viewLifecycleOwner){
+            it.getContentIfNotHandled()?.let { state->
+                when(state){
+                    is EditViewModel.EditState.SharePdf -> {
+                        Global.sharedPdfDoc(
+                            file = state.data,
+                            context = requireContext(),
+                            act = requireActivity() as MainActivity
+                        )
+                    }
+                }
+            }
+        }
+
         viewModel.doc.observe(viewLifecycleOwner) {
             //set into toolbar doc name
             binding.toolbarTitle.text = it.name

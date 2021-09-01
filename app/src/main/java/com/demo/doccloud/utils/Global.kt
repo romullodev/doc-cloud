@@ -1,6 +1,9 @@
 package com.demo.doccloud.utils
 
 import android.content.Context
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.demo.doccloud.R
 import com.demo.doccloud.domain.DocStatus
 import com.demo.doccloud.domain.User
@@ -11,8 +14,8 @@ class Global {
         var user: User? = null
 
         /** Use external media if it is available, our app's file directory otherwise */
-        //return only our app's file directory
         fun getOutputDirectory(context: Context): File {
+            //this code bellow only return our app's file directory
             //val appContext = context.applicationContext
             //return appContext.filesDir
 
@@ -21,8 +24,12 @@ class Global {
                 File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
             return if (mediaDir != null && mediaDir.exists())
                 mediaDir else appContext.filesDir
+        }
 
-
+        fun getInternalOutputDirectory(context: Context): File {
+            //this code bellow only return our app's file directory
+            val appContext = context.applicationContext
+            return appContext.filesDir
         }
 
         fun getDocStatus(status: DocStatus, context: Context) = when (status) {
@@ -36,6 +43,21 @@ class Global {
                 context.getString(R.string.home_doc_status_not_sent)
             }
 
+        }
+
+        fun sharedPdfDoc(file: File, context: Context, act: AppCompatActivity){
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            val outputPdfUri = FileProvider.getUriForFile(
+                context,
+                act.packageName.toString() + ".provider",
+                file
+            )
+            shareIntent.putExtra(Intent.EXTRA_STREAM, outputPdfUri)
+            shareIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            //Write Permission might not be necessary
+            shareIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            shareIntent.type = "application/pdf"
+            act.startActivity(Intent.createChooser(shareIntent, "Compartilhar com"))
         }
     }
 }

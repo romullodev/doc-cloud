@@ -1,5 +1,7 @@
 package com.demo.doccloud.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -30,6 +32,10 @@ import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.reflect.Method
+import androidx.core.content.FileProvider
+import com.demo.doccloud.ui.MainActivity
+import com.demo.doccloud.utils.Global
+import java.io.File
 
 
 @AndroidEntryPoint
@@ -178,7 +184,7 @@ class HomeFragment() :
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.share -> {
-                Toast.makeText(requireContext(), "Compartilhar", Toast.LENGTH_SHORT).show()
+                homeViewModel.shareDoc()
                 true
             }
             R.id.edit -> {
@@ -248,6 +254,13 @@ class HomeFragment() :
                     }
                     is HomeViewModel.HomeState.HomeToastMessage -> {
                         Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
+                    }
+                    is HomeViewModel.HomeState.SharePdf -> {
+                        Global.sharedPdfDoc(
+                            file = state.data,
+                            context = requireContext(),
+                            act = requireActivity() as MainActivity
+                        )
                     }
                 }
             }

@@ -14,6 +14,7 @@ import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +34,7 @@ class HomeViewModel @Inject constructor(
     sealed class HomeState {
         class HomeToastMessage(val msg: String) : HomeState()
         class HomeAlertDialog(val msg: String) : HomeState()
+        data class SharePdf(val data: File): HomeState()
     }
 
     private val _homeState = MutableLiveData<Event<HomeState>>()
@@ -54,6 +56,23 @@ class HomeViewModel @Inject constructor(
     //helper method to help navigate using navigation command
     fun navigate(directions: NavDirections) {
         _navigationCommands.value = Event(NavigationCommand.To(directions))
+    }
+
+    fun shareDoc(){
+        showDialog(R.string.loading_dialog_message_generating_pdf)
+        viewModelScope.launch {
+            val result = repository.generatePdf(currDoc!!)
+            when(result.status){
+                Result.Status.SUCCESS -> {
+                    _homeState.value = Event(HomeState.SharePdf(result.data!!))
+                    Timber.d("pdf generated on ${result.data.path}")
+                }
+                Result.Status.ERROR -> {
+                    Timber.d("failure on  generated pdf. \nDetails: ${result.msg}")
+                }
+            }
+            hideDialog()
+        }
     }
 
     fun doLogout() {
@@ -96,7 +115,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
     //verify the user authentication when start the app
     //we're using a sessionManager object to check user authentication
     //start with the home screen instead of login screen  is a concept from google called Conditional Navigation
@@ -120,6 +138,7 @@ class HomeViewModel @Inject constructor(
             repository.scheduleToSyncData()
         }
     }
+
     init {
         setupInitVariables()
     }

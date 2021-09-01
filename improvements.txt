@@ -1,5 +1,25 @@
-- create photo model for send only the necessary data
+- improve border of generated pdf
+
+-analyze photo format when sync data
 
 - remove all try catch from viewModels
 
 - track progress when sync data
+
+- analyze use of singleton on DI
+
+- change SharedPreference to DataStore
+
+- clear all data when make logout
+
+- improve HomeScreen layout
+	- open edit when item is clicked
+	- remove 3 dots
+	- add longPressListener on doc item
+	- show menu option after onLongPress on itens
+	- improve colors
+
+- improve EditScreen layout
+
+
+	

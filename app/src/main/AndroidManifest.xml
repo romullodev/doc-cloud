@@ -39,6 +39,16 @@
             android:exported="false"
             tools:node="remove" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.demo.doccloud.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
