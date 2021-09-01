@@ -10,6 +10,7 @@ import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.SyncStrategy
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DEFAULT_CUSTOM_ID
+import com.demo.doccloud.utils.Result
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -40,12 +41,25 @@ class SyncDataWorker @AssistedInject constructor(
                     val syncStrategy : SyncStrategy = resultSync.data!!
                     val customID: Long = localDataSource.getSavedCustomId()
                     if(
-                        syncStrategy.customId == DATABASE_DEFAULT_CUSTOM_ID || // (1): user never logs in
                         syncStrategy.lastUpdated + syncStrategy.expiration <= System.currentTimeMillis() || // (2): user has passed much time with no synced data
-                        syncStrategy.customId != customID // (3): user do login in another device
+                        syncStrategy.customId != customID // (3): user do login in another device OR local service failure on get custom ID saves on the device
                     ){
-                        syncDataProgress.postValue(0L)
-                        val result  = remoteDataSource.syncData(customID)
+                        val result  = if(syncStrategy.customId == DATABASE_DEFAULT_CUSTOM_ID){
+                            val saveCustomIdResult = localDataSource.saveCustomId()
+                            when(saveCustomIdResult.status){
+                                com.demo.doccloud.utils.Result.Status.SUCCESS -> {
+                                    syncDataProgress.postValue(0L)
+                                    remoteDataSource.syncData(saveCustomIdResult.data!!)
+                                }
+                                com.demo.doccloud.utils.Result.Status.ERROR -> {
+                                    Timber.d("failure on save custom ID on the device.")
+                                    return@withContext Result.failure()
+                                }
+                            }
+                        }else{
+                            syncDataProgress.postValue(0L)
+                            remoteDataSource.syncData(customID)
+                        }
                         return@withContext when(result.status){
                             com.demo.doccloud.utils.Result.Status.SUCCESS -> {
                                 localDataSource.syncData(result.data!!)
