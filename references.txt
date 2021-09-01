@@ -21,3 +21,6 @@ LifecycleService as a Foreground Service
 https://www.youtube.com/watch?v=1euA5LeyLIg
 https://github.com/sriharsha1507/lifecycle_service_demo_yt
 
+Share pdf document file
+https://stackoverflow.com/questions/55978638/android-pdf-not-accepted-when-sending-as-intent-action-send
+

@@ -1,16 +1,16 @@
-- create photo model for send only the necessary data
+- improve border of generated pdf
+
+-analyze photo format when sync data
 
 - remove all try catch from viewModels
 
 - track progress when sync data
 
-- create sync strategy -- OK
-
 - analyze use of singleton on DI
 
 - change SharedPreference to DataStore
 
-- clear all data when make login
+- clear all data when make logout
 
 - improve HomeScreen layout
 	- open edit when item is clicked
@@ -20,4 +20,6 @@
 	- improve colors
 
 - improve EditScreen layout
+
+
 	

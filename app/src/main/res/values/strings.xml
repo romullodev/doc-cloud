@@ -59,6 +59,7 @@
     <string name="loading_dialog_message_logout">Saindo …</string>
     <string name="loading_dialog_message_searching">Buscando …</string>
     <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
+    <string name="loading_dialog_message_generating_pdf">Gerando PDF …</string>
 
     <!-- Alerts Dialogs -->
     <string name="alert_dialog_info_tittle">Atenção</string>

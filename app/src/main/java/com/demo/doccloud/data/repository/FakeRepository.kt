@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -101,6 +102,10 @@ class FakeRepository @Inject constructor(
     }
 
     override suspend fun scheduleToSyncData() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun generatePdf(doc: Doc): Result<File> {
         TODO("Not yet implemented")
     }
 

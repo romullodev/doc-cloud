@@ -11,8 +11,8 @@ class Global {
         var user: User? = null
 
         /** Use external media if it is available, our app's file directory otherwise */
-        //return only our app's file directory
         fun getOutputDirectory(context: Context): File {
+            //this code bellow only return our app's file directory
             //val appContext = context.applicationContext
             //return appContext.filesDir
 
@@ -21,8 +21,11 @@ class Global {
                 File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
             return if (mediaDir != null && mediaDir.exists())
                 mediaDir else appContext.filesDir
-
-
+        }
+        fun getInternalOutputDirectory(context: Context): File {
+            //this code bellow only return our app's file directory
+            val appContext = context.applicationContext
+            return appContext.filesDir
         }
 
         fun getDocStatus(status: DocStatus, context: Context) = when (status) {
