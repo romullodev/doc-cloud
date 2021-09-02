@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_cameraFragment_to_cropFragment"
             app:destination="@id/cropFragment" />
+        <argument
+            android:name="root"
+            app:argType="com.demo.doccloud.domain.BackToRoot" />
     </fragment>
     <fragment
         android:id="@+id/cropFragment"
@@ -51,6 +54,9 @@
         <action
             android:id="@+id/action_cropFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <argument
+            android:name="root"
+            app:argType="com.demo.doccloud.domain.BackToRoot" />
     </fragment>
 
     <navigation
@@ -69,6 +75,9 @@
             <action
                 android:id="@+id/action_editFragment_to_editCropFragment"
                 app:destination="@id/editCropFragment" />
+            <action
+                android:id="@+id/action_global_cameraFragment"
+                app:destination="@id/cameraFragment" />
         </fragment>
         <fragment
             android:id="@+id/editCropFragment"

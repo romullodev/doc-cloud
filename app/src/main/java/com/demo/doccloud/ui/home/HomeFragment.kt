@@ -33,6 +33,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.reflect.Method
 import androidx.core.content.FileProvider
+import com.demo.doccloud.domain.BackToRoot
+import com.demo.doccloud.domain.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.utils.Global
 import java.io.File
@@ -143,7 +145,11 @@ class HomeFragment() :
                 dialog.dismiss()
             }
             view.cameraTv.setOnClickListener {
-                homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToCameraFragment())
+                homeViewModel.navigate(
+                    HomeFragmentDirections.actionHomeFragmentToCameraFragment(
+                        root = BackToRoot(rootDestination = RootDestination.HOME_DESTINATION)
+                    )
+                )
                 dialog.dismiss()
             }
             dialog.setView(view.root)
@@ -188,9 +194,11 @@ class HomeFragment() :
                 true
             }
             R.id.edit -> {
-                homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToEditFragment(
-                    docLocalId = homeViewModel.currDoc?.localId!!,
-                    docRemoteId = homeViewModel.currDoc?.remoteId!!)
+                homeViewModel.navigate(
+                    HomeFragmentDirections.actionHomeFragmentToEditFragment(
+                        docLocalId = homeViewModel.currDoc?.localId!!,
+                        docRemoteId = homeViewModel.currDoc?.remoteId!!
+                    )
                 )
                 true
             }
@@ -266,11 +274,11 @@ class HomeFragment() :
             }
         }
         //observe from SyncDataWorker to update view when sync data
-        SyncDataWorker.syncDataProgress.observe(viewLifecycleOwner){
+        SyncDataWorker.syncDataProgress.observe(viewLifecycleOwner) {
             //this will be improved soon
-            if(it != -1L){
+            if (it != -1L) {
                 binding.syncDataProgress.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.syncDataProgress.visibility = View.GONE
             }
         }

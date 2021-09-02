@@ -466,6 +466,48 @@ class FirebaseServices @Inject constructor(
         }
     }
 
+    override suspend fun addPhotosDoc(remoteId: Long, photos: List<Photo>, newJsonPages: String): Result<Boolean> {
+        val userId: String =
+            auth.currentUser?.uid ?: return Result.error("Usuário não logado", null)
+        //Firebase Storage
+        val fireStorage = storage.reference
+        //send all photos to cloud
+        photos.forEach { photo ->
+            //reference to save image into Storage
+            val refStorageImage = fireStorage.child(
+                "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${photo.id}.jpg"
+            )
+            //this code bellow can throw an exception
+            //use a try catch block when invoke this function
+            try {
+                val uriFile = Uri.fromFile(File(photo.path))
+                val task1 = refStorageImage.putFile(uriFile)
+                task1.await()
+            } catch (e: Exception) {
+                Timber.d("Erro ao enviar imagens do documento para o servidor. \nDetalhes: $e")
+            }
+        }
+        //update database with new photo ids
+        //Firebase Database
+        val database = database.reference
+        //reference to save values into database
+        val refDatabase =
+            database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_DOCUMENTS_DIRECTORY/$remoteId")
+        //update jsonPages on Real Database
+        val mapDatabase: HashMap<String, Any> = HashMap()
+        mapDatabase[DATABASE_JSON_PAGES_KEY] = newJsonPages
+        try {
+            val task = refDatabase.updateChildren(mapDatabase)
+            task.await()
+        } catch (e: Exception) {
+            return Result.error(
+                "Erro ao atualizar o campo jsonPages no servidor. Detalhes: $e",
+                null
+            )
+        }
+        return Result.success(true)
+    }
+
     private suspend fun getPages(ids: List<Long>, userId: String, remoteId: String): List<Photo> {
         //Firebase Storage
         val fireStorage = storage.reference

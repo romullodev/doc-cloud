@@ -106,4 +106,15 @@ class AppLocalServices @Inject constructor(
             }
         }
     }
+
+    override suspend fun addPhotosToDoc(localId: Long, photos: List<Photo>) {
+        withContext(dispatcher){
+            val doc : DatabaseDoc = appDatabase.docDao.getDoc(localId)
+            val addedPages = ArrayList(doc.pages)
+            addedPages.addAll(photos)
+            appDatabase.docDao.update(
+                doc.copy(pages = addedPages)
+            )
+        }
+    }
 }

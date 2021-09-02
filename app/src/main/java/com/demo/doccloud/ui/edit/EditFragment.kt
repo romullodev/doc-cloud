@@ -21,7 +21,9 @@ import androidx.window.WindowManager
 import com.demo.doccloud.R
 import com.demo.doccloud.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
+import com.demo.doccloud.domain.BackToRoot
 import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
 import com.demo.doccloud.utils.Global
@@ -64,7 +66,11 @@ class EditFragment : Fragment() {
                 object : CatchDocNameDialog.DialogDocNameListener {
                     override fun onSaveClick(docName: String, dialog: DialogFragment) {
                         binding.toolbarTitle.text = docName
-                        viewModel.updateNameDoc(localId = args.docLocalId, remoteId = args.docRemoteId, docName)
+                        viewModel.updateNameDoc(
+                            localId = args.docLocalId,
+                            remoteId = args.docRemoteId,
+                            docName
+                        )
                         dialog.dismiss()
                     }
 
@@ -81,12 +87,23 @@ class EditFragment : Fragment() {
             )
         }
 
-        binding.toolbar.setOnMenuItemClickListener { item->
+        binding.toolbar.setOnMenuItemClickListener { item ->
             if (item?.itemId == R.id.edit_share) {
                 viewModel.shareDoc()
                 return@setOnMenuItemClickListener true
             }
             return@setOnMenuItemClickListener true
+        }
+
+        binding.fab.setOnClickListener {
+            viewModel.navigate(
+                EditFragmentDirections.actionGlobalCameraFragment(
+                    root = BackToRoot(
+                        rootDestination = RootDestination.EDIT_DESTINATION,
+                        localId = viewModel.doc.value?.localId
+                    )
+                )
+            )
         }
     }
 
@@ -106,9 +123,9 @@ class EditFragment : Fragment() {
     }
 
     private fun setupObservables() {
-        viewModel.editState.observe(viewLifecycleOwner){
-            it.getContentIfNotHandled()?.let { state->
-                when(state){
+        viewModel.editState.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { state ->
+                when (state) {
                     is EditViewModel.EditState.SharePdf -> {
                         Global.sharedPdfDoc(
                             file = state.data,

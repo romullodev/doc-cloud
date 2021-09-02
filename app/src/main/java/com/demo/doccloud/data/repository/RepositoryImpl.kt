@@ -174,6 +174,39 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun addPhotos(photos: List<Photo>, localId: Long) {
+        localDatasource.addPhotosToDoc(localId = localId, photos = photos)
+        setupAddPhotoDocSchedule(localId = localId, photosId = photos.map { it.id })
+    }
+
+    private fun setupAddPhotoDocSchedule(localId: Long, photosId: List<Long>) {
+        val data =
+            workDataOf(
+                AppConstants.LOCAL_ID_KEY to localId,
+                AppConstants.LIST_PHOTO_ADD_KEY to Gson().toJson(photosId),
+                )
+
+        //setup constraint to workManager (only send if network is available)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        //setup the request work to send
+        val addPhotosWorkRequest =
+            OneTimeWorkRequestBuilder<AddDocPhotosWorker>()
+                .setInputData(data)
+                .setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .build()
+
+        //schedule the work to be done
+        WorkManager.getInstance(context).enqueue(addPhotosWorkRequest)
+    }
+
     override suspend fun updateDocPhotos(localId: Long, remoteId: Long, photo: Photo) {
         localDatasource.updateDocPhoto(localId = localId, photo = photo)
         val doc = localDatasource.getDoc(localId)

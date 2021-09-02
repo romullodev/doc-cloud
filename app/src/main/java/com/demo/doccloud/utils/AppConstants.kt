@@ -26,6 +26,7 @@ class AppConstants {
         const val PHOTO_ID_KEY = "photo.id.key"
         const val PHOTO_PATH_KEY = "photo.path.key"
         const val DOC_NAME_ID_KEY = "doc.name.id.key"
+        const val LIST_PHOTO_ADD_KEY = "list.photo.add.key"
         //Firebase directories
         const val DATABASE_USERS_DIRECTORY = "users_database"
         const val DATABASE_DOCUMENTS_DIRECTORY = "documents"

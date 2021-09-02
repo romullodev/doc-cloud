@@ -1,6 +1,5 @@
 package com.demo.doccloud.ui.camera
 
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -21,31 +19,36 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.window.WindowManager
 import com.demo.doccloud.adapters.ThumbnailAdapter
 import com.demo.doccloud.databinding.CameraFragmentBinding
+import com.demo.doccloud.domain.BackToRoot
+import com.demo.doccloud.domain.ListPhotoArg
 import com.demo.doccloud.domain.Photo
-import com.demo.doccloud.utils.AppConstants.Companion.IMMERSIVE_FLAG_TIMEOUT
-import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
-import java.io.File
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import androidx.recyclerview.widget.RecyclerView
-import com.demo.doccloud.ui.home.HomeViewModel
+import com.demo.doccloud.ui.crop.CropFragmentArgs
 import com.demo.doccloud.utils.AppConstants.Companion.ANIMATION_FAST_MILLIS
 import com.demo.doccloud.utils.AppConstants.Companion.ANIMATION_SLOW_MILLIS
 import com.demo.doccloud.utils.Global
+import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
+
+    private val args: CameraFragmentArgs by navArgs()
+
     private var _binding: CameraFragmentBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CameraViewModel by viewModels()
@@ -75,7 +78,6 @@ class CameraFragment : Fragment() {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
         showSystemUI()
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -188,6 +190,17 @@ class CameraFragment : Fragment() {
                     }, ANIMATION_SLOW_MILLIS)
                 }
             }
+        }
+
+        binding.finishPhotos.setOnClickListener {
+            viewModel.navigate(
+                CameraFragmentDirections.actionCameraFragmentToCropFragment(
+                    ListPhotoArg(
+                        viewModel.listThumbnail.value!!
+                    ),
+                    root = args.root
+                )
+            )
         }
     }
 

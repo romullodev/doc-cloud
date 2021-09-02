@@ -17,4 +17,5 @@ interface LocalDataSource {
     suspend fun syncData(docs: List<Doc>)
     suspend fun getSavedCustomId(): Long
     suspend fun saveCustomId(): Result<Long>
+    suspend fun addPhotosToDoc(localId: Long, photos: List<Photo>)
 }

@@ -24,4 +24,5 @@ interface Repository {
     suspend fun deleteDocPhoto(localId: Long, remoteId: Long, photo: Photo)
     suspend fun scheduleToSyncData()
     suspend fun generatePdf(doc: Doc): Result<File>
+    suspend fun addPhotos(photos: List<Photo>, localId: Long)
 }

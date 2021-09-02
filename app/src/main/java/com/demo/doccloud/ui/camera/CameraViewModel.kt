@@ -40,17 +40,6 @@ class CameraViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    //when finish button is pressed (called from xml)
-    fun goToCropScreen() {
-        navigate(
-            CameraFragmentDirections.actionCameraFragmentToCropFragment(
-                ListPhotoArg(
-                    listThumbnail.value!!
-                )
-            )
-        )
-    }
-
     //handle navigation between fragments
     sealed class NavigationCommand {
         data class To(val directions: NavDirections) : NavigationCommand()

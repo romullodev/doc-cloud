@@ -6,6 +6,9 @@
 
     <data>
         <variable
+            name="textButton"
+            type="String" />
+        <variable
             name="viewModel"
             type="com.demo.doccloud.ui.crop.CropViewModel" />
     </data>
@@ -15,10 +18,6 @@
         android:layout_height="match_parent"
         android:background="?attr/colorPrimary"
         tools:context=".ui.crop.CropFragment">
-
-        <include
-            layout="@layout/loading_dialog"
-            bind:viewModel="@{viewModel}" />
 
         <TextView
             android:id="@+id/touch_label"
@@ -45,6 +44,7 @@
             tools:listitem="@layout/crop_item" />
 
 
+<!--        android:onClick="@{() -> viewModel.saveDocName()}"-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/continue_btn"
             android:layout_width="0dp"
@@ -55,8 +55,8 @@
             android:backgroundTint="?attr/colorSecondary"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:onClick="@{() -> viewModel.saveDocName()}"
-            android:text="@string/crop_screen_continue_label"
+            tools:text="@string/crop_screen_continue_label"
+            android:text="@{textButton}"
             android:textColor="?attr/colorPrimaryVariant"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold"

@@ -46,6 +46,7 @@
     <string name="crop_screen_title">Recortar</string>
     <string name="crop_screen_touch_label">Toque na Foto</string>
     <string name="crop_screen_continue_label">Continuar</string>
+    <string name="crop_screen_add_label">Adicionar</string>
     <string name="crop_screen_dialog_title_label">Insira um nome</string>
     <string name="crop_screen_dialog_hint">Nome</string>
     <string name="crop_screen_cancel_btn">Cancelar</string>

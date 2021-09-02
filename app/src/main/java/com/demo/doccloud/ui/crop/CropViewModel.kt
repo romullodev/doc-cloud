@@ -36,11 +36,10 @@ import kotlin.collections.ArrayList
 @HiltViewModel
 class CropViewModel @Inject constructor(
     private val repository: Repository
-) : ViewModel(),
-    LoadingDialogViewModel {
+) : ViewModel() {
 
     sealed class CropState {
-        object SaveDocNameDialog : CropState()
+        //object SaveDocNameDialog : CropState()
         class CropAlertDialog(val msg: String) : CropState()
     }
 
@@ -56,7 +55,7 @@ class CropViewModel @Inject constructor(
 
     //handle navigation between fragments
     sealed class NavigationCommand {
-        object ToHome : NavigationCommand()
+        object ToRoot : NavigationCommand()
     }
 
     //retrieve the same list reference from the previous screen
@@ -66,7 +65,7 @@ class CropViewModel @Inject constructor(
 
     //save documentation locally and schedule to send to the serve via workManager when connection is available
     fun saveDocs(docName: String) {
-        showDialog(R.string.loading_dialog_message_please_wait)
+        //showDialog(R.string.loading_dialog_message_please_wait)
         viewModelScope.launch {
             val result = repository.saveDoc(
                 Doc(
@@ -79,7 +78,7 @@ class CropViewModel @Inject constructor(
             )
             when (result.status) {
                 Result.Status.SUCCESS -> {
-                    navigateToHome()
+                    navigateToRoot()
                 }
                 Result.Status.ERROR -> {
                     _cropState.value = Event(
@@ -87,7 +86,16 @@ class CropViewModel @Inject constructor(
                     )
                 }
             }
-            hideDialog()
+            //hideDialog()
+        }
+    }
+
+    fun addPhotos(localId: Long?){
+        //showDialog(R.string.loading_dialog_message_please_wait)
+        viewModelScope.launch {
+            repository.addPhotos(listPhoto.value!!, localId!!)
+            _navigationCommands.value = Event(NavigationCommand.ToRoot)
+            //hideDialog()
         }
     }
 
@@ -96,8 +104,8 @@ class CropViewModel @Inject constructor(
         get() = _navigationCommands
 
     //helper method to help navigate using navigation command
-    fun navigateToHome() {
-        _navigationCommands.value = Event(NavigationCommand.ToHome)
+    private fun navigateToRoot() {
+        _navigationCommands.value = Event(NavigationCommand.ToRoot)
     }
 
     fun setCurrCroppedPosition(pos: Int) {
@@ -109,10 +117,10 @@ class CropViewModel @Inject constructor(
         this.listPhoto.removeItem(photo)
     }
 
-    //called from xml
-    fun saveDocName() {
-        _cropState.value = Event(CropState.SaveDocNameDialog)
-    }
+//    //called from xml
+//    fun saveDocName() {
+//        _cropState.value = Event(CropState.SaveDocNameDialog)
+//    }
 
     fun saveCropPhoto(uri: Uri, context: Context) {
         viewModelScope.launch {
@@ -147,22 +155,6 @@ class CropViewModel @Inject constructor(
             oldFileOnFilesDir.delete()
             return@withContext newFileOnFilesDir.absolutePath
         }
-    }
-
-    //handle loading dialog to show feedback to user (this approaches does not depend on Fragments)
-    private var _loadingMessage = MutableLiveData(R.string.loading_dialog_message_please_wait)
-    override val loadingMessage: LiveData<Int> get() = _loadingMessage
-    private var _isDialogVisible = MutableLiveData(false)
-    override val isDialogVisible: LiveData<Boolean> get() = _isDialogVisible
-
-    override fun showDialog(message: Int?) {
-        _loadingMessage.value = message
-        _isDialogVisible.value = true
-    }
-
-
-    override fun hideDialog() {
-        _isDialogVisible.value = false
     }
 
 }
