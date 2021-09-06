@@ -31,4 +31,15 @@ class SharedPreferenceImpl @Inject constructor(
         val value = sharePref.getLong(key, defaultValue)
         return Result.success(value)
     }
+
+    override suspend fun clearAllData() {
+        val sharePref = context.getSharedPreferences(
+            context.getString(R.string.share_preference_doc_cloud_app_file_key),
+            Context.MODE_PRIVATE
+        ) ?: return
+        with(sharePref.edit()){
+            clear()
+            commit()
+        }
+    }
 }

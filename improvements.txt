@@ -1,8 +1,14 @@
+- reduce size of the generated pdfs
+
+- improve return types of Result class
+
+- clear all data when make logout
+
 - load a failure image on gallery in case of error
 
 - improve border of generated pdf
 
--analyze photo format when sync data
+- analyze photo format when sync data
 
 - remove all try catch from viewModels
 
@@ -12,13 +18,11 @@
 
 - change SharedPreference to DataStore
 
-- clear all data when make logout
-
 - improve HomeScreen layout
 	- open edit when item is clicked
 	- remove 3 dots
 	- add longPressListener on doc item
-	- show menu option after onLongPress on itens
+	- show menu option after onLongPress on iten
 	- improve colors
 
 - improve EditScreen layout

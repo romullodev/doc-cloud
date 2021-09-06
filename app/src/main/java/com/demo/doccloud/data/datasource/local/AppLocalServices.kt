@@ -117,4 +117,11 @@ class AppLocalServices @Inject constructor(
             )
         }
     }
+
+    override suspend fun clearAllData() {
+        withContext(dispatcher){
+            appDatabase.clearAllTables()
+            persistSimpleData.clearAllData()
+        }
+    }
 }

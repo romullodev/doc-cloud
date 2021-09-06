@@ -56,7 +56,10 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun getUser() = remoteDatasource.getUser()
 
-    override suspend fun doLogout() = remoteDatasource.doLogout()
+    override suspend fun doLogout() : Result<Boolean>{
+        localDatasource.clearAllData()
+        return remoteDatasource.doLogout()
+    }
 
     override suspend fun saveDoc(doc: Doc): Result<Boolean> {
         val rowNumber: Long = localDatasource.saveDocOnDevice(doc)
