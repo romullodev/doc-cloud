@@ -41,6 +41,27 @@
     <string name="home_doc_status_sent">Enviado</string>
     <string name="home_doc_status_sending">Enviando…</string>
     <string name="home_doc_status_not_sent">Não Enviado</string>
+    <string name="home_welcome_title">Olá, %1$s</string>
+    <string name="home_month_january">janeiro</string>
+    <string name="home_month_february">fevereiro</string>
+    <string name="home_month_march">março</string>
+    <string name="home_month_april">abril</string>
+    <string name="home_month_may">maio</string>
+    <string name="home_month_june">junho</string>
+    <string name="home_month_july">julho</string>
+    <string name="home_month_august">agosto</string>
+    <string name="home_month_september">setembro</string>
+    <string name="home_month_october">outubro</string>
+    <string name="home_month_november">november</string>
+    <string name="home_month_december">dezembro</string>
+    <string name="home_week_sunday">Domingo</string>
+    <string name="home_week_monday">Segunda-Feira</string>
+    <string name="home_week_tuesday">Terça-Feira</string>
+    <string name="home_week_wednesday">Quarta-Feira</string>
+    <string name="home_week_thursday">Quinta-Feira</string>
+    <string name="home_week_friday">Sexta-Feira</string>
+    <string name="home_week_saturday">Sábado</string>
+    <string name="home_welcome_subtitle">%1$s, %2$s de %3$s</string>
 
     <!-- Crop Screen -->
     <string name="crop_screen_title">Recortar</string>

@@ -35,7 +35,10 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import java.lang.reflect.Method
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -72,6 +75,50 @@ class HomeFragment() :
         setupObservers()
         setupToolbar()
         setupGalleryLauncher()
+        setupWelcome()
+    }
+
+    private fun setupWelcome() {
+
+        binding.title.text = context?.getString(R.string.home_welcome_title, Global.user?.displayName)
+        binding.subtitle.text = getFormattedSubtitle()
+    }
+
+    private fun getFormattedSubtitle(): String{
+        val now = Calendar.getInstance()
+        val dayOfWeek = getDayOfWeek(now[Calendar.DAY_OF_WEEK])
+        val month = getMonth(now[Calendar.MONTH])
+        //val subtitle = resources.getString(R.string.home_welcome_subtitle)
+        return getString(R.string.home_welcome_subtitle, dayOfWeek, now[Calendar.DAY_OF_MONTH].toString(), month)//String.format(subtitle, dayOfWeek, now[Calendar.DAY_OF_MONTH], month)
+    }
+
+    private fun getMonth(month: Int): String{
+        return when(month){
+            0 -> getString(R.string.home_month_january)
+            1 -> getString(R.string.home_month_february)
+            2 -> getString(R.string.home_month_march)
+            3 -> getString(R.string.home_month_april)
+            4 -> getString(R.string.home_month_may)
+            5 -> getString(R.string.home_month_june)
+            6 -> getString(R.string.home_month_july)
+            7 -> getString(R.string.home_month_august)
+            8 -> getString(R.string.home_month_september)
+            9 -> getString(R.string.home_month_october)
+            10 -> getString(R.string.home_month_november)
+            else -> getString(R.string.home_month_december)
+        }
+    }
+
+    private fun getDayOfWeek(week: Int): String{
+        return when(week){
+            1 -> getString(R.string.home_week_sunday)
+            2 -> getString(R.string.home_week_monday)
+            3 -> getString(R.string.home_week_tuesday)
+            4 -> getString(R.string.home_week_wednesday)
+            5 -> getString(R.string.home_week_thursday)
+            6 -> getString(R.string.home_week_friday)
+            else -> getString(R.string.home_week_saturday)
+        }
     }
 
     private fun setupGalleryLauncher() {
