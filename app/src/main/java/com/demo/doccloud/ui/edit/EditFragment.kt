@@ -1,11 +1,17 @@
 package com.demo.doccloud.ui.edit
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.DialogFragment
@@ -21,13 +27,17 @@ import androidx.window.WindowManager
 import com.demo.doccloud.R
 import com.demo.doccloud.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
+import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.domain.BackToRoot
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
+import com.demo.doccloud.ui.home.HomeFragmentDirections
 import com.demo.doccloud.utils.Global
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import java.util.*
 
 @AndroidEntryPoint
@@ -37,6 +47,9 @@ class EditFragment : Fragment() {
     private val args: EditFragmentArgs by navArgs()
     private var _binding: EditFragmentBinding? = null
     private val binding get() = _binding!!
+
+    //to launch gallery
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +65,29 @@ class EditFragment : Fragment() {
         setupObservables()
         setupToolbar()
         setupOnCLickListener()
+        setupGalleryLauncher()
+    }
+
+    private fun setupGalleryLauncher() {
+        galleryLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val intent = result.data ?: return@registerForActivityResult
+                    intent.clipData?.let { clipData ->
+                        val uris = ArrayList<Uri?>()
+                        for (i in 0 until clipData.itemCount) {
+                            uris.add(clipData.getItemAt(i).uri)
+                        }
+                        viewModel.copyAndNavigateToCrop(requireContext(), uris)
+                        return@registerForActivityResult
+                    }
+                    intent.data?.let { uri ->
+                        viewModel.copyAndNavigateToCrop(requireContext(), listOf(uri))
+                        return@registerForActivityResult
+                    }
+                    Timber.d("error on get photo from gallery")
+                }
+            }
     }
 
     override fun onResume() {
@@ -96,14 +132,37 @@ class EditFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            viewModel.navigate(
-                EditFragmentDirections.actionGlobalCameraFragment(
-                    root = BackToRoot(
-                        rootDestination = RootDestination.EDIT_DESTINATION,
-                        localId = viewModel.doc.value?.localId
+            val dialog = MaterialAlertDialogBuilder(
+                requireContext(),
+                R.style.ThemeOverlay_App_MaterialAlertDialog
+            ).create()//AlertDialog.Builder(requireContext()).create()
+            val layoutInflater = LayoutInflater.from(requireContext())
+            val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
+            view.btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+            view.cameraTv.setOnClickListener {
+                viewModel.navigate(
+                    EditFragmentDirections.actionGlobalCameraFragment(
+                        root = BackToRoot(
+                            rootDestination = RootDestination.EDIT_DESTINATION,
+                            localId = viewModel.doc.value?.localId
+                        )
                     )
                 )
-            )
+                dialog.dismiss()
+            }
+            view.galleryTv.setOnClickListener {
+                // For latest versions API LEVEL 19+
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent.type = "image/*"
+                galleryLauncher.launch(intent)
+                dialog.dismiss()
+            }
+            dialog.setView(view.root)
+            dialog.show()
         }
     }
 

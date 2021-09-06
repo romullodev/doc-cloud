@@ -1,5 +1,6 @@
 package com.demo.doccloud.ui.edit
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -9,10 +10,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.Event
-import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.*
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
+import com.demo.doccloud.ui.home.HomeFragmentDirections
 import com.demo.doccloud.ui.home.HomeViewModel
 import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
@@ -24,6 +24,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -96,6 +99,52 @@ class EditViewModel @Inject constructor(
                 }
             }
             hideDialog()
+        }
+    }
+
+    //https://stackoverflow.com/questions/57093479/get-real-path-from-uri-data-is-deprecated-in-android-q
+    //same function define on HomeViewModel
+    fun copyAndNavigateToCrop(context: Context, uris: List<Uri?>) {
+        viewModelScope.launch {
+            val photos = ArrayList<Photo>()
+            uris.forEach { uri ->
+                val contentResolver: ContentResolver = context.contentResolver ?: return@forEach
+
+                // Create file path inside app's data dir
+                val filePath: String =
+                    "${Global.getInternalOutputDirectory(context)}${File.separator}${System.currentTimeMillis()}"
+                val file = File(filePath)
+                try {
+                    val inputStream = contentResolver.openInputStream(uri!!) ?: return@forEach
+                    val outputStream: OutputStream = FileOutputStream(file)
+                    val buf = ByteArray(1024)
+                    var len: Int
+                    while (inputStream.read(buf).also { len = it } > 0) outputStream.write(
+                        buf,
+                        0,
+                        len
+                    )
+                    outputStream.close()
+                    inputStream.close()
+                } catch (ignore: IOException) {
+                    return@forEach
+                }
+                photos.add(
+                    Photo(
+                        id = System.currentTimeMillis(),
+                        path = file.absolutePath
+                    )
+                )
+            }
+            navigate(
+                EditFragmentDirections.actionGlobalCropFragment(
+                    photos = ListPhotoArg(photos),
+                    root = BackToRoot(
+                        rootDestination = RootDestination.EDIT_DESTINATION,
+                        localId = doc.value?.localId
+                    ),
+                )
+            )
         }
     }
 

@@ -28,25 +28,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val toolbar: MaterialToolbar = binding.contentMain.toolbar
-        setSupportActionBar(toolbar)
-        val navController = findNavController(R.id.nav_host_fragment)
-        toolbar.setupToolbar(navController)
+        //val toolbar: MaterialToolbar = binding.contentMain.toolbar
+        //setSupportActionBar(toolbar)
+        //val navController = findNavController(R.id.nav_host_fragment)
+        //toolbar.setupToolbar(navController)
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.loginFragment ||
-                destination.id == R.id.homeFragment ||
-                destination.id == R.id.cameraFragment ||
-                destination.id == R.id.editFragment ||
-                destination.id == R.id.editCropFragment) {
-                binding.contentMain.appBar.visibility = View.GONE
-            } else {
-                binding.contentMain.appBar.visibility = View.VISIBLE
-            }
-        }
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            if (destination.id == R.id.loginFragment ||
+//                destination.id == R.id.homeFragment ||
+//                destination.id == R.id.cameraFragment ||
+//                destination.id == R.id.editFragment ||
+//                destination.id == R.id.editCropFragment) {
+//                binding.contentMain.appBar.visibility = View.GONE
+//            } else {
+//                binding.contentMain.appBar.visibility = View.VISIBLE
+//            }
+//        }
     }
 
-    companion object{
+    companion object {
         fun getOutputDirectory(context: Context): File {
             val mediaDir: File? = context.externalMediaDirs?.firstOrNull()?.let {
                 File(it, context.resources.getString(R.string.app_name)).apply { mkdirs() }

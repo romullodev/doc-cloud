@@ -5,8 +5,6 @@ import androidx.navigation.NavDirections
 import com.demo.doccloud.R
 import com.demo.doccloud.data.datasource.local.room.entities.asDomain
 import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.Event
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.ui.login.LoginViewModel
 import com.demo.doccloud.utils.Global
@@ -14,8 +12,13 @@ import com.demo.doccloud.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
+import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
+import com.demo.doccloud.domain.*
+import java.io.*
+
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -34,7 +37,7 @@ class HomeViewModel @Inject constructor(
     sealed class HomeState {
         class HomeToastMessage(val msg: String) : HomeState()
         class HomeAlertDialog(val msg: String) : HomeState()
-        data class SharePdf(val data: File): HomeState()
+        data class SharePdf(val data: File) : HomeState()
     }
 
     private val _homeState = MutableLiveData<Event<HomeState>>()
@@ -58,11 +61,11 @@ class HomeViewModel @Inject constructor(
         _navigationCommands.value = Event(NavigationCommand.To(directions))
     }
 
-    fun shareDoc(){
+    fun shareDoc() {
         showDialog(R.string.loading_dialog_message_generating_pdf)
         viewModelScope.launch {
             val result = repository.generatePdf(currDoc!!)
-            when(result.status){
+            when (result.status) {
                 Result.Status.SUCCESS -> {
                     _homeState.value = Event(HomeState.SharePdf(result.data!!))
                     Timber.d("pdf generated on ${result.data.path}")
@@ -115,6 +118,49 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    //https://stackoverflow.com/questions/57093479/get-real-path-from-uri-data-is-deprecated-in-android-q
+    //same function define on EditViewModel
+    fun copyAndNavigateToCrop(context: Context, uris: List<Uri?>) {
+        viewModelScope.launch {
+            val photos = ArrayList<Photo>()
+            uris.forEach { uri ->
+                val contentResolver: ContentResolver = context.contentResolver ?: return@forEach
+
+                // Create file path inside app's data dir
+                val filePath: String =
+                    "${Global.getInternalOutputDirectory(context)}${File.separator}${System.currentTimeMillis()}"
+                val file = File(filePath)
+                try {
+                    val inputStream = contentResolver.openInputStream(uri!!) ?: return@forEach
+                    val outputStream: OutputStream = FileOutputStream(file)
+                    val buf = ByteArray(1024)
+                    var len: Int
+                    while (inputStream.read(buf).also { len = it } > 0) outputStream.write(
+                        buf,
+                        0,
+                        len
+                    )
+                    outputStream.close()
+                    inputStream.close()
+                } catch (ignore: IOException) {
+                    return@forEach
+                }
+                photos.add(
+                    Photo(
+                        id = System.currentTimeMillis(),
+                        path = file.absolutePath
+                    )
+                )
+            }
+            navigate(
+                HomeFragmentDirections.actionHomeFragmentToCropFragment(
+                    photos = ListPhotoArg(photos),
+                    root = BackToRoot(rootDestination = RootDestination.HOME_DESTINATION)
+                )
+            )
+        }
+    }
+
     //verify the user authentication when start the app
     //we're using a sessionManager object to check user authentication
     //start with the home screen instead of login screen  is a concept from google called Conditional Navigation
@@ -153,7 +199,6 @@ class HomeViewModel @Inject constructor(
         _loadingMessage.value = message
         _isDialogVisible.value = true
     }
-
 
     override fun hideDialog() {
         _isDialogVisible.value = false

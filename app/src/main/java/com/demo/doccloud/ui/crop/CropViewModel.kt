@@ -116,6 +116,11 @@ class CropViewModel @Inject constructor(
         File(photo.path).delete()
         this.listPhoto.removeItem(photo)
     }
+    fun deleteAllPhotos(){
+        this.listPhoto.value?.forEach {
+            File(it.path).delete()
+        }
+    }
 
 //    //called from xml
 //    fun saveDocName() {

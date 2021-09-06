@@ -1,6 +1,7 @@
 package com.demo.doccloud.utils
 
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
@@ -17,6 +18,10 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseUser
+import android.provider.MediaStore
+
+
+
 
 // help to setup appbar on every fragment
 

@@ -1,3 +1,5 @@
+- load a failure image on gallery in case of error
+
 - improve border of generated pdf
 
 -analyze photo format when sync data

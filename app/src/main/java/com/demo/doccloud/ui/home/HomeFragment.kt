@@ -1,5 +1,6 @@
 package com.demo.doccloud.ui.home
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -11,33 +12,30 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.adapters.DocAdapter
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.databinding.HomeFragmentBinding
-import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.*
+import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.DialogsHelper
+import com.demo.doccloud.utils.Global
 import com.demo.doccloud.workers.SyncDataWorker
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.reflect.Method
-import androidx.core.content.FileProvider
-import com.demo.doccloud.domain.BackToRoot
-import com.demo.doccloud.domain.RootDestination
-import com.demo.doccloud.ui.MainActivity
-import com.demo.doccloud.utils.Global
-import java.io.File
 
 
 @AndroidEntryPoint
@@ -53,6 +51,9 @@ class HomeFragment() :
     private var searchViewHasTrigger = false
 
     private val homeViewModel: HomeViewModel by activityViewModels()
+
+    //to launch gallery
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
 
     private lateinit var adapter: DocAdapter
 
@@ -70,6 +71,26 @@ class HomeFragment() :
         setupListeners()
         setupObservers()
         setupToolbar()
+        setupGalleryLauncher()
+    }
+
+    private fun setupGalleryLauncher() {
+        galleryLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val intent = result.data ?: return@registerForActivityResult
+                    intent.clipData?.let { clipData ->
+                        val uris = ArrayList<Uri?>()
+                        for (i in 0 until clipData.itemCount) {
+                            uris.add(clipData.getItemAt(i).uri)
+                        }
+                        homeViewModel.copyAndNavigateToCrop(requireContext(), uris)
+                    }
+                    intent.data?.let { uri ->
+                        homeViewModel.copyAndNavigateToCrop(requireContext(), listOf(uri))
+                    }
+                }
+            }
     }
 
     private fun setupToolbar() {
@@ -86,9 +107,15 @@ class HomeFragment() :
         val item = binding.toolbar.menu.findItem(R.id.search)
         val searchView = item.actionView as SearchView
 
-        val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+        val editText =
+            searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
         editText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
-        editText.setHintTextColor(ContextCompat.getColor(binding.root.context, R.color.a_60_white))
+        editText.setHintTextColor(
+            ContextCompat.getColor(
+                binding.root.context,
+                R.color.a_60_white
+            )
+        )
         editText.hint = "Pesquisar"
         searchView.apply {
             setOnQueryTextFocusChangeListener { _, hasFocus ->
@@ -150,6 +177,15 @@ class HomeFragment() :
                         root = BackToRoot(rootDestination = RootDestination.HOME_DESTINATION)
                     )
                 )
+                dialog.dismiss()
+            }
+            view.galleryTv.setOnClickListener {
+                // For latest versions API LEVEL 19+
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent.type = "image/*"
+                galleryLauncher.launch(intent)
                 dialog.dismiss()
             }
             dialog.setView(view.root)

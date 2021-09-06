@@ -9,6 +9,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
@@ -17,6 +18,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.adapters.CropAdapter
 import com.demo.doccloud.databinding.CropFragmentBinding
@@ -62,6 +65,27 @@ class CropFragment() : Fragment() {
         setupObservers()
         setupBindingVariables()
         setupListeners()
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setupWithNavController(
+            navController,
+            AppBarConfiguration(navController.graph)
+        )
+        //delete all photos in case of pick images from gallery
+        binding.toolbar.setNavigationOnClickListener {
+            if(navController.previousBackStackEntry?.destination?.id == R.id.homeFragment){
+             viewModel.deleteAllPhotos()
+            }
+            navController.popBackStack()
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if(navController.previousBackStackEntry?.destination?.id == R.id.homeFragment){
+                viewModel.deleteAllPhotos()
+            }
+            navController.popBackStack()
+        }
     }
 
     private fun setupListeners() {
@@ -117,27 +141,6 @@ class CropFragment() : Fragment() {
         viewModel.cropState.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { state ->
                 when (state) {
-//                    CropViewModel.CropState.SaveDocNameDialog -> {
-//                        val materialDialog = CatchDocNameDialog.newInstance(
-//                            object : CatchDocNameDialog.DialogDocNameListener {
-//                                override fun onSaveClick(docName: String, dialog: DialogFragment) {
-//                                    viewModel.saveDocs(docName)
-//                                    dialog.dismiss()
-//
-//                                }
-//
-//                                override fun onCancelClick(dialog: DialogFragment) {
-//                                    dialog.dismiss()
-//                                }
-//                            },
-//                            getString(R.string.crop_screen_dialog_title_label)
-//                        )
-//
-//                        materialDialog.show(
-//                            requireActivity().supportFragmentManager,
-//                            null
-//                        )
-//                    }
                     is CropViewModel.CropState.CropAlertDialog -> {
                         DialogsHelper.showAlertDialog(
                             DialogsHelper.getInfoAlertParams(msg = state.msg),
