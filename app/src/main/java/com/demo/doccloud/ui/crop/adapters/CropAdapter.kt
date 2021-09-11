@@ -1,4 +1,4 @@
-package com.demo.doccloud.adapters
+package com.demo.doccloud.ui.crop.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

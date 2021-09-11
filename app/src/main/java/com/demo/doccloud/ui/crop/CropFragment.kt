@@ -21,7 +21,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.demo.doccloud.R
-import com.demo.doccloud.adapters.CropAdapter
+import com.demo.doccloud.ui.crop.adapters.CropAdapter
 import com.demo.doccloud.databinding.CropFragmentBinding
 import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.RootDestination

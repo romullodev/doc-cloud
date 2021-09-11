@@ -12,7 +12,9 @@
             type="String" />
 
     </data>
+
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -24,6 +26,20 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:id="@+id/upload_progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:indeterminate="true"
+                android:indeterminateTintMode="src_atop"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/verticalLine"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/docNumber"
@@ -47,9 +63,10 @@
                 android:background="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/docNumber"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/upload_progress"
                 app:layout_constraintVertical_bias="0.0" />
 
+<!--            app:layout_constraintEnd_toStartOf="@+id/more_options"-->
             <TextView
                 android:id="@+id/docDetails"
                 android:layout_width="0dp"
@@ -60,22 +77,21 @@
                 android:textSize="16sp"
                 android:lineSpacingExtra="3dp"
                 app:layout_constraintBottom_toBottomOf="@+id/verticalLine"
-                app:layout_constraintEnd_toStartOf="@+id/more_options"
                 app:layout_constraintHorizontal_bias="0.507"
                 app:layout_constraintStart_toEndOf="@+id/verticalLine"
                 app:layout_constraintTop_toTopOf="@+id/verticalLine"
                 tools:text="Nome: Investimentos ..\nData: 08/08/2021\nStatus: Sincronizado" />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/more_options"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="3dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_more_vert_24"
-                app:tint="@color/black" />
+<!--            <com.google.android.material.imageview.ShapeableImageView-->
+<!--                android:id="@+id/more_options"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="3dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_more_vert_24"-->
+<!--                app:tint="@color/black" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

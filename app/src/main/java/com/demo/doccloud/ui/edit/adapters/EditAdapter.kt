@@ -1,4 +1,4 @@
-package com.demo.doccloud.adapters
+package com.demo.doccloud.ui.edit.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.demo.doccloud.databinding.EditItemBinding
-import com.demo.doccloud.domain.Doc
 import com.demo.doccloud.domain.Photo
 
 class EditAdapter(

@@ -16,12 +16,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
-import com.demo.doccloud.adapters.DocAdapter
+import com.demo.doccloud.ui.home.adapters.DocAdapter
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.databinding.HomeFragmentBinding
 import com.demo.doccloud.domain.*
@@ -35,7 +36,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.collections.ArrayList
@@ -255,10 +255,30 @@ class HomeFragment() :
         binding.lifecycleOwner = viewLifecycleOwner
         adapter = DocAdapter(
             object : DocAdapter.OnDocClickListener {
-                override fun onDocClick(doc: Doc, view: View) {
+//                override fun onMoreOptionsClick(doc: Doc, view: View) {
+//                    //this doc could be used to share/delete/edit on onMenuItemClick() method
+//                    homeViewModel.currDoc = doc
+//                    val popup = PopupMenu(requireContext(), view)
+//                    val inflater: MenuInflater = popup.menuInflater
+//                    inflater.inflate(R.menu.home_doc_item, popup.menu)
+//                    popup.setOnMenuItemClickListener(this@HomeFragment)
+//                    forceIconOnMenu(popup)
+//                    popup.show()
+//                }
+
+                override fun onDocClick(doc: Doc) {
+                    homeViewModel.navigate(
+                        HomeFragmentDirections.actionHomeFragmentToEditFragment(
+                            docLocalId = doc.localId,
+                            docRemoteId = doc.remoteId
+                        )
+                    )
+                }
+
+                override fun onLongDocClick(doc: Doc, view: View) {
                     //this doc could be used to share/delete/edit on onMenuItemClick() method
                     homeViewModel.currDoc = doc
-                    val popup = PopupMenu(requireContext(), view)
+                    val popup = PopupMenu(requireContext(), view, GravityCompat.END)
                     val inflater: MenuInflater = popup.menuInflater
                     inflater.inflate(R.menu.home_doc_item, popup.menu)
                     popup.setOnMenuItemClickListener(this@HomeFragment)
@@ -276,15 +296,15 @@ class HomeFragment() :
                 homeViewModel.shareDoc()
                 true
             }
-            R.id.edit -> {
-                homeViewModel.navigate(
-                    HomeFragmentDirections.actionHomeFragmentToEditFragment(
-                        docLocalId = homeViewModel.currDoc?.localId!!,
-                        docRemoteId = homeViewModel.currDoc?.remoteId!!
-                    )
-                )
-                true
-            }
+//            R.id.edit -> {
+//                homeViewModel.navigate(
+//                    HomeFragmentDirections.actionHomeFragmentToEditFragment(
+//                        docLocalId = homeViewModel.currDoc?.localId!!,
+//                        docRemoteId = homeViewModel.currDoc?.remoteId!!
+//                    )
+//                )
+//                true
+//            }
             R.id.delete -> {
                 DialogsHelper.showAlertDialog(
                     DialogsHelper.getQuestionDeleteAlertParams(

@@ -8,15 +8,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -25,7 +22,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.window.WindowManager
 import com.demo.doccloud.R
-import com.demo.doccloud.adapters.EditAdapter
+import com.demo.doccloud.ui.edit.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.domain.BackToRoot
@@ -33,7 +30,6 @@ import com.demo.doccloud.domain.Photo
 import com.demo.doccloud.domain.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
-import com.demo.doccloud.ui.home.HomeFragmentDirections
 import com.demo.doccloud.utils.Global
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint

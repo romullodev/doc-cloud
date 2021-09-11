@@ -1,8 +1,8 @@
+- implement use cases
+
 - reduce size of the generated pdfs
 
 - improve return types of Result class
-
-- clear all data when make logout
 
 - load a failure image on gallery in case of error
 
@@ -16,14 +16,14 @@
 
 - analyze use of singleton on DI
 
+    - refactor life cycle of use cases
+
 - change SharedPreference to DataStore
 
 - improve HomeScreen layout
-	- open edit when item is clicked
-	- remove 3 dots
-	- add longPressListener on doc item
-	- show menu option after onLongPress on iten
 	- improve colors
+	- improve doc layout
+	- implement multiple selection
 
 - improve EditScreen layout
 

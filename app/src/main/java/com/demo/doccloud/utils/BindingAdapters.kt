@@ -1,6 +1,5 @@
 package com.demo.doccloud.adapters
 
-import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -9,13 +8,11 @@ import android.text.style.StyleSpan
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.demo.doccloud.R
 import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.ui.home.adapters.DocAdapter
 import com.demo.doccloud.utils.Global
 
 

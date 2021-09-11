@@ -1,4 +1,4 @@
-package com.demo.doccloud.adapters
+package com.demo.doccloud.ui.home.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.demo.doccloud.databinding.HomeDocItemBinding
 import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.DocStatus
 import java.util.*
-import kotlin.collections.ArrayList
 
 class DocAdapter(
     private var clickListener: OnDocClickListener
@@ -49,9 +49,17 @@ class DocAdapter(
         fun bindView(doc: Doc, position: Int, action: OnDocClickListener) {
             binding.doc = doc
             binding.number = if (position + 1 < 10) "0${(position + 1)}" else (position + 1).toString()
+            binding.uploadProgress.visibility = if(doc.status == DocStatus.SENDING) View.VISIBLE else View.GONE
             binding.executePendingBindings()
-            binding.moreOptions.setOnClickListener {
-                action.onDocClick(doc, it)
+//            binding.moreOptions.setOnClickListener {
+//                action.onMoreOptionsClick(doc, it)
+//            }
+            binding.cardView.setOnClickListener {
+                action.onDocClick(doc)
+            }
+            binding.cardView.setOnLongClickListener {
+                action.onLongDocClick(doc, it)
+                true
             }
         }
 
@@ -65,7 +73,9 @@ class DocAdapter(
     }
 
     interface OnDocClickListener {
-        fun onDocClick(doc: Doc, view: View)
+        //fun onMoreOptionsClick(doc: Doc, view: View)
+        fun onDocClick(doc: Doc)
+        fun onLongDocClick(doc: Doc, view: View)
     }
 
     override fun getFilter(): Filter {

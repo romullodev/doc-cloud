@@ -23,12 +23,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.window.WindowManager
-import com.demo.doccloud.adapters.ThumbnailAdapter
+import com.demo.doccloud.ui.camera.adapters.ThumbnailAdapter
 import com.demo.doccloud.databinding.CameraFragmentBinding
-import com.demo.doccloud.domain.BackToRoot
 import com.demo.doccloud.domain.ListPhotoArg
 import com.demo.doccloud.domain.Photo
-import com.demo.doccloud.ui.crop.CropFragmentArgs
 import com.demo.doccloud.utils.AppConstants.Companion.ANIMATION_FAST_MILLIS
 import com.demo.doccloud.utils.AppConstants.Companion.ANIMATION_SLOW_MILLIS
 import com.demo.doccloud.utils.Global
