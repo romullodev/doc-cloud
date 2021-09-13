@@ -1,26 +1,17 @@
 package com.demo.doccloud.utils
 
 import android.content.pm.PackageManager
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.demo.doccloud.R
-import com.demo.doccloud.domain.Photo
-import com.demo.doccloud.domain.User
+import com.demo.doccloud.domain.entities.Photo
+import com.demo.doccloud.domain.entities.User
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseUser
-import android.provider.MediaStore
-
-
 
 
 // help to setup appbar on every fragment

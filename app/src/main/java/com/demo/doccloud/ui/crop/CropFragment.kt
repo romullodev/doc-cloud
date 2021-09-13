@@ -23,11 +23,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.ui.crop.adapters.CropAdapter
 import com.demo.doccloud.databinding.CropFragmentBinding
-import com.demo.doccloud.domain.Photo
-import com.demo.doccloud.domain.RootDestination
+import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
 import com.demo.doccloud.utils.DialogsHelper
+import com.demo.doccloud.utils.RootDestination.EDIT_DESTINATION
+import com.demo.doccloud.utils.RootDestination.HOME_DESTINATION
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,7 +92,7 @@ class CropFragment() : Fragment() {
     private fun setupListeners() {
         binding.continueBtn.setOnClickListener {
             when(args.root.rootDestination){
-                RootDestination.HOME_DESTINATION -> {
+                HOME_DESTINATION -> {
                     val materialDialog = CatchDocNameDialog.newInstance(
                         object : CatchDocNameDialog.DialogDocNameListener {
                             override fun onSaveClick(docName: String, dialog: DialogFragment) {
@@ -112,7 +113,7 @@ class CropFragment() : Fragment() {
                         null
                     )
                 }
-                RootDestination.EDIT_DESTINATION -> {
+                EDIT_DESTINATION -> {
                     viewModel.addPhotos(args.root.localId)
                 }
             }
@@ -124,7 +125,7 @@ class CropFragment() : Fragment() {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     CropImage.getActivityResult(result.data)?.let { cropResult ->
-                        viewModel.saveCropPhoto(cropResult.uri, requireContext())
+                        viewModel.saveCropPhoto(cropResult.uri)
                     }
                 }
             }
@@ -165,10 +166,10 @@ class CropFragment() : Fragment() {
                 when (state) {
                     is CropViewModel.NavigationCommand.ToRoot -> {
                         when(args.root.rootDestination){
-                            RootDestination.HOME_DESTINATION -> {
+                            HOME_DESTINATION -> {
                                 navController.popBackStack(R.id.homeFragment, false)
                             }
-                            RootDestination.EDIT_DESTINATION -> {
+                            EDIT_DESTINATION -> {
                                 navController.popBackStack(R.id.editFragment, false)
                             }
                         }
@@ -184,10 +185,10 @@ class CropFragment() : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         when(args.root.rootDestination){
-            RootDestination.HOME_DESTINATION -> {
+            HOME_DESTINATION -> {
                 binding.textButton = getString(R.string.crop_screen_continue_label)
             }
-            RootDestination.EDIT_DESTINATION -> {
+            EDIT_DESTINATION -> {
                 binding.textButton = getString(R.string.crop_screen_add_label)
             }
         }

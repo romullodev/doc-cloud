@@ -7,6 +7,7 @@ import android.net.Uri
 import com.demo.doccloud.R
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.*
+import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
@@ -52,7 +53,7 @@ class FirebaseServices @Inject constructor(
     private val database: FirebaseDatabase,
     @ApplicationContext private val context: Context
 ) : RemoteDataSource {
-    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): Result<User> {
+    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): User {
         return withContext(dispatcher) {
             try {
                 val signedInTask: Task<GoogleSignInAccount> =
@@ -64,8 +65,7 @@ class FirebaseServices @Inject constructor(
                 signInCredentialTask.await()
                 //send customId to database
                 val userId: String =
-                    auth.currentUser?.uid
-                        ?: return@withContext Result.error("Usuário logado não possui id", null)
+                    auth.currentUser?.uid ?: throw Exception(context.getString(R.string.login_user_with_no_id))
                 //Firebase Database
                 val database = database.reference
                 //reference to save values into database
@@ -81,35 +81,34 @@ class FirebaseServices @Inject constructor(
                 )
                 val sendValuesTask = refDatabase.setValue(mapDatabase)
                 sendValuesTask.await()
-                return@withContext Result.success(auth.currentUser?.asDomain()!!)
+                return@withContext auth.currentUser?.asDomain()!!
             } catch (e: Exception) {
                 if (e is ApiException) {
-                    return@withContext Result.error(context.getString(R.string.login_error_api_google))
+                    throw Exception(context.getString(R.string.login_error_api_google))
                 }
                 if (e is NetworkErrorException || e is HttpException) {
-                    return@withContext Result.error(context.getString(R.string.common_no_internet))
+                    throw Exception(context.getString(R.string.common_no_internet))
                 }
-                return@withContext Result.error(context.getString(R.string.login_unknown_error))
+                throw Exception(context.getString(R.string.login_unknown_error))
             }
         }
     }
 
-    override suspend fun getUser(): Result<User> {
+    override suspend fun getUser(): User {
         return withContext(dispatcher) {
             auth.currentUser?.let {
-                val user = it.asDomain()
-                Global.user = user
-                return@withContext Result.success(user)
+                return@withContext it.asDomain()
             }
-            return@withContext Result.error(context.getString(R.string.login_user_not_logged_in))
+            throw Exception(
+                context.getString(R.string.common_user_not_logged_in)
+            )
         }
     }
 
-    override suspend fun doLogout(): Result<Boolean> {
+    override suspend fun doLogout(){
         //this code bellow make user choose an account whenever he do log in after a logout
         return withContext(dispatcher) {
             auth.signOut()
-            Global.user = null
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -118,9 +117,9 @@ class FirebaseServices @Inject constructor(
             val taskGoogleClient = googleSignInClient.revokeAccess()
             try {
                 taskGoogleClient.await()
-                return@withContext Result.success(true)
+                return@withContext
             } catch (e: Exception) {
-                return@withContext Result.error(context.getString(R.string.login_revokeAccess))
+                return@withContext
             }
         }
     }
@@ -129,7 +128,7 @@ class FirebaseServices @Inject constructor(
     override suspend fun uploadDocFirebase(doc: Doc) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //send all photos to cloud
@@ -145,7 +144,7 @@ class FirebaseServices @Inject constructor(
                     val task1 = refStorageImage.putFile(uriFile)
                     task1.await()
                 } catch (e: Exception) {
-                    Timber.d("Erro ao enviar imagens do documento para o servidor. \nDetalhes: $e")
+                    throw e
                 }
             }
 
@@ -172,7 +171,7 @@ class FirebaseServices @Inject constructor(
                 val task = refDatabase.setValue(mapDatabase)
                 task.await()
             } catch (e: Exception) {
-                Timber.d("Erro ao enviar dados do documento para o servidor. \nDetalhes: $e")
+                throw e
             }
         }
     }
@@ -181,7 +180,7 @@ class FirebaseServices @Inject constructor(
     override suspend fun deleteDocFirebase(remoteId: Long, pages: List<Photo>) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //delete all photos from server
@@ -194,7 +193,7 @@ class FirebaseServices @Inject constructor(
                     val task1 = refStorageImage.delete()
                     task1.await()
                 } catch (e: Exception) {
-                    Timber.d("Erro ao deletar a imagem ${remoteId}_${it.id}.jpg do servidor. \nDetalhes: $e")
+                    throw e
                 }
 
             }
@@ -210,16 +209,16 @@ class FirebaseServices @Inject constructor(
                 val task2 = refDatabase.removeValue()
                 task2.await()
             } catch (e: Exception) {
-                Timber.d("Erro ao deletar dados do documento no servidor. \nDetalhes: $e")
+                throw e
             }
         }
     }
 
     //trigger from UpdateDocNameWorker
-    override suspend fun updateDocNameFirebase(remoteId: Long, name: String): Result<Boolean> {
-        return withContext(dispatcher) {
+    override suspend fun updateDocNameFirebase(remoteId: Long, name: String) {
+        withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Database
             val database = database.reference
             //reference to save values into database
@@ -232,20 +231,16 @@ class FirebaseServices @Inject constructor(
                 val task = refDatabase.updateChildren(mapDatabase)
                 task.await()
             } catch (e: Exception) {
-                return@withContext Result.error(
-                    "Erro ao enviar dados do documento para o servidor. Detalhes: $e",
-                    null
-                )
+                throw e
             }
-            return@withContext Result.success(true)
         }
     }
 
     //trigger from UpdateDocPageWorker
-    override suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo): Result<Boolean> {
-        return withContext(dispatcher) {
+    override suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo) {
+        withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //delete old photo from server
@@ -257,10 +252,7 @@ class FirebaseServices @Inject constructor(
                 val task1 = refStorageImage.delete()
                 task1.await()
             } catch (e: Exception) {
-                return@withContext Result.error(
-                    "Erro ao deletar a imagem ${remoteId}_$index.jpg do servidor. \nDetalhes: $e",
-                    null
-                )
+                throw e
             }
 
             //upload new photo to server
@@ -269,28 +261,22 @@ class FirebaseServices @Inject constructor(
                 val task2 = refStorageImage.putFile(uriFile)
                 task2.await()
             } catch (e: Exception) {
-                return@withContext Result.error(
-                    "Erro ao enviar imagens do documento para o servidor. \nDetalhes: $e",
-                    null
-                )
+                throw e
             }
-            return@withContext Result.success(true)
         }
     }
 
-    //trigger from DeleteDocPageWorker
     override suspend fun deleteDocPhotosFirebase(
         remoteId: Long,
         photo: Photo,
         jsonPages: String
-    ): Result<Boolean> {
-        return withContext(dispatcher) {
+    ) {
+        withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //delete photo from server
-            val index = photo.id
             val refStorageImage = fireStorage.child(
                 "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_IMAGES_DIRECTORY/${remoteId}_${photo.id}.jpg"
             )
@@ -298,10 +284,8 @@ class FirebaseServices @Inject constructor(
                 val task = refStorageImage.delete()
                 task.await()
             } catch (e: Exception) {
-                return@withContext Result.error(
-                    "Erro ao deletar a imagem ${remoteId}_${photo.id}.jpg do servidor. \nDetalhes: $e",
-                    null
-                )
+                //could customize this exception
+                throw e
             }
 
             //Firebase Database
@@ -316,20 +300,17 @@ class FirebaseServices @Inject constructor(
                 val task = refDatabase.updateChildren(mapDatabase)
                 task.await()
             } catch (e: Exception) {
-                return@withContext Result.error(
-                    "Erro ao atualizar dados do documento no servidor. Detalhes: $e",
-                    null
-                )
+                //could customize this exception
+                throw e
             }
-            return@withContext Result.success(true)
         }
     }
 
     //trigger from SyncDataWorker
-    override suspend fun syncData(customId: Long): Result<List<Doc>> {
+    override suspend fun syncData(customId: Long): List<Doc> {
         return withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Database
             val database = database.reference
             //reference to delete values from database
@@ -385,14 +366,14 @@ class FirebaseServices @Inject constructor(
             val sendValuesTask = refSyncStrategy.updateChildren(mapDatabase)
             sendValuesTask.await()
 
-            return@withContext Result.success(docs)
+            return@withContext docs
         }
     }
 
-    override suspend fun getSyncStrategy(): Result<SyncStrategy> {
-        return withContext(dispatcher) {
+    override suspend fun getSyncStrategy(): SyncStrategy {
+       return withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: return@withContext Result.error("Usuário não logado", null)
+                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Database
             val database = database.reference
             //reference to get expiration info
@@ -449,26 +430,20 @@ class FirebaseServices @Inject constructor(
                 //expiration is localed on app level directory on firebase
                 val expiration =
                     expirationDataSnapshot.child(DATABASE_APP_LEVEL_EXPIRATION_KEY).value.toString()
-                val syncStrategy = SyncStrategy(
+                return@withContext SyncStrategy(
                     expiration = expiration.toLong(),
                     lastUpdated = lastUpdated.toLong(),
                     customId = customId.toLong()
                 )
-
-                return@withContext Result.success(syncStrategy)
-
             } catch (e: Exception) {
-                return@withContext Result.error(
-                    e.message ?: "unknown error whiling get sync info",
-                    null
-                )
+                throw e
             }
         }
     }
 
-    override suspend fun addPhotosDoc(remoteId: Long, photos: List<Photo>, newJsonPages: String): Result<Boolean> {
+    override suspend fun addPhotosDoc(remoteId: Long, photos: List<Photo>, newJsonPages: String) {
         val userId: String =
-            auth.currentUser?.uid ?: return Result.error("Usuário não logado", null)
+            auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
         //Firebase Storage
         val fireStorage = storage.reference
         //send all photos to cloud
@@ -484,7 +459,7 @@ class FirebaseServices @Inject constructor(
                 val task1 = refStorageImage.putFile(uriFile)
                 task1.await()
             } catch (e: Exception) {
-                Timber.d("Erro ao enviar imagens do documento para o servidor. \nDetalhes: $e")
+                throw Exception(e)
             }
         }
         //update database with new photo ids
@@ -500,12 +475,8 @@ class FirebaseServices @Inject constructor(
             val task = refDatabase.updateChildren(mapDatabase)
             task.await()
         } catch (e: Exception) {
-            return Result.error(
-                "Erro ao atualizar o campo jsonPages no servidor. Detalhes: $e",
-                null
-            )
+            throw Exception(e)
         }
-        return Result.success(true)
     }
 
     private suspend fun getPages(ids: List<Long>, userId: String, remoteId: String): List<Photo> {

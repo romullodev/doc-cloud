@@ -1,6 +1,5 @@
-package com.demo.doccloud.domain
+package com.demo.doccloud.domain.entities
 
-import androidx.room.PrimaryKey
 import com.demo.doccloud.data.datasource.local.room.entities.DatabaseDoc
 
 data class Doc(

@@ -4,13 +4,11 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
-import com.demo.doccloud.domain.DocStatus
-import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.entities.Photo
+import com.demo.doccloud.domain.usecases.contracts.DeleteRemoteDoc
 import com.demo.doccloud.utils.AppConstants
-import com.demo.doccloud.utils.Result
 import com.google.gson.Gson
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -24,7 +22,7 @@ class DeleteDocWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    private val remoteDataSource: RemoteDataSource,
+    private val deleteRemoteDocUseCase: DeleteRemoteDoc
 ) :
     CoroutineWorker(appContext, workerParams) {
 
@@ -38,7 +36,7 @@ class DeleteDocWorker @AssistedInject constructor(
                 if (remoteId != -1L && jsonPages != "") {
                     //could be Array<String>
                     val pages = Gson().fromJson(jsonPages, Array<Photo>::class.java).toList()
-                    remoteDataSource.deleteDocFirebase(remoteId, pages)
+                    deleteRemoteDocUseCase(remoteId, pages)
                     return@withContext Result.success()
                 }else{
                     Timber.d("Falha ao recuperar dados para exclusão na nuvem")

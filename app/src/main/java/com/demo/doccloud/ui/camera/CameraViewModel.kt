@@ -5,10 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
-import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.domain.Event
-import com.demo.doccloud.domain.ListPhotoArg
-import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.utils.Event
+import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.utils.addNewItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

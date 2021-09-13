@@ -1,6 +1,5 @@
 package com.demo.doccloud.ui.edit
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -9,33 +8,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.domain.*
+import com.demo.doccloud.domain.entities.Doc
+import com.demo.doccloud.domain.entities.Photo
+import com.demo.doccloud.domain.usecases.contracts.*
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
-import com.demo.doccloud.ui.home.HomeFragmentDirections
-import com.demo.doccloud.ui.home.HomeViewModel
-import com.demo.doccloud.utils.Global
-import com.demo.doccloud.utils.Result
-import com.demo.doccloud.utils.addWithDiffId
-import com.demo.doccloud.utils.updateItem
+import com.demo.doccloud.utils.BackToRoot
+import com.demo.doccloud.utils.Event
+import com.demo.doccloud.utils.ListPhotoArg
+import com.demo.doccloud.utils.RootDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
-    private val repository: Repository
+    private val copyFileUseCase: CopyFile,
+    private val generateDocPdfUseCase: GenerateDocPdf,
+    private val getDocByIdUseCase: GetDocById,
+    private val updatedDocNameUseCase: UpdatedDocName,
+    private val deleteDocPhotoUseCase: DeleteDocPhoto,
+    private val updateDocPhotoUseCase: UpdateDocPhoto,
 ) : ViewModel(),
     LoadingDialogViewModel {
-
 
     sealed class EditState {
         data class SharePdf(val data: File): EditState()
@@ -44,7 +40,6 @@ class EditViewModel @Inject constructor(
     private val _editState = MutableLiveData<Event<EditState>>()
     val editState: LiveData<Event<EditState>>
         get() = _editState
-
 
 
     private var _doc = MutableLiveData<Doc>()
@@ -66,21 +61,18 @@ class EditViewModel @Inject constructor(
 
     fun updateNameDoc(localId: Long, remoteId: Long, newName: String) {
         viewModelScope.launch {
-            repository.updateDocName(localId = localId, remoteId = remoteId, newName)
+            updatedDocNameUseCase(localId = localId, remoteId = remoteId, newName)
         }
     }
 
     //retrieve the same list reference from the previous screen
     fun getDocById(id: Long) {
         viewModelScope.launch {
-            val result = repository.getDoc(id)
-            when (result.status) {
-                Result.Status.SUCCESS -> {
-                    _doc.value = result.data!!
-                }
-                Result.Status.ERROR -> {
-                    TODO()
-                }
+            try {
+                val doc = getDocByIdUseCase(id)
+                _doc.value = doc
+            }catch (e: Exception){
+                Timber.d(e.toString())
             }
         }
     }
@@ -88,15 +80,11 @@ class EditViewModel @Inject constructor(
     fun shareDoc(){
         showDialog(R.string.loading_dialog_message_generating_pdf)
         viewModelScope.launch {
-            val result = repository.generatePdf(_doc.value!!)
-            when(result.status){
-                Result.Status.SUCCESS -> {
-                    _editState.value = Event(EditState.SharePdf(result.data!!))
-                    Timber.d("pdf generated on ${result.data.path}")
-                }
-                Result.Status.ERROR -> {
-                    Timber.d("failure on  generated pdf. \nDetails: ${result.msg}")
-                }
+            try {
+                val pdfFile = generateDocPdfUseCase(_doc.value!!)
+                _editState.value = Event(EditState.SharePdf(pdfFile))
+            }catch (e: Exception){
+                Timber.d("failure on  generated pdf. \nDetails: $e")
             }
             hideDialog()
         }
@@ -106,45 +94,29 @@ class EditViewModel @Inject constructor(
     //same function define on HomeViewModel
     fun copyAndNavigateToCrop(context: Context, uris: List<Uri?>) {
         viewModelScope.launch {
-            val photos = ArrayList<Photo>()
-            uris.forEach { uri ->
-                val contentResolver: ContentResolver = context.contentResolver ?: return@forEach
-
-                // Create file path inside app's data dir
-                val filePath: String =
-                    "${Global.getInternalOutputDirectory(context)}${File.separator}${System.currentTimeMillis()}"
-                val file = File(filePath)
-                try {
-                    val inputStream = contentResolver.openInputStream(uri!!) ?: return@forEach
-                    val outputStream: OutputStream = FileOutputStream(file)
-                    val buf = ByteArray(1024)
-                    var len: Int
-                    while (inputStream.read(buf).also { len = it } > 0) outputStream.write(
-                        buf,
-                        0,
-                        len
+            try{
+                val photos = ArrayList<Photo>()
+                uris.forEach { uri ->
+                    val copiedFile = copyFileUseCase(uri!!)
+                    photos.add(
+                        Photo(
+                            id = System.currentTimeMillis(),
+                            path = copiedFile!!.absolutePath
+                        )
                     )
-                    outputStream.close()
-                    inputStream.close()
-                } catch (ignore: IOException) {
-                    return@forEach
                 }
-                photos.add(
-                    Photo(
-                        id = System.currentTimeMillis(),
-                        path = file.absolutePath
+                navigate(
+                    EditFragmentDirections.actionGlobalCropFragment(
+                        photos = ListPhotoArg(photos),
+                        root = BackToRoot(
+                            rootDestination = RootDestination.EDIT_DESTINATION,
+                            localId = doc.value?.localId
+                        ),
                     )
                 )
+            }catch (e:Exception){
+                Timber.i(e.toString())
             }
-            navigate(
-                EditFragmentDirections.actionGlobalCropFragment(
-                    photos = ListPhotoArg(photos),
-                    root = BackToRoot(
-                        rootDestination = RootDestination.EDIT_DESTINATION,
-                        localId = doc.value?.localId
-                    ),
-                )
-            )
         }
     }
 
@@ -154,11 +126,11 @@ class EditViewModel @Inject constructor(
 
     fun deleteSelectedDocPhoto() {
         viewModelScope.launch {
-            repository.deleteDocPhoto(
-                localId = doc.value?.localId!!,
-                remoteId = doc.value?.remoteId!!,
-                photo = selectedPhoto.value!!
-            )
+            try {
+                deleteDocPhotoUseCase(localId = doc.value?.localId!!, photo = selectedPhoto.value!!)
+            }catch (e: Exception){
+                Timber.d(e.toString())
+            }
         }
     }
 
@@ -173,41 +145,20 @@ class EditViewModel @Inject constructor(
         _navigationCommands.value = Event(NavigationCommand.To(directions))
     }
 
-    fun updateDocPhoto(uri: Uri, context: Context) {
+    fun updateDocPhoto(uri: Uri) {
         viewModelScope.launch {
             try {
-                val newPath = copyNewFileDeleteOldOne(uri.path, context)
-                _selectedPhoto.value = _selectedPhoto.value?.copy(path = newPath)
-                repository.updateDocPhotos(
+                val newFile = copyFileUseCase(uri)
+                _selectedPhoto.value = _selectedPhoto.value?.copy(path = newFile?.path!!)
+                updateDocPhotoUseCase(
                     localId = doc.value?.localId!!,
-                    remoteId = doc.value?.remoteId!!,
                     photo = selectedPhoto.value!!
                 )
-            } catch (e: Exception) {
+            }catch (e: Exception){
                 Timber.e("an error updateDocPhoto. Details:\n $e")
             }
         }
     }
-
-    //copy a file from cache dir (and delete) to files Dir
-    private suspend fun copyNewFileDeleteOldOne(croppedUriPath: String?, context: Context): String {
-        return withContext(Dispatchers.IO) {
-            val fileOnCacheDir = File(croppedUriPath!!)
-            //this is the file that we want
-            val newFileOnFilesDir =
-                File(Global.getOutputDirectory(context), fileOnCacheDir.name)
-            //copy file from cache Dir
-            fileOnCacheDir.copyTo(newFileOnFilesDir, true)
-            //delete file from cache Dir
-            fileOnCacheDir.delete()
-            //val oldFileOnFilesDir = File(_uriPhotos.value?.get(position)?.uriPath!!)
-            val oldFileOnFilesDir = File(selectedPhoto.value?.path!!)
-            //delete old file from Files Dir
-            oldFileOnFilesDir.delete()
-            return@withContext newFileOnFilesDir.absolutePath
-        }
-    }
-
 
     //handle loading dialog to show feedback to user (this approaches does not depend on Fragments)
     private var _loadingMessage = MutableLiveData(R.string.loading_dialog_message_please_wait)

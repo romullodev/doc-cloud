@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">DocCloud</string>
 
+    <!-- Work Manager -->
+    <string name="work_manager_failure_recover_list_or_id">falha ao recuperar a lista ou localId</string>
+
+
     <!-- Shared Preference -->
     <string name="share_preference_doc_cloud_app_file_key">SharePreferenceDocCloudFileKey</string>
+    <string name="share_preference_instance_error">failure on get  sharedPreference instance</string>
+
 
     <!-- Login Screen -->
     <string name="login_doc_cloud_name">Doc Cloud</string>
+    <string name="login_user_with_no_id">Usuário logado não possui id</string>
     <string name="login_password_hint">Senha</string>
     <string name="login_email_hint">E-mail</string>
     <string name="login_sign_in">entrar</string>
@@ -16,7 +23,6 @@
     <string name="login_input_layout_error_invalid">Insira seu login</string>
     <string name="login_input_password_error">Insira sua senha</string>
     <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
-    <string name="login_user_not_logged_in">O usuário não está logado</string>
     <string name="login_error_api_google">Houve um erro com o Google. Tente novamente!</string>
     <string name="login_unknown_error">Houve um erro. Tente novamente!</string>
     <string name="login_revokeAccess">Erro ao revogar acesso do google durante o logout</string>
@@ -24,6 +30,7 @@
     <!-- Common -->
     <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>
     <string name="common_delete_label">Excluir</string>
+    <string name="common_user_not_logged_in">O usuário não está logado</string>
 
     <!-- Home Screen -->
     <string name="home_menu_logout">Sair</string>
@@ -38,6 +45,7 @@
     <string name="home_select_option_label">Selecione uma opção:</string>
     <string name="home_recent_label">Recentes</string>
     <string name="home_toast_delete_success">%1$s foi excluído</string>
+    <string name="home_toast_delete_error">Erro ao excluir documento. Tente novamente.</string>
     <string name="home_doc_status_sent">Enviado</string>
     <string name="home_doc_status_sending">Enviando…</string>
     <string name="home_doc_status_not_sent">Não Enviado</string>

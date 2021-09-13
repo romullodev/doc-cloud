@@ -26,6 +26,9 @@ import com.demo.doccloud.ui.home.adapters.DocAdapter
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.databinding.HomeFragmentBinding
 import com.demo.doccloud.domain.*
+import com.demo.doccloud.utils.BackToRoot
+import com.demo.doccloud.domain.entities.Doc
+import com.demo.doccloud.utils.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.utils.AppConstants
@@ -75,13 +78,6 @@ class HomeFragment() :
         setupObservers()
         setupToolbar()
         setupGalleryLauncher()
-        setupWelcome()
-    }
-
-    private fun setupWelcome() {
-
-        binding.title.text = context?.getString(R.string.home_welcome_title, Global.user?.displayName)
-        binding.subtitle.text = getFormattedSubtitle()
     }
 
     private fun getFormattedSubtitle(): String{
@@ -131,10 +127,10 @@ class HomeFragment() :
                         for (i in 0 until clipData.itemCount) {
                             uris.add(clipData.getItemAt(i).uri)
                         }
-                        homeViewModel.copyAndNavigateToCrop(requireContext(), uris)
+                        homeViewModel.copyAndNavigateToCrop(uris)
                     }
                     intent.data?.let { uri ->
-                        homeViewModel.copyAndNavigateToCrop(requireContext(), listOf(uri))
+                        homeViewModel.copyAndNavigateToCrop(listOf(uri))
                     }
                 }
             }
@@ -356,7 +352,7 @@ class HomeFragment() :
                     is HomeViewModel.HomeState.HomeAlertDialog -> {
                         DialogsHelper.showAlertDialog(
                             DialogsHelper.getInfoAlertParams(
-                                msg = state.msg
+                                msg = getString(state.msg)
                             ),
                             this,
                             requireActivity(),
@@ -374,6 +370,13 @@ class HomeFragment() :
                         )
                     }
                 }
+            }
+        }
+
+        Global.user.observe(viewLifecycleOwner){
+            it.getContentIfNotHandled()?.let { user->
+                binding.title.text = context?.getString(R.string.home_welcome_title, user.displayName)
+                binding.subtitle.text = getFormattedSubtitle()
             }
         }
         //observe from SyncDataWorker to update view when sync data

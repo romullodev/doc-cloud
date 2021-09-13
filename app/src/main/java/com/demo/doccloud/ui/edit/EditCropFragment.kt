@@ -75,7 +75,7 @@ class EditCropFragment : Fragment() {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     CropImage.getActivityResult(result.data)?.let { cropResult ->
-                        viewModel.updateDocPhoto(cropResult.uri, requireContext())
+                        viewModel.updateDocPhoto(cropResult.uri)
                     }
                 }
             }

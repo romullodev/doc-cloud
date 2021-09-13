@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.demo.doccloud.databinding.PictureItemBinding
-import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.entities.Photo
 
 
 class ThumbnailAdapter(

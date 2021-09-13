@@ -1,4 +1,4 @@
-package com.demo.doccloud.domain
+package com.demo.doccloud.domain.entities
 
 data class SyncStrategy (
     //expiration field  is localed on ../user_database directory on firebase

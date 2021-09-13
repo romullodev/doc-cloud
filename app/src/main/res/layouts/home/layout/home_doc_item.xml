@@ -6,7 +6,7 @@
     <data>
         <variable
             name="doc"
-            type="com.demo.doccloud.domain.Doc" />
+            type="com.demo.doccloud.domain.entities.Doc" />
         <variable
             name="number"
             type="String" />

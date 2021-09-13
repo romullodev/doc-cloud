@@ -1,9 +1,8 @@
 package com.demo.doccloud.data.datasource.local.room
 
 import androidx.room.TypeConverter
-import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.DocStatus
-import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.entities.DocStatus
+import com.demo.doccloud.domain.entities.Photo
 import com.google.gson.Gson
 
 class AppConverters {

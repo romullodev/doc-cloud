@@ -44,7 +44,7 @@
             app:destination="@id/cropFragment" />
         <argument
             android:name="root"
-            app:argType="com.demo.doccloud.domain.BackToRoot" />
+            app:argType="com.demo.doccloud.utils.BackToRoot" />
     </fragment>
     <fragment
         android:id="@+id/cropFragment"
@@ -53,10 +53,10 @@
         tools:layout="@layout/crop_fragment">
         <argument
             android:name="photos"
-            app:argType="com.demo.doccloud.domain.ListPhotoArg" />
+            app:argType="com.demo.doccloud.utils.ListPhotoArg" />
         <argument
             android:name="root"
-            app:argType="com.demo.doccloud.domain.BackToRoot" />
+            app:argType="com.demo.doccloud.utils.BackToRoot" />
     </fragment>
 
     <navigation

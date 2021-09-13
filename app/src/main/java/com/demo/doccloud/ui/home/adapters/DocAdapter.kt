@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.demo.doccloud.databinding.HomeDocItemBinding
-import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.DocStatus
+import com.demo.doccloud.domain.entities.Doc
+import com.demo.doccloud.domain.entities.DocStatus
 import java.util.*
 
 class DocAdapter(

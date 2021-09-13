@@ -11,7 +11,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.demo.doccloud.R
-import com.demo.doccloud.domain.Doc
+import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.ui.home.adapters.DocAdapter
 import com.demo.doccloud.utils.Global
 

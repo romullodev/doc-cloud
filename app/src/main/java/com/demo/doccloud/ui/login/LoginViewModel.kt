@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.domain.Event
+import com.demo.doccloud.domain.usecases.contracts.DoLoginWithGoogle
+import com.demo.doccloud.domain.usecases.contracts.ScheduleToSyncData
+import com.demo.doccloud.utils.Event
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
 import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
@@ -18,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: Repository,
+    private val scheduleToSyncDataUseCase: ScheduleToSyncData,
+    private val doLoginWithGoogleUseCase: DoLoginWithGoogle
 ) : ViewModel(),
     LoadingDialogViewModel {
 
@@ -41,19 +44,17 @@ class LoginViewModel @Inject constructor(
     fun doLoginWithGoogle(data: Intent?){
         showDialog(R.string.loading_dialog_message_login)
         viewModelScope.launch {
-            val result = repository.doLoginWithGoogle(data)
-            when(result.status){
-                Result.Status.SUCCESS -> {
-                    Global.user = result.data
-                    _loginState.value = Event(
-                        LoginState.Authenticated
-                    )
-                }
-                Result.Status.ERROR -> {
-                    _loginState.value = Event(
-                        LoginState.LoginAlertDialog(result.msg!!)
-                    )
-                }
+            try {
+                val user = doLoginWithGoogleUseCase(data)
+                Global.user.value = Event(user)
+                scheduleToSyncDataUseCase()
+                _loginState.value = Event(
+                    LoginState.Authenticated
+                )
+            }catch (e: Exception){
+                _loginState.value = Event(
+                    LoginState.LoginAlertDialog(e.message!!)
+                )
             }
             hideDialog()
         }

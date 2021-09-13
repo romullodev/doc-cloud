@@ -34,8 +34,6 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
     private lateinit var validationFields: Map<String, TextInputLayout>
 
     private val loginViewModel: LoginViewModel by viewModels()
-    //only for sync data when use make login successfully
-    private val homeViewModel: HomeViewModel by activityViewModels()
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -102,7 +100,6 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
             it.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is LoginViewModel.LoginState.Authenticated -> {
-                        homeViewModel.syncData()
                         findNavController().popBackStack()
                     }
                     //notify in case of empty fields

@@ -4,14 +4,15 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.MutableLiveData
 import com.demo.doccloud.R
-import com.demo.doccloud.domain.DocStatus
-import com.demo.doccloud.domain.User
+import com.demo.doccloud.domain.entities.DocStatus
+import com.demo.doccloud.domain.entities.User
 import java.io.File
 
 class Global {
     companion object{
-        var user: User? = null
+        var user = MutableLiveData<Event<User>>()
 
         /** Use external media if it is available, our app's file directory otherwise */
         fun getOutputDirectory(context: Context): File {

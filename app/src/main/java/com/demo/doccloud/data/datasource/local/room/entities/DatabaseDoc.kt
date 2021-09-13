@@ -2,9 +2,9 @@ package com.demo.doccloud.data.datasource.local.room.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.demo.doccloud.domain.Doc
-import com.demo.doccloud.domain.DocStatus
-import com.demo.doccloud.domain.Photo
+import com.demo.doccloud.domain.entities.Doc
+import com.demo.doccloud.domain.entities.DocStatus
+import com.demo.doccloud.domain.entities.Photo
 
 @Entity(tableName = "doc_table")
 data class DatabaseDoc constructor(

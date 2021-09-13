@@ -25,9 +25,9 @@ import com.demo.doccloud.R
 import com.demo.doccloud.ui.edit.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
-import com.demo.doccloud.domain.BackToRoot
-import com.demo.doccloud.domain.Photo
-import com.demo.doccloud.domain.RootDestination
+import com.demo.doccloud.utils.BackToRoot
+import com.demo.doccloud.domain.entities.Photo
+import com.demo.doccloud.utils.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
 import com.demo.doccloud.utils.Global
