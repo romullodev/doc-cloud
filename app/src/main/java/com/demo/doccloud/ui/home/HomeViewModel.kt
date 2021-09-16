@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.domain.usecases.contracts.*
 import com.demo.doccloud.domain.usecases.contracts.GetAllDocs
@@ -71,7 +72,11 @@ class HomeViewModel @Inject constructor(
                 val pdfFile = generateDocPdfUseCase(currDoc!!)
                 _homeState.value = Event(HomeState.SharePdf(pdfFile))
             }catch (e: Exception){
-                Timber.d("failure on  generated pdf. \nDetails: $e")
+                _homeState.value = Event(
+                    HomeState.HomeAlertDialog(
+                        R.string.home_alert_error_generate_pdf
+                    )
+                )
             }
             hideDialog()
         }
@@ -131,7 +136,11 @@ class HomeViewModel @Inject constructor(
                     )
                 )
             }catch (e: Exception){
-                Timber.d(e.toString())
+                _homeState.value = Event(
+                    HomeState.HomeAlertDialog(
+                        R.string.home_alert_error_copy_image_from_gallery
+                    )
+                )
             }
         }
     }
@@ -139,7 +148,8 @@ class HomeViewModel @Inject constructor(
     //verify the user authentication when start the app
     //we're using a sessionManager object to check user authentication
     //start with the home screen instead of login screen  is a concept from google called Conditional Navigation
-    private fun setupInitVariables() {
+    //can not be private for the sake of the tests
+    fun setupInitVariables() {
         viewModelScope.launch {
             try {
                 val user = getUserUseCase()

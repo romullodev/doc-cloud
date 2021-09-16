@@ -74,11 +74,11 @@ class EditFragment : Fragment() {
                         for (i in 0 until clipData.itemCount) {
                             uris.add(clipData.getItemAt(i).uri)
                         }
-                        viewModel.copyAndNavigateToCrop(requireContext(), uris)
+                        viewModel.copyAndNavigateToCrop(uris)
                         return@registerForActivityResult
                     }
                     intent.data?.let { uri ->
-                        viewModel.copyAndNavigateToCrop(requireContext(), listOf(uri))
+                        viewModel.copyAndNavigateToCrop(listOf(uri))
                         return@registerForActivityResult
                     }
                     Timber.d("error on get photo from gallery")

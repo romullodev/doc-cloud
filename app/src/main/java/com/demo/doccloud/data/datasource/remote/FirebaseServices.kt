@@ -89,7 +89,7 @@ class FirebaseServices @Inject constructor(
                 if (e is NetworkErrorException || e is HttpException) {
                     throw Exception(context.getString(R.string.common_no_internet))
                 }
-                throw Exception(context.getString(R.string.login_unknown_error))
+                throw Exception(context.getString(R.string.common_unknown_error))
             }
         }
     }
@@ -237,7 +237,7 @@ class FirebaseServices @Inject constructor(
     }
 
     //trigger from UpdateDocPageWorker
-    override suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo) {
+    override suspend fun updateDocPhotoFirebase(remoteId: Long, photo: Photo) {
         withContext(dispatcher) {
             val userId: String =
                 auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))

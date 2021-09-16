@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.demo.doccloud.R
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
@@ -32,7 +33,7 @@ class CropViewModel @Inject constructor(
 
     sealed class CropState {
         //object SaveDocNameDialog : CropState()
-        class CropAlertDialog(val msg: String) : CropState()
+        class CropAlertDialog(val msg: Int) : CropState()
     }
 
     private val _cropState = MutableLiveData<Event<CropState>>()
@@ -71,7 +72,9 @@ class CropViewModel @Inject constructor(
                 navigateToRoot()
             }catch (e: Exception){
                 _cropState.value = Event(
-                    CropState.CropAlertDialog(e.message!!)
+                    CropState.CropAlertDialog(
+                        R.string.common_unknown_error
+                    )
                 )
             }
         }
@@ -83,7 +86,11 @@ class CropViewModel @Inject constructor(
                 addPhotosUseCase(localId!!, listPhoto.value!!)
                 _navigationCommands.value = Event(NavigationCommand.ToRoot)
             }catch (e: Exception){
-                Timber.d(e.toString())
+                _cropState.value = Event(
+                    CropState.CropAlertDialog(
+                        R.string.common_unknown_error
+                    )
+                )
             }
         }
     }
@@ -122,7 +129,11 @@ class CropViewModel @Inject constructor(
                     ), currCroppedPosition
                 )
             } catch (e: Exception) {
-                Timber.e("an error occurred saving cropped image. Details:\n $e")
+                _cropState.value = Event(
+                    CropState.CropAlertDialog(
+                        R.string.crop_screen_error_on_save_crop
+                    )
+                )
             }
         }
     }

@@ -12,6 +12,7 @@ import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.usecases.contracts.*
 import com.demo.doccloud.ui.dialogs.loading.LoadingDialogViewModel
+import com.demo.doccloud.ui.home.HomeViewModel
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.Event
 import com.demo.doccloud.utils.ListPhotoArg
@@ -35,6 +36,7 @@ class EditViewModel @Inject constructor(
 
     sealed class EditState {
         data class SharePdf(val data: File): EditState()
+        class EditAlertDialog(val msg: Int) : EditState()
     }
 
     private val _editState = MutableLiveData<Event<EditState>>()
@@ -61,7 +63,13 @@ class EditViewModel @Inject constructor(
 
     fun updateNameDoc(localId: Long, remoteId: Long, newName: String) {
         viewModelScope.launch {
-            updatedDocNameUseCase(localId = localId, remoteId = remoteId, newName)
+            try {
+                updatedDocNameUseCase(localId = localId, remoteId = remoteId, newName)
+            }catch (e: Exception){
+                _editState.value = Event(
+                    EditState.EditAlertDialog(R.string.common_unknown_error)
+                )
+            }
         }
     }
 
@@ -84,15 +92,17 @@ class EditViewModel @Inject constructor(
                 val pdfFile = generateDocPdfUseCase(_doc.value!!)
                 _editState.value = Event(EditState.SharePdf(pdfFile))
             }catch (e: Exception){
-                Timber.d("failure on  generated pdf. \nDetails: $e")
+                _editState.value = Event(
+                    EditState.EditAlertDialog(
+                        R.string.home_alert_error_generate_pdf
+                    )
+                )
             }
             hideDialog()
         }
     }
 
-    //https://stackoverflow.com/questions/57093479/get-real-path-from-uri-data-is-deprecated-in-android-q
-    //same function define on HomeViewModel
-    fun copyAndNavigateToCrop(context: Context, uris: List<Uri?>) {
+    fun copyAndNavigateToCrop(uris: List<Uri?>) {
         viewModelScope.launch {
             try{
                 val photos = ArrayList<Photo>()
@@ -111,11 +121,15 @@ class EditViewModel @Inject constructor(
                         root = BackToRoot(
                             rootDestination = RootDestination.EDIT_DESTINATION,
                             localId = doc.value?.localId
-                        ),
+                        )
                     )
                 )
             }catch (e:Exception){
-                Timber.i(e.toString())
+                _editState.value = Event(
+                    EditState.EditAlertDialog(
+                        R.string.home_alert_error_copy_image_from_gallery
+                    )
+                )
             }
         }
     }
@@ -129,7 +143,11 @@ class EditViewModel @Inject constructor(
             try {
                 deleteDocPhotoUseCase(localId = doc.value?.localId!!, photo = selectedPhoto.value!!)
             }catch (e: Exception){
-                Timber.d(e.toString())
+                _editState.value = Event(
+                    EditState.EditAlertDialog(
+                        R.string.common_unknown_error
+                    )
+                )
             }
         }
     }
@@ -155,7 +173,9 @@ class EditViewModel @Inject constructor(
                     photo = selectedPhoto.value!!
                 )
             }catch (e: Exception){
-                Timber.e("an error updateDocPhoto. Details:\n $e")
+                _editState.value = Event(
+                    EditState.EditAlertDialog(R.string.common_unknown_error)
+                )
             }
         }
     }

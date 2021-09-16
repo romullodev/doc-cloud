@@ -35,6 +35,6 @@ interface Repository {
     suspend fun insertDocs(docs: List<Doc>)
     suspend fun clearDocs()
     suspend fun updateRemoteDocName(remoteId: Long, name: String)
-    suspend fun updateRemoteDocPhotos(remoteId: Long, photo: Photo)
+    suspend fun updateRemoteDocPhoto(remoteId: Long, photo: Photo)
     suspend fun uploadDoc(doc: Doc)
 }

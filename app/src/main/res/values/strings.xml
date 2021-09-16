@@ -24,13 +24,13 @@
     <string name="login_input_password_error">Insira sua senha</string>
     <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
     <string name="login_error_api_google">Houve um erro com o Google. Tente novamente!</string>
-    <string name="login_unknown_error">Houve um erro. Tente novamente!</string>
     <string name="login_revokeAccess">Erro ao revogar acesso do google durante o logout</string>
 
     <!-- Common -->
     <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>
     <string name="common_delete_label">Excluir</string>
     <string name="common_user_not_logged_in">O usuário não está logado</string>
+    <string name="common_unknown_error">Ocorreu um erro desconhecido. Tente novamente</string>
 
     <!-- Home Screen -->
     <string name="home_menu_logout">Sair</string>
@@ -70,6 +70,8 @@
     <string name="home_week_friday">Sexta-Feira</string>
     <string name="home_week_saturday">Sábado</string>
     <string name="home_welcome_subtitle">%1$s, %2$s de %3$s</string>
+    <string name="home_alert_error_generate_pdf">Erro ao gerar PDF. Tente novamente.</string>
+    <string name="home_alert_error_copy_image_from_gallery">Um erro ocorreu com sua galeria. Tente novamente.</string>
 
     <!-- Crop Screen -->
     <string name="crop_screen_title">Recortar</string>
@@ -80,6 +82,7 @@
     <string name="crop_screen_dialog_hint">Nome</string>
     <string name="crop_screen_cancel_btn">Cancelar</string>
     <string name="crop_screen_save_btn">Salvar</string>
+    <string name="crop_screen_error_on_save_crop">Erro ao recortar imagem. Tente novamente</string>
 
     <!-- Edit Screen -->
     <string name="edit_screen_rename_doc_dialog">Renomear para</string>

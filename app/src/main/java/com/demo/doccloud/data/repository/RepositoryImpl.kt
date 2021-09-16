@@ -138,8 +138,8 @@ class RepositoryImpl @Inject constructor(
     override suspend fun updateRemoteDocName(remoteId: Long, name: String) =
         remoteDatasource.updateDocNameFirebase(remoteId, name)
 
-    override suspend fun updateRemoteDocPhotos(remoteId: Long, photo: Photo) =
-        remoteDatasource.updateDocPhotosFirebase(remoteId, photo)
+    override suspend fun updateRemoteDocPhoto(remoteId: Long, photo: Photo) =
+        remoteDatasource.updateDocPhotoFirebase(remoteId, photo)
 
     override suspend fun uploadDoc(doc: Doc) =
         remoteDatasource.uploadDocFirebase(doc)

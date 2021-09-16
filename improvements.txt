@@ -1,16 +1,11 @@
-- remove dispatcher from datasources
-
 - implement alert dialog to generate pdf file
     option 1: generate file
     option 2: generate link
     in case of option 2, inform that this link has a limit time
 
-- implement use cases
-    - improve feedback of usecases
+- improve feedback of usecases
 
 - reduce size of the generated pdfs
-
-- improve return types of Result class
 
 - load a failure image on gallery in case of error
 
@@ -18,13 +13,9 @@
 
 - analyze photo format when sync data
 
-- remove all try catch from viewModels
-
 - track progress when sync data
 
 - analyze use of singleton on DI
-
-    - refactor life cycle of use cases
 
 - change SharedPreference to DataStore
 

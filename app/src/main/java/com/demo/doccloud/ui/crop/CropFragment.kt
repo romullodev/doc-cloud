@@ -144,7 +144,7 @@ class CropFragment() : Fragment() {
                 when (state) {
                     is CropViewModel.CropState.CropAlertDialog -> {
                         DialogsHelper.showAlertDialog(
-                            DialogsHelper.getInfoAlertParams(msg = state.msg),
+                            DialogsHelper.getInfoAlertParams(msg = getString(state.msg)),
                             object : AppAlertDialog.DialogMaterialListener {
                                 override fun onDialogPositiveClick(dialog: DialogFragment) {
                                     dialog.dismiss()

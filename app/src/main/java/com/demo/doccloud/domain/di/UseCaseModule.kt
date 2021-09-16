@@ -42,7 +42,7 @@ abstract class UseCaseForWorkManagerModule{
     abstract fun bindUpdateRemoteDocNameUseCase(updateRemoteDocName: UpdateRemoteDocNameImpl): UpdateRemoteDocName
 
     @Binds
-    abstract fun bindUpdateRemoteDocPhotosUseCase(updateRemoteDocPhotos: UpdateRemoteDocPhotosImpl): UpdateRemoteDocPhotos
+    abstract fun bindUpdateRemoteDocPhotoUseCase(updateRemoteDocPhoto: UpdateRemoteDocPhotoImpl): UpdateRemoteDocPhoto
 
     @Binds
     abstract fun bindUploadDocUseCase(uploadDoc: UploadDocImpl): UploadDoc

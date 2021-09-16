@@ -9,7 +9,7 @@ import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.usecases.contracts.GetDocById
 import com.demo.doccloud.domain.usecases.contracts.UpdateLocalDoc
-import com.demo.doccloud.domain.usecases.contracts.UpdateRemoteDocPhotos
+import com.demo.doccloud.domain.usecases.contracts.UpdateRemoteDocPhoto
 import com.demo.doccloud.utils.AppConstants
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -24,7 +24,7 @@ class UpdateDocPageWorker @AssistedInject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val getDocById: GetDocById,
     private val updateLocalDocUseCase: UpdateLocalDoc,
-    private val updateRemoteDocPhotosUseCase: UpdateRemoteDocPhotos
+    private val updateRemoteDocPhotosUseCase: UpdateRemoteDocPhoto
 ) :
     CoroutineWorker(appContext, workerParams) {
 

@@ -14,7 +14,7 @@ interface RemoteDataSource {
     suspend fun uploadDocFirebase(doc: Doc)
     suspend fun deleteDocFirebase(remoteId: Long, pages: List<Photo>)
     suspend fun updateDocNameFirebase(remoteId: Long, name: String)
-    suspend fun updateDocPhotosFirebase(remoteId: Long, photo: Photo)
+    suspend fun updateDocPhotoFirebase(remoteId: Long, photo: Photo)
     suspend fun deleteDocPhotosFirebase(remoteId: Long, photo: Photo, jsonPages: String)
     suspend fun syncData(customId: Long): List<Doc>
     suspend fun getSyncStrategy() : SyncStrategy
