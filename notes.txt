@@ -1,0 +1,24 @@
+general notes:
+
+1 - FakeRepository é utilizado para testes locais (com roboletric) e instrumentados
+
+androidTest notes:
+
+1 - nas tarefas assincronas dentro do FakeRepository (using delay do simulate this scenario), é utilizado IdlingResource para que os testes
+aguardem (quando conveniente) as tarefas em background
+
+2 - quando uma certa lógica precisa ser verificada (que não está relacionada aos componentes de visualização da tela), o método onIdle 
+é utilizado para aguardar a finalização da tarefa em background
+
+3 - Os casos de uso, bem como repositório e demais dependencias são injetados automaticamente pelo Hilt
+
+
+localTest notes:
+
+1 - cada teste utiliza a Rule mainCoroutinesRule, com a extension runBlockingTest
+
+2 - quando a suspend function delay é utilizada dentro do FakeRepository, o teste excecuta infinitamente
+
+3 - é utilizada uma flag para não utilizar a função delay dentro do FakeRepository
+
+4 - a injeção de dependência é feita manualmente

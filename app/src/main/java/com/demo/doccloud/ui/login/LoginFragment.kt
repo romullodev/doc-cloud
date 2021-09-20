@@ -60,6 +60,8 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
         }
     }
 
+    fun getViewModel() = loginViewModel
+
     private fun setupGoogleLogin() {
         loginGoogleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             loginViewModel.doLoginWithGoogle(it.data)

@@ -12,6 +12,7 @@ class AppConstants {
 
         const val IMMERSIVE_FLAG_TIMEOUT = 500L
         const val TIMESTAMP_FORMAT_BR = "dd-MM-yyyy HH:mm:ss:SSS"
+        const val INTENT_PDF_TYPE = "application/pdf"
 
         // Milliseconds used for UI animations
         const val ANIMATION_FAST_MILLIS = 50L

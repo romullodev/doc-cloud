@@ -1,23 +1,26 @@
-package com.demo.doccloud.data.repository
+package com.demo.doccloud
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.demo.doccloud.R
+import com.demo.doccloud.data.repository.Repository
+import com.demo.doccloud.di.IoDispatcher
+import com.demo.doccloud.di.MainDispatcher
 import com.demo.doccloud.domain.entities.*
-import com.demo.doccloud.utils.Result
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import java.io.File
+import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FakeRepository @Inject constructor(
     @ApplicationContext private val context: Context,
+    @MainDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : Repository {
+
+    val localDocs =  ArrayList<Doc>()
 
     private var hasDelay = false
     private var shouldThrowNetworkingException = false
@@ -28,7 +31,7 @@ class FakeRepository @Inject constructor(
     private var shouldThrowExceptionWhenDeleteLocalDoc = false
 
     private var shouldReturnErrorOnLogout = false
-    private var delayDuration = 0L
+    private val delayDuration = 2000L
 
     fun setShouldThrowNetworkingException(value: Boolean) {
         this.shouldThrowNetworkingException = value
@@ -53,30 +56,54 @@ class FakeRepository @Inject constructor(
         this.shouldReturnErrorOnLogout = value
     }
 
-    fun setHasDelay(value: Boolean, duration: Long) {
-        this.hasDelay = true
-        this.delayDuration = duration
+    fun setHasDelay(value: Boolean) {
+        this.hasDelay = value
     }
 
     override val docs: LiveData<List<Doc>>
-        get() = MutableLiveData(listOf())
-
-    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long) = runBlocking {
-        if(shouldThrowNetworkingException){
-            throw Exception(context.getString(R.string.common_no_internet))
-        }
-        if(shouldThrowApiException){
-            throw Exception(context.getString(R.string.login_error_api_google))
-        }
-        if(shouldThrowUserWithNoIdException){
-            throw Exception(context.getString(R.string.login_user_with_no_id))
-        }
-        if(shouldThrowUnknownException){
-            throw Exception(context.getString(R.string.common_unknown_error))
+        get() = if(localDocs.isEmpty()) {
+            localDocs.addAll(listOf(
+                fakeDoc.copy(localId = 1, name = "doc 1"),
+                fakeDoc.copy(localId = 2, name = "doc 2"))
+            )
+            MutableLiveData(localDocs)
+        } else{
+            MutableLiveData(localDocs)
         }
 
-        return@runBlocking User("any", "any")
+    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): User{
+        return wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource withContext(dispatcher) {
+                //idlingResourceBooleanVersion.setIdleState(false)
+                if (shouldThrowNetworkingException) {
+                    throw Exception(context.getString(R.string.common_no_internet))
+                }
+                if (shouldThrowApiException) {
+                    throw Exception(context.getString(R.string.login_error_api_google))
+                }
+                if (shouldThrowUserWithNoIdException) {
+                    throw Exception(context.getString(R.string.login_user_with_no_id))
+                }
+                if (shouldThrowUnknownException) {
+                    throw Exception(context.getString(R.string.common_unknown_error))
+                }
+                if(hasDelay)
+                    delay(2000L)
+                return@withContext User("any", "any")
+            }
+        }
+        //idlingResourceBooleanVersion.setIdleState(true)
+    }
 
+    override suspend fun doLogout(){
+        wrapEspressoIdlingResource {
+            withContext(dispatcher) {
+                if(hasDelay)
+                    delay(2000L)
+            }
+
+        }
+        //do nothing
     }
 
 //    override suspend fun doLoginWithGoogle(data: Intent?) = runBlocking {
@@ -107,10 +134,6 @@ class FakeRepository @Inject constructor(
 //        return@runBlocking Result.success(User("any", "any"))
 //    }
 
-    override suspend fun doLogout() = runBlocking {
-        //do nothing
-    }
-
     override suspend fun saveDoc(doc: Doc) = runBlocking {
         if(shouldThrowUnknownException){
             throw Exception()
@@ -118,11 +141,13 @@ class FakeRepository @Inject constructor(
         return@runBlocking -1L
     }
 
-    override suspend fun deleteDoc(doc: Doc) = runBlocking {
-        if(shouldThrowExceptionWhenDeleteLocalDoc){
-            throw Exception()
+    override suspend fun deleteDoc(doc: Doc) {
+        runBlocking {
+            if(shouldThrowExceptionWhenDeleteLocalDoc){
+                throw Exception()
+            }
+            localDocs.remove(doc)
         }
-        //do nothing
     }
 
     override suspend fun getDoc(id: Long) = runBlocking {
@@ -222,11 +247,11 @@ class FakeRepository @Inject constructor(
         val fakeDoc = Doc(
             remoteId = -1L,
             name = "any name",
-            date = "",
+            date = "18/09/2021",
             pages = listOf(),
             status = DocStatus.NOT_SENT,
         )
+        val idlingResourceBooleanVersion = IdlingResourceBooleanVersion()
     }
-
 
 }

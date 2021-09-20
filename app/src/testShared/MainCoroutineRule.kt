@@ -1,4 +1,5 @@
-package com.demo.doccloud.domain.usecases.impl
+package com.demo.doccloud
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -9,7 +10,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 @ExperimentalCoroutinesApi
-class MainCoroutineRuleInstrumentation(private val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()):
+class MainCoroutineRule(private val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()):
     TestWatcher(),
     TestCoroutineScope by TestCoroutineScope(dispatcher) {
     override fun starting(description: Description?) {

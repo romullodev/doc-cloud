@@ -3,18 +3,15 @@ package com.demo.doccloud.ui.edit
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import com.demo.doccloud.GlobalVariablesTest
-import com.demo.doccloud.MainCoroutineRule
-import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.FakeRepository
+import com.demo.doccloud.*
+import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.usecases.impl.*
-import com.demo.doccloud.getOrAwaitValue
-import com.demo.doccloud.fakes.*
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.ListPhotoArg
 import com.demo.doccloud.utils.RootDestination
 import com.google.common.truth.Truth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
@@ -41,7 +38,7 @@ class EditViewModelTest {
         repository = FakeRepository(context)
 
         val copyFileUseCase = FakeCopyFileImpl()
-        val generateDocPdfUseCase = FakeGenerateDocPdfImpl()
+        val generateDocPdfUseCase = FakeGenerateDocPdfImpl(Dispatchers.Main, context)
         val getDocByIdUseCase = GetDocByIdImpl(repository)
 
         val fakeScheduleToUpdateRemoteDocName = FakeScheduleToUpdateRemoteDocNameImpl()

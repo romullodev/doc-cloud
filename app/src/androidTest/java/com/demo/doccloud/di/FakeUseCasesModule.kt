@@ -1,26 +1,49 @@
-package com.demo.doccloud.domain.di
+package com.demo.doccloud.di
 
+import com.demo.doccloud.*
+import com.demo.doccloud.domain.di.UseCaseModule
 import com.demo.doccloud.domain.usecases.contracts.*
 import com.demo.doccloud.domain.usecases.impl.*
 import dagger.Binds
 import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.testing.TestInstallIn
 
+//not all use cases are fake. only those ones that is needed
+@TestInstallIn(
+    components = [ViewModelComponent::class],
+    replaces = [UseCaseModule::class]
+)
 @Module
-@InstallIn(ViewModelComponent::class)
-abstract class UseCaseModule {
+abstract class FakeUseCaseModule {
 
     @Binds
-    abstract fun bindCopyFileUseCase(copyFile: CopyFileImpl): CopyFile
+    abstract fun bindCopyFileUseCase(copyFile: FakeCopyFileImpl): CopyFile
 
     @Binds
-    abstract fun bindGenerateDocPdfUseCase(generateDocPdf: GenerateDocPdfImpl): GenerateDocPdf
+    abstract fun bindGenerateDocPdfUseCase(generateDocPdf: FakeGenerateDocPdfImpl): GenerateDocPdf
 
     //used inside UpdatedDocName
     @Binds
-    abstract fun bindScheduleToUpdateDocNameUseCase(schedule: ScheduleToUpdateRemoteDocNameImpl): ScheduleToUpdateRemoteDocName
+    abstract fun bindScheduleToUpdateDocNameUseCase(schedule: FakeScheduleToUpdateRemoteDocNameImpl): ScheduleToUpdateRemoteDocName
+
+    @Binds
+    abstract fun bindScheduleToDeleteRemoteDocPhotoUseCase(schedule: FakeScheduleToDeleteRemoteDocPhotoImpl): ScheduleToDeleteRemoteDocPhoto
+
+    @Binds
+    abstract fun bindScheduleToUpdateRemoteDocPhotoUseCase(schedule: FakeScheduleToUpdateRemoteDocPhotoImpl): ScheduleToUpdateRemoteDocPhoto
+
+    @Binds
+    abstract fun bindScheduleToSyncDataUseCase(schedule: FakeScheduleToSyncDataImpl): ScheduleToSyncData
+
+    @Binds
+    abstract fun bindScheduleToDeleteRemoteDocUseCase(deleteLocalDoc: FakeScheduleToDeleteRemoteDocImpl): ScheduleToDeleteRemoteDoc
+
+    @Binds
+    abstract fun bindScheduleToAddRemoteDocPhotosUseCase(schedule: FakeScheduleToAddRemoteDocPhotosImpl): ScheduleToAddRemoteDocPhotos
+
+    @Binds
+    abstract fun bindScheduleToSaveRemoteDocUseCase(schedule: FakeScheduleToSaveRemoteDocImpl): ScheduleToSaveRemoteDoc
 
     //used inside UpdatedDocName
     @Binds
@@ -33,13 +56,7 @@ abstract class UseCaseModule {
     abstract fun bindDeleteLocalDocPhotoUseCase(updatedDocNameImpl: DeleteLocalDocPhotoImpl): DeleteLocalDocPhoto
 
     @Binds
-    abstract fun bindScheduleToDeleteRemoteDocPhotoUseCase(schedule: ScheduleToDeleteRemoteDocPhotoImpl): ScheduleToDeleteRemoteDocPhoto
-
-    @Binds
     abstract fun bindUpdateLocalDocPhotoUseCase(updateLocalDocPhoto: UpdateLocalDocPhotoImpl): UpdateLocalDocPhoto
-
-    @Binds
-    abstract fun bindScheduleToUpdateRemoteDocPhotoUseCase(schedule: ScheduleToUpdateRemoteDocPhotoImpl): ScheduleToUpdateRemoteDocPhoto
 
     @Binds
     abstract fun bindUpdateDocPhotoUseCase(updateDocPhoto: UpdateDocPhotoImpl): UpdateDocPhoto
@@ -54,16 +71,11 @@ abstract class UseCaseModule {
     abstract fun bindDeleteLocalDocUseCase(deleteLocalDoc: DeleteLocalDocImpl): DeleteLocalDoc
 
     @Binds
-    abstract fun bindScheduleToDeleteRemoteDocUseCase(deleteLocalDoc: ScheduleToDeleteRemoteDocImpl): ScheduleToDeleteRemoteDoc
-
-    @Binds
     abstract fun bindDeleteDocUseCase(deleteDoc: DeleteDocImpl): DeleteDoc
 
     @Binds
     abstract fun bindGetUserUseCase(getUser: GetUserImpl): GetUser
 
-    @Binds
-    abstract fun bindScheduleToSyncDataUseCase(schedule: ScheduleToSyncDataImpl): ScheduleToSyncData
 
     @Binds
     abstract fun bindGetAllDocsUseCase(getAllDocs: GetAllDocsImpl): GetAllDocs
@@ -78,15 +90,9 @@ abstract class UseCaseModule {
     abstract fun bindAddPhotosToLocalDocUseCase(addPhotosToLocalDoc: AddPhotosToLocalDocImpl): AddPhotosToLocalDoc
 
     @Binds
-    abstract fun bindScheduleToAddRemoteDocPhotosUseCase(schedule: ScheduleToAddRemoteDocPhotosImpl): ScheduleToAddRemoteDocPhotos
-
-    @Binds
     abstract fun bindAddPhotosUseCase(addPhotos: AddPhotosImpl): AddPhotos
 
     @Binds
     abstract fun bindSaveDocImplUseCase(saveDocImpl: SaveDocImpl): SaveDoc
-
-    @Binds
-    abstract fun bindScheduleToSaveRemoteDocUseCase(schedule: ScheduleToSaveRemoteDocImpl): ScheduleToSaveRemoteDoc
 
 }

@@ -57,8 +57,8 @@ class Global {
             shareIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             //Write Permission might not be necessary
             shareIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            shareIntent.type = "application/pdf"
-            act.startActivity(Intent.createChooser(shareIntent, "Compartilhar com"))
+            shareIntent.type = AppConstants.INTENT_PDF_TYPE
+            act.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.common_share_with)))
         }
     }
 }

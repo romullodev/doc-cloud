@@ -72,6 +72,7 @@ class HomeViewModel @Inject constructor(
                 val pdfFile = generateDocPdfUseCase(currDoc!!)
                 _homeState.value = Event(HomeState.SharePdf(pdfFile))
             }catch (e: Exception){
+                Timber.d(e.printStackTrace().toString())
                 _homeState.value = Event(
                     HomeState.HomeAlertDialog(
                         R.string.home_alert_error_generate_pdf

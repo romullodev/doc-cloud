@@ -24,3 +24,13 @@ https://github.com/sriharsha1507/lifecycle_service_demo_yt
 Share pdf document file
 https://stackoverflow.com/questions/55978638/android-pdf-not-accepted-when-sending-as-intent-action-send
 
+share directory with test and androidTest
+https://stackoverflow.com/questions/39519347/share-test-classes-between-test-and-androidtest
+
+inject viewModel (hilt) on local and android tests
+https://stackoverflow.com/questions/63544502/hilt-viewmodel-injection-into-instrumentation-tests
+
+test intents
+https://imasters.com.br/android/espresso-intents-nao-e-magia-e-tecnologia
+https://www.youtube.com/watch?v=CpQQ6-vo5bw
+https://developer.android.com/training/testing/espresso/intents
