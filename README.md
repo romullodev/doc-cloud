@@ -25,11 +25,11 @@ Este aplicativo foi desenvolido utilizando o padrão de design Model-View-ViewMo
 ## Screeshots
 
 <p align="center">
-  <img width="320" height="568" src=img/LoginScreen.jpeg>
+  <img width="320" height="568" src=img/LoginPage.jpeg>
 </p>
 
 <p align="center">
-  <img width="320" height="568" src=img/LoginScreenLoading.jpeg>
+  <img width="320" height="568" src=img/LoginLoadingScreen.jpeg>
 </p>
 
 <p align="center">
@@ -37,17 +37,37 @@ Este aplicativo foi desenvolido utilizando o padrão de design Model-View-ViewMo
 </p>
 
 <p align="center">
-  <img width="320" height="568" src=img/HomeScreenDate.jpeg>
+  <img width="320" height="568" src=img/CameraGalleryDialog.jpeg>
 </p>
 
 <p align="center">
-  <img width="320" height="568" src=img/HomeScreenCode.jpeg>
+  <img width="320" height="568" src=img/CameraScreen.jpeg>
 </p>
 
 <p align="center">
-  <img width="320" height="568" src=img/LoadScreen.jpeg>
+  <img width="320" height="568" src=img/CropPage.jpeg>
 </p>
 
 <p align="center">
-  <img width="320" height="568" src=img/OrderScreen.jpeg>
+  <img width="320" height="568" src=img/CroppingPage.jpeg>
+</p>
+
+<p align="center">
+  <img width="320" height="568" src=img/SaveDocNameDialog.jpeg>
+</p>
+
+<p align="center">
+  <img width="320" height="568" src=img/SearchDocName.jpeg>
+</p>
+
+<p align="center">
+  <img width="320" height="568" src=img/ShareEditMenu.jpeg>
+</p>
+
+<p align="center">
+  <img width="320" height="568" src=img/EditScreen.jpeg>
+</p>
+
+<p align="center">
+  <img width="320" height="568" src=img/PageDocScreen.jpeg>
 </p>
