@@ -80,8 +80,6 @@ class HomeFragment() :
         setupGalleryLauncher()
     }
 
-    fun getViewModel() = this.homeViewModel
-
     private fun getFormattedSubtitle(): String{
         val now = Calendar.getInstance()
         val dayOfWeek = getDayOfWeek(now[Calendar.DAY_OF_WEEK])

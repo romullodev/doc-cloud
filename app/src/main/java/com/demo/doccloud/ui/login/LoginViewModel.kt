@@ -103,7 +103,6 @@ class LoginViewModel @Inject constructor(
         _isDialogVisible.value = true
     }
 
-
     override fun hideDialog() {
         _isDialogVisible.value = false
     }

@@ -106,4 +106,10 @@
     <string name="alert_dialog_question_delete_tittle">Excluir</string>
     <string name="alert_dialog_question_delete_msg">Deseja realmente excluir?</string>
 
+    <!-- SignUp Dialogs -->
+    <string name="signup_field_invalid_name">Insira um nome válido</string>
+    <string name="signup_field_invalid_email">Insira um email válido</string>
+    <string name="signup_field_invalid_password">Insira números e letras com no mínimo 6 caracteres</string>
+    <string name="signup_field_invalid_confirm_password">Senha diferente da informada</string>
+
 </resources>

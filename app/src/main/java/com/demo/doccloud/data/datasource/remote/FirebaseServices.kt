@@ -9,6 +9,7 @@ import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.*
 import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOC_NAME_KEY
@@ -89,6 +90,7 @@ class FirebaseServices @Inject constructor(
                 if (e is NetworkErrorException || e is HttpException) {
                     throw Exception(context.getString(R.string.common_no_internet))
                 }
+                Timber.d(e.toString())
                 throw Exception(context.getString(R.string.common_unknown_error))
             }
         }
@@ -429,13 +431,14 @@ class FirebaseServices @Inject constructor(
 
                 //expiration is localed on app level directory on firebase
                 val expiration =
-                    expirationDataSnapshot.child(DATABASE_APP_LEVEL_EXPIRATION_KEY).value.toString()
+                    expirationDataSnapshot.child("$DATABASE_APP_LEVEL_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXPIRATION_KEY").value.toString()
                 return@withContext SyncStrategy(
                     expiration = expiration.toLong(),
                     lastUpdated = lastUpdated.toLong(),
                     customId = customId.toLong()
                 )
             } catch (e: Exception) {
+                Timber.d(e.printStackTrace().toString())
                 throw e
             }
         }

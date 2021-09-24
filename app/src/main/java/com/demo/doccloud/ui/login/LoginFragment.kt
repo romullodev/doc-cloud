@@ -16,7 +16,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.databinding.FragmentLoginBinding
+import com.demo.doccloud.domain.entities.SignUpParams
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
+import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
+import com.demo.doccloud.ui.dialogs.signup.SignUpDialog
 import com.demo.doccloud.ui.home.HomeViewModel
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.DialogsHelper
@@ -60,8 +63,6 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
         }
     }
 
-    fun getViewModel() = loginViewModel
-
     private fun setupGoogleLogin() {
         loginGoogleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             loginViewModel.doLoginWithGoogle(it.data)
@@ -93,6 +94,20 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
 
             val googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
             loginGoogleLauncher.launch(googleSignInClient.signInIntent)
+        }
+
+        binding.textViewLoginRegistration.setOnClickListener {
+            val materialDialog = SignUpDialog.newInstance(
+                object :  SignUpDialog.SignUpDialogListener {
+                    override fun onSignUpClick(params: SignUpParams, dialog: DialogFragment) {
+                        TODO("Not yet implemented")
+                    }
+                }
+            )
+            materialDialog.show(
+                requireActivity().supportFragmentManager,
+                null
+            )
         }
     }
 
