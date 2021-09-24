@@ -3,18 +3,15 @@ package com.demo.doccloud.ui.edit
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import com.demo.doccloud.GlobalVariablesTest
-import com.demo.doccloud.MainCoroutineRule
-import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.FakeRepository
+import com.demo.doccloud.*
+import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.usecases.impl.*
-import com.demo.doccloud.getOrAwaitValue
-import com.demo.doccloud.fakes.*
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.ListPhotoArg
 import com.demo.doccloud.utils.RootDestination
 import com.google.common.truth.Truth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
@@ -41,7 +38,7 @@ class EditViewModelTest {
         repository = FakeRepository(context)
 
         val copyFileUseCase = FakeCopyFileImpl()
-        val generateDocPdfUseCase = FakeGenerateDocPdfImpl()
+        val generateDocPdfUseCase = FakeGenerateDocPdfImpl(Dispatchers.Main, context)
         val getDocByIdUseCase = GetDocByIdImpl(repository)
 
         val fakeScheduleToUpdateRemoteDocName = FakeScheduleToUpdateRemoteDocNameImpl()
@@ -56,7 +53,7 @@ class EditViewModelTest {
         val fakeScheduleToUpdateRemoteDocPhoto = FakeScheduleToUpdateRemoteDocPhotoImpl()
         val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, fakeScheduleToUpdateRemoteDocPhoto)
 
-        doc = FakeRepository.fakeDoc
+        doc = FakeRepository.fakeDoc.copy(localId = 1)
         editViewModel = EditViewModel(
             copyFileUseCase,
             generateDocPdfUseCase,
@@ -66,12 +63,13 @@ class EditViewModelTest {
             updateDocPhoto
         )
         //this method is execute on onResume state of the fragment
-        editViewModel.getDocById(id = -1L)
+        editViewModel.getDocById(id = 1L)
     }
 
     @After
     fun teardown(){
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test
@@ -82,7 +80,7 @@ class EditViewModelTest {
     @Test
     fun `throw exception when update doc name`(){
         repository.setShouldThrowUnknownException(true)
-        editViewModel.updateNameDoc(localId = -1L, remoteId = -1L, newName = "any")
+        editViewModel.updateNameDoc(localId = 1L, remoteId = -1L, newName = "any")
         val value = editViewModel.editState.getOrAwaitValue()
         Truth.assertThat((value.getContentIfNotHandled() as EditViewModel.EditState.EditAlertDialog).msg).isEqualTo(
             R.string.common_unknown_error
@@ -112,6 +110,7 @@ class EditViewModelTest {
         )
     }
 
+
     @Test
     fun `copy and navigate to CropFragment with success`(){
         editViewModel.copyAndNavigateToCrop(listOf())
@@ -126,6 +125,7 @@ class EditViewModelTest {
             )
         )
     }
+
     @Test
     fun `throw exception when copy and navigate to CropFragment`(){
         GlobalVariablesTest.shouldThrowException = true

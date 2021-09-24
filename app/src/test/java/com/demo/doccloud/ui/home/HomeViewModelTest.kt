@@ -3,19 +3,16 @@ package com.demo.doccloud.ui.home
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import com.demo.doccloud.GlobalVariablesTest
-import com.demo.doccloud.MainCoroutineRule
-import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.FakeRepository
+import com.demo.doccloud.*
+import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.usecases.impl.*
-import com.demo.doccloud.getOrAwaitValue
-import com.demo.doccloud.fakes.*
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.ListPhotoArg
 import com.demo.doccloud.utils.RootDestination
 import com.google.common.truth.Truth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
@@ -44,7 +41,7 @@ class HomeViewModelTest{
 
         //val copyFileUseCase = CopyFileImpl(context, Dispatchers.Main)
         val copyFileUseCase = FakeCopyFileImpl()
-        val fakeGenerateDocPdfUseCase = FakeGenerateDocPdfImpl()
+        val fakeGenerateDocPdfUseCase = FakeGenerateDocPdfImpl(Dispatchers.Main, context)
         val doLogoutUseCase = DoLogoutImpl(repository)
         val fakeScheduleToDeleteRemoteDoc = FakeScheduleToDeleteRemoteDocImpl()
         val deleteLocalDoc = DeleteLocalDocImpl(repository)
@@ -74,7 +71,8 @@ class HomeViewModelTest{
 
     @After
     fun teardown(){
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test
@@ -129,7 +127,7 @@ class HomeViewModelTest{
     }
 
     @Test
-    fun `copy and navigate do Crop Fragment`() = mainCoroutineRule.runBlockingTest{
+    fun `copy and navigate to Crop Fragment`() = mainCoroutineRule.runBlockingTest{
         homeViewModel.copyAndNavigateToCrop(listOf())
         val value = homeViewModel.navigationCommands.getOrAwaitValue()
         Truth.assertThat((value.getContentIfNotHandled() as HomeViewModel.NavigationCommand.To).directions).isEqualTo(

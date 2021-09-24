@@ -1,10 +1,14 @@
-package com.demo.doccloud.di
+package com.demo.doccloud.data.datasource.di
 
 import android.content.Context
 import androidx.room.Room
+import com.demo.doccloud.data.datasource.local.AppLocalServices
+import com.demo.doccloud.data.datasource.local.LocalDataSource
+import com.demo.doccloud.data.datasource.local.persist.PersistSimpleData
+import com.demo.doccloud.data.datasource.local.persist.SharedPreferenceImpl
 import com.demo.doccloud.data.datasource.local.room.AppDatabase
-import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.data.repository.RepositoryImpl
+import com.demo.doccloud.data.datasource.remote.FirebaseServices
+import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -14,14 +18,27 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import javax.inject.Qualifier
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ProvidesModule {
+abstract class DatasourceModule {
+
+    @Binds
+    abstract fun bindRemoteDataSource(remoteDatasource: FirebaseServices): RemoteDataSource
+
+    @Binds
+    abstract fun bindPersistSimpleData(persistSimpleData: SharedPreferenceImpl): PersistSimpleData
+
+    @Binds
+    abstract fun bindLocalDataSource(localDataSource: AppLocalServices): LocalDataSource
+}
+
+//provides outside implementations for this module
+@Module
+@InstallIn(SingletonComponent::class)
+object HelperDatasourceModule {
 
     @Singleton
     @Provides
@@ -42,28 +59,4 @@ object ProvidesModule {
 
     @Provides
     fun providesFirebaseDatabase() = FirebaseDatabase.getInstance()
-
-    @DefaultDispatcher
-    @Provides
-    fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
-
-    @IoDispatcher
-    @Provides
-    fun providesIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
-
-    @MainDispatcher
-    @Provides
-    fun providesMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 }
-
-@Retention(AnnotationRetention.BINARY)
-@Qualifier
-annotation class IoDispatcher
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class MainDispatcher
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class DefaultDispatcher

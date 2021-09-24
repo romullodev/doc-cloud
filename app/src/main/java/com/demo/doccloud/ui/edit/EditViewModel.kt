@@ -39,9 +39,17 @@ class EditViewModel @Inject constructor(
         class EditAlertDialog(val msg: Int) : EditState()
     }
 
+    sealed class CropState {
+        class CropAlertDialog(val msg: Int) : CropState()
+    }
+
     private val _editState = MutableLiveData<Event<EditState>>()
     val editState: LiveData<Event<EditState>>
         get() = _editState
+
+    private val _cropState = MutableLiveData<Event<CropState>>()
+    val cropState: LiveData<Event<CropState>>
+        get() = _cropState
 
 
     private var _doc = MutableLiveData<Doc>()
@@ -138,6 +146,7 @@ class EditViewModel @Inject constructor(
      * these methods above are called from EditFragment and these ones bellow are called from EditCropFragment
      */
 
+    //in case of failure, after press yes button on alert dialog, pop back stack is executed after press yes button and this alert will be shown on EditFragment screen
     fun deleteSelectedDocPhoto() {
         viewModelScope.launch {
             try {
@@ -163,18 +172,18 @@ class EditViewModel @Inject constructor(
         _navigationCommands.value = Event(NavigationCommand.To(directions))
     }
 
-    fun updateDocPhoto(uri: Uri) {
+    fun updateDocPhoto(uri: Uri?) {
         viewModelScope.launch {
             try {
-                val newFile = copyFileUseCase(uri)
+                val newFile = copyFileUseCase(uri!!)
                 _selectedPhoto.value = _selectedPhoto.value?.copy(path = newFile?.path!!)
                 updateDocPhotoUseCase(
                     localId = doc.value?.localId!!,
                     photo = selectedPhoto.value!!
                 )
             }catch (e: Exception){
-                _editState.value = Event(
-                    EditState.EditAlertDialog(R.string.common_unknown_error)
+                _cropState.value = Event(
+                    CropState.CropAlertDialog(R.string.common_unknown_error)
                 )
             }
         }

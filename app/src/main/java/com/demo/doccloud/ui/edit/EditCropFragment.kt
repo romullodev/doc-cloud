@@ -1,11 +1,11 @@
 package com.demo.doccloud.ui.edit
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +24,6 @@ import com.bumptech.glide.Glide
 import com.demo.doccloud.R
 import com.demo.doccloud.databinding.FragmentEditCropBinding
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
-import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
-import com.demo.doccloud.ui.home.HomeViewModel
 import com.demo.doccloud.utils.AppConstants
 import com.demo.doccloud.utils.DialogsHelper
 import com.theartofdev.edmodo.cropper.CropImage
@@ -35,7 +33,7 @@ import java.io.File
 
 
 @AndroidEntryPoint
-class EditCropFragment : Fragment() {
+class EditCropFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
 
     private val viewModel: EditViewModel by navGraphViewModels(R.id.edit_navigation)
     private var _binding: FragmentEditCropBinding? = null
@@ -68,16 +66,30 @@ class EditCropFragment : Fragment() {
                 .fitCenter()
                 .into(binding.photo)
         }
+
+        viewModel.cropState.observe(viewLifecycleOwner){
+            it.getContentIfNotHandled()?.let { state->
+                when(state){
+                    is EditViewModel.CropState.CropAlertDialog -> {
+                        DialogsHelper.showAlertDialog(
+                            DialogsHelper.getInfoAlertParams(
+                                msg = getString(state.msg)
+                            ),
+                            this,
+                            requireActivity(),
+                            tag = AppConstants.INFO_DIALOG_TAG
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun setupCropper() {
         cropperLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    CropImage.getActivityResult(result.data)?.let { cropResult ->
-                        viewModel.updateDocPhoto(cropResult.uri)
-                    }
-                }
+                val uri: Uri? = CropImage.getActivityResult(result.data)?.uri
+                viewModel.updateDocPhoto(uri)
             }
     }
 
@@ -144,5 +156,27 @@ class EditCropFragment : Fragment() {
         }
     }
 
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        dialog.dismiss()
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        dialog.dismiss()
+    }
+
+    constructor(parcel: Parcel) : this()
+
+    override fun describeContents(): Int {
+        return 0
+    }
+    companion object CREATOR : Parcelable.Creator<EditCropFragment> {
+        override fun createFromParcel(parcel: Parcel): EditCropFragment {
+            return EditCropFragment(parcel)
+        }
+
+        override fun newArray(size: Int): Array<EditCropFragment?> {
+            return arrayOfNulls(size)
+        }
+    }
 
 }

@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CropViewModel @Inject constructor(
     private val saveDocUseCase: SaveDoc,
-    private val addPhotosUseCase: AddPhotos,
+    private val addPhotosUseCase: AddPhotos,//in case on editFragment
     private val copyFileUseCase: CopyFile
 ) : ViewModel() {
 

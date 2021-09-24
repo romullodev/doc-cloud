@@ -2,13 +2,11 @@ package com.demo.doccloud.ui.login
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.demo.doccloud.MainCoroutineRule
-import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.FakeRepository
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResource
+import com.demo.doccloud.*
 import com.demo.doccloud.domain.usecases.impl.DoLoginWithGoogleImpl
 import com.demo.doccloud.domain.usecases.impl.SaveCustomIdSyncStrategyImpl
-import com.demo.doccloud.getOrAwaitValue
-import com.demo.doccloud.fakes.FakeScheduleToSyncDataImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -17,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import com.google.common.truth.Truth.assertThat
+import org.junit.After
 
 @RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
@@ -35,6 +34,11 @@ class LoginViewModelTest{
         val saveCustomIdSyncStrategy = SaveCustomIdSyncStrategyImpl(repository)
         val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, repository)
         loginViewModel = LoginViewModel(fakeScheduleToSyncData, doLoginWithGoogle)
+    }
+    @After
+    fun teardown(){
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test

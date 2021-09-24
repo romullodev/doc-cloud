@@ -3,20 +3,13 @@ package com.demo.doccloud.ui.crop
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import com.demo.doccloud.GlobalVariablesTest
-import com.demo.doccloud.MainCoroutineRule
-import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.FakeRepository
-import com.demo.doccloud.domain.entities.Doc
+import com.demo.doccloud.*
+import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.usecases.impl.AddPhotosImpl
 import com.demo.doccloud.domain.usecases.impl.AddPhotosToLocalDocImpl
 import com.demo.doccloud.domain.usecases.impl.SaveDocImpl
 import com.demo.doccloud.domain.usecases.impl.SaveLocalDocImpl
-import com.demo.doccloud.fakes.FakeCopyFileImpl
-import com.demo.doccloud.fakes.FakeScheduleToAddRemoteDocPhotosImpl
-import com.demo.doccloud.fakes.FakeScheduleToSaveRemoteDocImpl
-import com.demo.doccloud.getOrAwaitValue
 import com.google.common.truth.Truth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
@@ -71,7 +64,8 @@ class CropViewModelTest {
 
     @After
     fun teardown(){
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test

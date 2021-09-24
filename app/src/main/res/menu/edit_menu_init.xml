@@ -5,7 +5,7 @@
     <item
         android:id="@+id/edit_share"
         android:icon="@drawable/ic_share_24"
-        android:title="Share"
+        android:title="@string/edit_screen_menu_share"
         tools:iconTint="@color/white"
         app:showAsAction="always" />
 </menu>

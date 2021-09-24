@@ -4,14 +4,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
-import com.demo.doccloud.MainCoroutineRule
-import com.demo.doccloud.R
-import com.demo.doccloud.data.repository.FakeRepository
+import com.demo.doccloud.*
+import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.usecases.impl.*
-import com.demo.doccloud.fakes.*
 import com.google.common.truth.Truth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -109,7 +107,7 @@ class UseCasesTest {
         val deleteLocalDocPhoto = DeleteLocalDocPhotoImpl(repository)
         val fakeScheduleToDeleteRemoteDocPhoto = FakeScheduleToDeleteRemoteDocPhotoImpl()
         val deleteDocPhoto = DeleteDocPhotoImpl(deleteLocalDocPhoto, fakeScheduleToDeleteRemoteDocPhoto)
-        deleteDocPhoto(-1L, Photo(-1L, "any"))
+        deleteDocPhoto(1L, Photo(1L, "any"))
     }
 
     @Test
@@ -152,7 +150,7 @@ class UseCasesTest {
     @Test
     fun `run GetDocById`() = mainCoroutineRule.runBlockingTest {
         val getDocById = GetDocByIdImpl(repository)
-        getDocById(-1L)
+        getDocById(1L)
     }
 
     @Test

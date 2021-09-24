@@ -1,3 +1,5 @@
+- change FakecopyFile to CopyFileImpl
+
 - implement alert dialog to generate pdf file
     option 1: generate file
     option 2: generate link

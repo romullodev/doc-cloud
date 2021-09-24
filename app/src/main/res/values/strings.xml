@@ -12,7 +12,7 @@
 
     <!-- Login Screen -->
     <string name="login_doc_cloud_name">Doc Cloud</string>
-    <string name="login_user_with_no_id">Usuário logado não possui id</string>
+    <string name="login_user_with_no_id">Erro ao recuperar ID do usuário. Tente novamente.</string>
     <string name="login_password_hint">Senha</string>
     <string name="login_email_hint">E-mail</string>
     <string name="login_sign_in">entrar</string>
@@ -31,6 +31,8 @@
     <string name="common_delete_label">Excluir</string>
     <string name="common_user_not_logged_in">O usuário não está logado</string>
     <string name="common_unknown_error">Ocorreu um erro desconhecido. Tente novamente</string>
+    <string name="common_share_with">Compartilhar com</string>
+
 
     <!-- Home Screen -->
     <string name="home_menu_logout">Sair</string>
@@ -86,6 +88,8 @@
 
     <!-- Edit Screen -->
     <string name="edit_screen_rename_doc_dialog">Renomear para</string>
+    <string name="edit_screen_menu_share" translatable="false">share</string>
+    <string name="edit_screen_menu_crop" translatable="false">crop</string>
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>
