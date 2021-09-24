@@ -71,7 +71,8 @@ class HomeViewModelTest{
 
     @After
     fun teardown(){
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test

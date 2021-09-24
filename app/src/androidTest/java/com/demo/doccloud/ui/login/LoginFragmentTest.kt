@@ -2,32 +2,29 @@ package com.demo.doccloud.ui.login
 
 
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onIdle
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.action.EspressoKey
+import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
 import com.demo.doccloud.*
-import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.usecases.impl.DoLoginWithGoogleImpl
 import com.demo.doccloud.domain.usecases.impl.SaveCustomIdSyncStrategyImpl
+import com.demo.doccloud.ui.MainActivity
+import com.demo.doccloud.ui.home.HomeFragmentDirections
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -35,7 +32,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class LoginFragmentTest {
 
-    private lateinit var activityScenario: ActivityScenario<HiltTestActivity>
+    //private lateinit var activityScenario: ActivityScenario<HiltTestActivity>
+    private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var navController: NavController
 
     @get:Rule
@@ -58,9 +56,14 @@ class LoginFragmentTest {
         val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, repository)
         loginViewModel = LoginViewModel(fakeScheduleToSyncData, doLoginWithGoogle)
 
-        navController = mock(NavController::class.java)
-        activityScenario = launchFragmentInHiltContainer<LoginFragment> {
-            Navigation.setViewNavController(requireView(), navController)
+        //navController = mock(NavController::class.java)
+//        activityScenario = launchFragmentInHiltContainer<LoginFragment> {
+//            Navigation.setViewNavController(requireView(), navController)
+//        }
+        activityScenario = launchFromMainActivityToFragment(
+            HomeFragmentDirections.actionHomeFragmentToLoginFragment()
+        ).onActivity {
+            navController = it.findNavController(R.id.nav_host_fragment)
         }
         mIdlingResource = EspressoIdlingResource.countingIdlingResource
         IdlingRegistry.getInstance().register(mIdlingResource)
@@ -71,7 +74,8 @@ class LoginFragmentTest {
     fun teardown() {
         activityScenario.close()
         IdlingRegistry.getInstance().unregister(mIdlingResource)
-        repository.setHasDelay(false)
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test
@@ -82,7 +86,11 @@ class LoginFragmentTest {
             }
         }
         onIdle()
-        verify(navController).popBackStack()
+        ViewMatchers.assertThat(
+            navController.currentDestination?.id,
+            Matchers.`is`(R.id.homeFragment)
+        )
+        //verify(navController).popBackStack()
     }
 
     @Test
@@ -120,13 +128,10 @@ class LoginFragmentTest {
 
     @Test
     fun verify_loading_state() {
+        Intents.init()
         IdlingRegistry.getInstance().unregister(mIdlingResource)
-        activityScenario.onActivity {
-            it.runOnUiThread {
-                loginViewModel.doLoginWithGoogle(null)
-            }
-        }
+        EspressoActions.performClickOnView(R.id.buttonLoginSignInGoogle)
         EspressoActions.checkTextOnScreen(R.string.loading_dialog_message_login)
-        //assertThat(loadingValue, Matchers.`is`(true))
+        Intents.release()
     }
 }

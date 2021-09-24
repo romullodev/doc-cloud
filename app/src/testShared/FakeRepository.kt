@@ -20,7 +20,7 @@ class FakeRepository @Inject constructor(
     @MainDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : Repository {
 
-    val localDocs =  ArrayList<Doc>()
+    private val localDocs =  ArrayList<Doc>()
 
     private var hasDelay = false
     private var shouldThrowNetworkingException = false
@@ -31,7 +31,7 @@ class FakeRepository @Inject constructor(
     private var shouldThrowExceptionWhenDeleteLocalDoc = false
 
     private var shouldReturnErrorOnLogout = false
-    private val delayDuration = 2000L
+    private val delayDuration = 1000L
 
     fun setShouldThrowNetworkingException(value: Boolean) {
         this.shouldThrowNetworkingException = value
@@ -60,16 +60,30 @@ class FakeRepository @Inject constructor(
         this.hasDelay = value
     }
 
-    override val docs: LiveData<List<Doc>>
-        get() = if(localDocs.isEmpty()) {
+    fun clearFlags(){
+        hasDelay = false
+        shouldThrowNetworkingException = false
+        shouldThrowApiException = false
+        shouldThrowUserWithNoIdException = false
+        shouldThrowUnknownException = false
+        shouldThrowExceptionWhenGetUser = false
+        shouldThrowExceptionWhenDeleteLocalDoc = false
+        shouldReturnErrorOnLogout = false
+    }
+
+    private var _docs : MutableLiveData<List<Doc>> =
+        if(localDocs.isEmpty()) {
             localDocs.addAll(listOf(
-                fakeDoc.copy(localId = 1, name = "doc 1"),
+                fakeDoc.copy(localId = 1, name = "doc 1", pages = arrayListOf(Photo(id = 1, path = Uri.EMPTY.path!!))),
                 fakeDoc.copy(localId = 2, name = "doc 2"))
             )
             MutableLiveData(localDocs)
         } else{
             MutableLiveData(localDocs)
         }
+
+    override val docs: LiveData<List<Doc>>
+        get() = _docs
 
     override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): User{
         return wrapEspressoIdlingResource {
@@ -88,7 +102,7 @@ class FakeRepository @Inject constructor(
                     throw Exception(context.getString(R.string.common_unknown_error))
                 }
                 if(hasDelay)
-                    delay(2000L)
+                    delay(delayDuration)
                 return@withContext User("any", "any")
             }
         }
@@ -99,7 +113,7 @@ class FakeRepository @Inject constructor(
         wrapEspressoIdlingResource {
             withContext(dispatcher) {
                 if(hasDelay)
-                    delay(2000L)
+                    delay(delayDuration)
             }
 
         }
@@ -134,11 +148,20 @@ class FakeRepository @Inject constructor(
 //        return@runBlocking Result.success(User("any", "any"))
 //    }
 
-    override suspend fun saveDoc(doc: Doc) = runBlocking {
-        if(shouldThrowUnknownException){
-            throw Exception()
+    override suspend fun saveDoc(doc: Doc): Long{
+        return wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource withContext(dispatcher){
+                if(shouldThrowUnknownException){
+                    throw Exception()
+                }
+                if(hasDelay){
+                    delay(delayDuration)
+                }
+                localDocs.add(doc)
+                _docs.value = localDocs
+                return@withContext -1L
+            }
         }
-        return@runBlocking -1L
     }
 
     override suspend fun deleteDoc(doc: Doc) {
@@ -150,37 +173,67 @@ class FakeRepository @Inject constructor(
         }
     }
 
-    override suspend fun getDoc(id: Long) = runBlocking {
-        return@runBlocking fakeDoc
-    }
-
-    override suspend fun updateDocPhoto(localId: Long, photo: Photo) = runBlocking {
-        //do nothing
-    }
-
-    override suspend fun updateDocName(localId: Long, name: String) = runBlocking {
-        if(shouldThrowUnknownException){
-            throw Exception(context.getString(R.string.common_unknown_error))
+    override suspend fun getDoc(id: Long): Doc{
+        return wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource withContext(dispatcher){
+                return@withContext localDocs.find { it.localId == id }!!
+            }
         }
-        //do nothing
     }
 
-    override suspend fun deleteDocPhoto(localId: Long, photo: Photo) = runBlocking {
-        if(shouldThrowUnknownException){
-            throw Exception()
+    override suspend fun updateDocPhoto(localId: Long, photo: Photo){
+        wrapEspressoIdlingResource {
+            withContext(dispatcher){
+                if(shouldThrowUnknownException){
+                    throw Exception()
+                }
+            }
         }
-        //do nothing
+    }
+
+    override suspend fun updateDocName(localId: Long, name: String){
+        wrapEspressoIdlingResource {
+            withContext(dispatcher){
+                if(shouldThrowUnknownException){
+                    throw Exception(context.getString(R.string.common_unknown_error))
+                }
+            }
+        }
+
+    }
+
+    override suspend fun deleteDocPhoto(localId: Long, photo: Photo){
+        wrapEspressoIdlingResource {
+            withContext(dispatcher){
+                if(shouldThrowUnknownException){
+                    throw Exception()
+                }
+                val doc: Doc = localDocs.find { it.localId == localId }!!
+                val pages = ArrayList(doc.pages)
+                pages.remove(photo)
+                localDocs.remove(doc)
+                localDocs.add(doc.copy(pages = pages))
+                _docs.value = localDocs
+            }
+        }
     }
 
     override suspend fun scheduleToSyncData() {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addPhotos(localId: Long, photos: List<Photo>)= runBlocking {
-        if(shouldThrowUnknownException){
-            throw Exception()
+    override suspend fun addPhotos(localId: Long, photos: List<Photo>){
+        wrapEspressoIdlingResource {
+            withContext(dispatcher){
+                if(shouldThrowUnknownException){
+                    throw Exception()
+                }
+                val doc: Doc = localDocs.find { it.localId == localId }!!
+                localDocs.remove(doc)
+                localDocs.add(doc.copy(pages = photos))
+                _docs.value = localDocs
+            }
         }
-        //do nothing
     }
 
     override suspend fun saveLong(key: String, value: Long) = runBlocking {

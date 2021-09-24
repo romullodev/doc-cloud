@@ -88,6 +88,8 @@
 
     <!-- Edit Screen -->
     <string name="edit_screen_rename_doc_dialog">Renomear para</string>
+    <string name="edit_screen_menu_share" translatable="false">share</string>
+    <string name="edit_screen_menu_crop" translatable="false">crop</string>
 
     <!-- Loading dialog messages -->
     <string name="loading_dialog_message_login">Entrando …</string>

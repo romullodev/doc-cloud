@@ -120,8 +120,7 @@ fun launchMyMainActivity(): ActivityScenario<MainActivity> {
 
 //my custom function
 fun launchFromMainActivityToFragment(
-    fragmentArgs: Bundle? = null,
-    direction: Int,
+    direction: NavDirections,
 ): ActivityScenario<MainActivity> {
     val startActivityIntent = Intent.makeMainActivity(
         ComponentName(
@@ -129,9 +128,8 @@ fun launchFromMainActivityToFragment(
             MainActivity::class.java
         )
     )
-
     return ActivityScenario.launch<MainActivity>(startActivityIntent).onActivity {
         val naController = it.findNavController(R.id.nav_host_fragment)
-        naController.navigate(direction, fragmentArgs)
+        naController.navigate(direction)
     }
 }

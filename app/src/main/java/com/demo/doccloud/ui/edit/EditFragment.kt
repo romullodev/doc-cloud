@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,19 +27,18 @@ import com.demo.doccloud.R
 import com.demo.doccloud.ui.edit.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
-import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.domain.entities.Photo
-import com.demo.doccloud.utils.RootDestination
 import com.demo.doccloud.ui.MainActivity
+import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
-import com.demo.doccloud.utils.Global
+import com.demo.doccloud.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.util.*
 
 @AndroidEntryPoint
-class EditFragment : Fragment() {
+class EditFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
 
     private val viewModel: EditViewModel by navGraphViewModels(R.id.edit_navigation) { defaultViewModelProviderFactory }
     private val args: EditFragmentArgs by navArgs()
@@ -188,6 +189,16 @@ class EditFragment : Fragment() {
                             act = requireActivity() as MainActivity
                         )
                     }
+                    is EditViewModel.EditState.EditAlertDialog -> {
+                        DialogsHelper.showAlertDialog(
+                            DialogsHelper.getInfoAlertParams(
+                                msg = getString(state.msg)
+                            ),
+                            this,
+                            requireActivity(),
+                            tag = AppConstants.INFO_DIALOG_TAG
+                        )
+                    }
                 }
             }
         }
@@ -232,5 +243,27 @@ class EditFragment : Fragment() {
             )
         }
     }
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        dialog.dismiss()
+    }
 
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        dialog.dismiss()
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    constructor(parcel: Parcel) : this()
+
+    companion object CREATOR : Parcelable.Creator<EditFragment> {
+        override fun createFromParcel(parcel: Parcel): EditFragment {
+            return EditFragment(parcel)
+        }
+
+        override fun newArray(size: Int): Array<EditFragment?> {
+            return arrayOfNulls(size)
+        }
+    }
 }

@@ -107,7 +107,7 @@ class UseCasesTest {
         val deleteLocalDocPhoto = DeleteLocalDocPhotoImpl(repository)
         val fakeScheduleToDeleteRemoteDocPhoto = FakeScheduleToDeleteRemoteDocPhotoImpl()
         val deleteDocPhoto = DeleteDocPhotoImpl(deleteLocalDocPhoto, fakeScheduleToDeleteRemoteDocPhoto)
-        deleteDocPhoto(-1L, Photo(-1L, "any"))
+        deleteDocPhoto(1L, Photo(1L, "any"))
     }
 
     @Test
@@ -150,7 +150,7 @@ class UseCasesTest {
     @Test
     fun `run GetDocById`() = mainCoroutineRule.runBlockingTest {
         val getDocById = GetDocByIdImpl(repository)
-        getDocById(-1L)
+        getDocById(1L)
     }
 
     @Test

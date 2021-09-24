@@ -64,7 +64,8 @@ class CropViewModelTest {
 
     @After
     fun teardown(){
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test

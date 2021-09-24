@@ -52,7 +52,6 @@ class HomeFragmentTest {
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var navController: NavController
-    private lateinit var dataBindingIdlingResource: DataBindingIdlingResource
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -95,11 +94,6 @@ class HomeFragmentTest {
         mIdlingResource = EspressoIdlingResource.countingIdlingResource
         IdlingRegistry.getInstance().register(mIdlingResource)
 
-        dataBindingIdlingResource = DataBindingIdlingResource()
-        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-
-
         repository.setHasDelay(true)
         GlobalVariablesTest.hasDelay = true
     }
@@ -107,10 +101,8 @@ class HomeFragmentTest {
     @After
     fun teardown() {
         IdlingRegistry.getInstance().unregister(mIdlingResource)
-        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
-        repository.setHasDelay(false)
-        GlobalVariablesTest.hasDelay = false
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
         activityScenario.close()
         Intents.release()
     }
@@ -128,8 +120,8 @@ class HomeFragmentTest {
         intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
 
-        intending(hasAction(Intent.ACTION_SEND)).respondWith(result);
-        EspressoActions.performLongClickRecyclerViewItem(R.id.rvHome, 0)
+        intending(hasAction(Intent.ACTION_SEND)).respondWith(result)
+        EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
         EspressoActions.performMenuItemClick(R.string.home_doc_item_share, R.id.share)
 
         intended(
@@ -155,7 +147,7 @@ class HomeFragmentTest {
     @Test
     fun share_doc_with_exception() {
         GlobalVariablesTest.shouldThrowException = true
-        EspressoActions.performLongClickRecyclerViewItem(R.id.rvHome, 0)
+        EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
         EspressoActions.performMenuItemClick(R.string.home_doc_item_share, R.id.share)
         EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_generate_pdf)
     }
@@ -168,7 +160,7 @@ class HomeFragmentTest {
                 assertThat(value.size, Matchers.`is`(2))
             }
         }
-        EspressoActions.performLongClickRecyclerViewItem(R.id.rvHome, 0)
+        EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
         EspressoActions.performMenuItemClick(R.string.common_delete_label, R.id.delete)
         EspressoActions.performClickOnText(R.string.alert_dialog_yes_button)
         activityScenario.onActivity {
@@ -182,7 +174,7 @@ class HomeFragmentTest {
     @Test
     fun throw_exception_when_delete_doc() {
         repository.setShouldThrowExceptionWhenDeleteLocalDoc(true)
-        EspressoActions.performLongClickRecyclerViewItem(R.id.rvHome, 0)
+        EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
         EspressoActions.performMenuItemClick(R.string.common_delete_label, R.id.delete)
         EspressoActions.performClickOnText(R.string.alert_dialog_yes_button)
         EspressoActions.checkTextOnAlertDialog(R.string.home_toast_delete_error)
@@ -240,16 +232,19 @@ class HomeFragmentTest {
             }
         }
         assertThat(navController.currentDestination?.id, Matchers.`is`(R.id.loginFragment))
-        //homeViewModel.setupInitVariables()
-        //onIdle()
-        //EspressoActions.checkTextOnScreen(R.string.login_doc_cloud_name)
-        //assertThat(navController.currentDestination?.id, Matchers.`is`(R.id.loginFragment))
     }
 
     @Test
     fun show_two_docs_on_recycler_view(){
-        onView(withId(R.id.rvHome)).check(matches(EspressoActions.hasItemCountOnRecyclerView(2)))
+        EspressoActions.checkSizeOnRecyclerView(R.id.rvHome, 2)
     }
+    @Test
+    fun tap_doc_navigate_to_edit_fragment(){
+        EspressoActions.performClickOnRecyclerViewItem(R.id.rvHome, 0)
+        assertThat(navController.currentDestination?.id, Matchers.`is`(R.id.editFragment))
+    }
+
+
 }
 //val receivedIntent: Intent = Iterables.getOnlyElement(Intents.getIntents())
 //        intended(
@@ -274,5 +269,6 @@ class HomeFragmentTest {
 //),
 //hasCategories(hasItem(equalTo(Intent.CATEGORY_OPENABLE))),
 //hasAction(equalTo(ACTION_OPEN_DOCUMENT))
+//)
 //)
 //)

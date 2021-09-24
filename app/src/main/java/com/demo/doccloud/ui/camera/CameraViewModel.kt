@@ -36,6 +36,7 @@ class CameraViewModel @Inject constructor() : ViewModel() {
                 }
             }
         }
+        _listThumbnail.value?.clear()
     }
 
     //handle navigation between fragments

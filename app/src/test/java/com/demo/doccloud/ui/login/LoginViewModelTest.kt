@@ -35,6 +35,11 @@ class LoginViewModelTest{
         val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, repository)
         loginViewModel = LoginViewModel(fakeScheduleToSyncData, doLoginWithGoogle)
     }
+    @After
+    fun teardown(){
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
+    }
 
     @Test
     fun `do login with success`() = mainCoroutineRule.runBlockingTest{

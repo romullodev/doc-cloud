@@ -53,7 +53,7 @@ class EditViewModelTest {
         val fakeScheduleToUpdateRemoteDocPhoto = FakeScheduleToUpdateRemoteDocPhotoImpl()
         val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, fakeScheduleToUpdateRemoteDocPhoto)
 
-        doc = FakeRepository.fakeDoc
+        doc = FakeRepository.fakeDoc.copy(localId = 1)
         editViewModel = EditViewModel(
             copyFileUseCase,
             generateDocPdfUseCase,
@@ -63,12 +63,13 @@ class EditViewModelTest {
             updateDocPhoto
         )
         //this method is execute on onResume state of the fragment
-        editViewModel.getDocById(id = -1L)
+        editViewModel.getDocById(id = 1L)
     }
 
     @After
     fun teardown(){
-        GlobalVariablesTest.shouldThrowException = false
+        GlobalVariablesTest.clearFlags()
+        repository.clearFlags()
     }
 
     @Test
@@ -79,7 +80,7 @@ class EditViewModelTest {
     @Test
     fun `throw exception when update doc name`(){
         repository.setShouldThrowUnknownException(true)
-        editViewModel.updateNameDoc(localId = -1L, remoteId = -1L, newName = "any")
+        editViewModel.updateNameDoc(localId = 1L, remoteId = -1L, newName = "any")
         val value = editViewModel.editState.getOrAwaitValue()
         Truth.assertThat((value.getContentIfNotHandled() as EditViewModel.EditState.EditAlertDialog).msg).isEqualTo(
             R.string.common_unknown_error
@@ -109,6 +110,7 @@ class EditViewModelTest {
         )
     }
 
+
     @Test
     fun `copy and navigate to CropFragment with success`(){
         editViewModel.copyAndNavigateToCrop(listOf())
@@ -123,6 +125,7 @@ class EditViewModelTest {
             )
         )
     }
+
     @Test
     fun `throw exception when copy and navigate to CropFragment`(){
         GlobalVariablesTest.shouldThrowException = true
