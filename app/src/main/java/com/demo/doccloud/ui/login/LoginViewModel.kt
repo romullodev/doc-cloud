@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
+import com.demo.doccloud.domain.entities.User
 import com.demo.doccloud.domain.usecases.contracts.DoLoginWithGoogle
 import com.demo.doccloud.domain.usecases.contracts.ScheduleToSyncData
 import com.demo.doccloud.utils.Event
@@ -57,6 +58,22 @@ class LoginViewModel @Inject constructor(
                 )
             }
             hideDialog()
+        }
+    }
+
+    fun processRegisterUser(user: User?){
+        viewModelScope.launch {
+            try {
+                Global.user.value = Event(user!!)
+                scheduleToSyncDataUseCase()
+                _loginState.value = Event(
+                    LoginState.Authenticated
+                )
+            }catch (e: Exception){
+                _loginState.value = Event(
+                    LoginState.LoginAlertDialog(e.message!!)
+                )
+            }
         }
     }
 

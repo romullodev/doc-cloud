@@ -4,25 +4,26 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
 import com.demo.doccloud.databinding.FragmentLoginBinding
-import com.demo.doccloud.domain.entities.SignUpParams
+import com.demo.doccloud.domain.entities.User
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
-import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
-import com.demo.doccloud.ui.dialogs.signup.SignUpDialog
-import com.demo.doccloud.ui.home.HomeViewModel
-import com.demo.doccloud.utils.AppConstants
+import com.demo.doccloud.utils.AppConstants.Companion.USER_SIGN_UP_KEY
 import com.demo.doccloud.utils.DialogsHelper
+import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.errorDismiss
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -97,17 +98,7 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
         }
 
         binding.textViewLoginRegistration.setOnClickListener {
-            val materialDialog = SignUpDialog.newInstance(
-                object :  SignUpDialog.SignUpDialogListener {
-                    override fun onSignUpClick(params: SignUpParams, dialog: DialogFragment) {
-                        TODO("Not yet implemented")
-                    }
-                }
-            )
-            materialDialog.show(
-                requireActivity().supportFragmentManager,
-                null
-            )
+            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegisterUser())
         }
     }
 
@@ -138,6 +129,25 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
                 }
             }
         })
+
+        findNavController().run {
+            val navBackStackEntry = getBackStackEntry(R.id.loginFragment)
+            val savedStateHandle = navBackStackEntry.savedStateHandle
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME && savedStateHandle.contains(USER_SIGN_UP_KEY)) {
+                    val user = savedStateHandle.get<User>(USER_SIGN_UP_KEY)
+                    loginViewModel.processRegisterUser(user)
+                }
+            }
+
+            navBackStackEntry.lifecycle.addObserver(observer)
+
+            viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    navBackStackEntry.lifecycle.removeObserver(observer)
+                }
+            })
+        }
     }
 
     //helper method to initialize validation fields (for empty fields)

@@ -9,6 +9,7 @@ import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
+import com.demo.doccloud.domain.usecases.contracts.SendCustomIdAndForceUpdate
 import com.demo.doccloud.domain.usecases.impl.*
 import com.google.common.truth.Truth
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,7 @@ class UseCasesTest {
         val addPhotosToLocalDoc = AddPhotosToLocalDocImpl(repository)
         val fakeScheduleToAddRemoteDocPhotos = FakeScheduleToAddRemoteDocPhotosImpl()
         val addPhotos = AddPhotosImpl(addPhotosToLocalDoc, fakeScheduleToAddRemoteDocPhotos)
-        addPhotos(localId = -1L, photos = listOf())
+        addPhotos(localId = 1L, photos = listOf())
     }
 
     @Test
@@ -128,7 +129,8 @@ class UseCasesTest {
     @Test
     fun `run doLoginWithGoogle and saveCustomIdSyncStrategy`() = mainCoroutineRule.runBlockingTest {
         val saveCustomIdSyncStrategy = SaveCustomIdSyncStrategyImpl(repository)
-        val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, repository)
+        val sendCustomIdAndForceUpdate = SendCustomIdAndForceUpdateImpl(repository)
+        val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, sendCustomIdAndForceUpdate, repository)
         doLoginWithGoogle(Intent("any"))
     }
 

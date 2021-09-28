@@ -1,3 +1,5 @@
+- create use case to send customId to Real Database
+
 - change Real Database Rules to security mode
 
 - change FakecopyFile to CopyFileImpl

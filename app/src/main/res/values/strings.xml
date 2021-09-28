@@ -32,6 +32,7 @@
     <string name="common_user_not_logged_in">O usuário não está logado</string>
     <string name="common_unknown_error">Ocorreu um erro desconhecido. Tente novamente</string>
     <string name="common_share_with">Compartilhar com</string>
+    <string name="common_error_send_custom_id_to_server">Erro ao enviar dados ao servidor!</string>
 
 
     <!-- Home Screen -->
@@ -106,10 +107,14 @@
     <string name="alert_dialog_question_delete_tittle">Excluir</string>
     <string name="alert_dialog_question_delete_msg">Deseja realmente excluir?</string>
 
-    <!-- SignUp Dialogs -->
+    <!-- Register Dialog -->
     <string name="signup_field_invalid_name">Insira um nome válido</string>
     <string name="signup_field_invalid_email">Insira um email válido</string>
     <string name="signup_field_invalid_password">Insira números e letras com no mínimo 6 caracteres</string>
     <string name="signup_field_invalid_confirm_password">Senha diferente da informada</string>
+    <string name="signup_error_email_already_exists">Email informado já em uso!</string>
+    <string name="signup_error_user_not_found">Erro ao recuperar usuário registrado!</string>
+    <string name="signup_error_on_register_user">Erro ao registrar usuário!</string>
+    <string name="signup_error_update_user_profile">Erro ao atualizar dados do usuário registrado!</string>
 
 </resources>

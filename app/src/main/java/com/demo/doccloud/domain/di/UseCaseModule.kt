@@ -89,4 +89,10 @@ abstract class UseCaseModule {
     @Binds
     abstract fun bindScheduleToSaveRemoteDocUseCase(schedule: ScheduleToSaveRemoteDocImpl): ScheduleToSaveRemoteDoc
 
+    @Binds
+    abstract fun bindSendCustomIdAndForceUpdateUseCase(sendCustomIdAndForceUpdate: SendCustomIdAndForceUpdateImpl): SendCustomIdAndForceUpdate
+
+    @Binds
+    abstract fun bindRegisterNewUserByEmailUseCase(registerNewUserByEmail: RegisterNewUserByEmailImpl): RegisterNewUserByEmail
+
 }
