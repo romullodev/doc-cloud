@@ -40,6 +40,10 @@ class RepositoryImpl @Inject constructor(
     override suspend fun doLoginWithGoogle(data: Intent?) =
         remoteDatasource.doLoginWithGoogle(data)
 
+    override suspend fun doLoginByEmail(email: String, password: String) =
+        remoteDatasource.doLoginByEmail(email, password)
+
+
     override suspend fun registerUser(params: SignUpParams) = remoteDatasource.registerUser(params)
 
     override suspend fun getUser() = remoteDatasource.getUser()

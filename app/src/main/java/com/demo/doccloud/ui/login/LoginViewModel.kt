@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.demo.doccloud.R
 import com.demo.doccloud.data.repository.Repository
 import com.demo.doccloud.domain.entities.User
+import com.demo.doccloud.domain.usecases.contracts.DoLoginByEmail
 import com.demo.doccloud.domain.usecases.contracts.DoLoginWithGoogle
 import com.demo.doccloud.domain.usecases.contracts.ScheduleToSyncData
 import com.demo.doccloud.utils.Event
@@ -22,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val scheduleToSyncDataUseCase: ScheduleToSyncData,
-    private val doLoginWithGoogleUseCase: DoLoginWithGoogle
+    private val doLoginWithGoogleUseCase: DoLoginWithGoogle,
+    private val doLoginByEmailUseCase: DoLoginByEmail
 ) : ViewModel(),
     LoadingDialogViewModel {
 
@@ -78,9 +80,24 @@ class LoginViewModel @Inject constructor(
     }
 
     //called from fragment_login.xml directly
-    fun doLogin() {
+    fun doLoginByEmail() {
         if (isValidLoginPassword(login.trim(), password.trim())) {
-            //showDialog(R.string.loading_dialog_message_login)
+            showDialog(R.string.loading_dialog_message_login)
+            viewModelScope.launch {
+                try {
+                    val user = doLoginByEmailUseCase(login.trim(), password.trim())
+                    Global.user.value = Event(user)
+                    scheduleToSyncDataUseCase()
+                    _loginState.value = Event(
+                        LoginState.Authenticated
+                    )
+                }catch (e: Exception){
+                    _loginState.value = Event(
+                        LoginState.LoginAlertDialog(e.message!!)
+                    )
+                }
+                hideDialog()
+            }
         }
     }
 

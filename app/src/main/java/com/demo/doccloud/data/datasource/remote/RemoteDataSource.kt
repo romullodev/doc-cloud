@@ -6,6 +6,7 @@ import com.demo.doccloud.utils.Result
 
 interface RemoteDataSource {
     suspend fun doLoginWithGoogle(data: Intent?) : User
+    suspend fun doLoginByEmail(email: String, password: String) : User
     suspend fun registerUser(params: SignUpParams) : User
     suspend fun getUser() : User
     suspend fun doLogout()

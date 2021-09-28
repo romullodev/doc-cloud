@@ -95,4 +95,7 @@ abstract class UseCaseModule {
     @Binds
     abstract fun bindRegisterNewUserByEmailUseCase(registerNewUserByEmail: RegisterNewUserByEmailImpl): RegisterNewUserByEmail
 
+    @Binds
+    abstract fun bindDoLoginByEmailUseCase(doLoginByEmail: DoLoginByEmailImpl): DoLoginByEmail
+
 }

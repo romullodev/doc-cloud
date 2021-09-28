@@ -101,6 +101,18 @@ class FirebaseServices @Inject constructor(
         }
     }
 
+    override suspend fun doLoginByEmail(email: String, password: String) = withContext(dispatcher) {
+        try {
+            val taskLogin = FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            taskLogin.await()
+        }catch (e: Exception){
+            throw Exception(context.getString(R.string.login_error_sign_in_with_email))
+        }
+        val firebaseUser : FirebaseUser = FirebaseAuth.getInstance().currentUser ?: throw Exception(context.getString(R.string.login_error_retrieve_logged_user))
+
+        return@withContext firebaseUser.asDomain()
+    }
+
     override suspend fun registerUser(params: SignUpParams) =
         withContext(dispatcher) {
             try {
@@ -545,7 +557,7 @@ class FirebaseServices @Inject constructor(
     }
 
     override suspend fun sendCustomIdForceUpdate(customId: Long) {
-        withContext(dispatcher){
+        withContext(dispatcher) {
             //send customId to database
             val userId: String =
                 auth.currentUser?.uid
@@ -567,7 +579,7 @@ class FirebaseServices @Inject constructor(
             try {
                 val sendValuesTask = refDatabase.setValue(mapDatabase)
                 sendValuesTask.await()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 throw Exception(context.getString(R.string.common_error_send_custom_id_to_server))
             }
         }

@@ -127,7 +127,7 @@
             android:backgroundTint="?attr/colorSurface"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:onClick="@{() -> loginViewModel.doLogin()}"
+            android:onClick="@{() -> loginViewModel.doLoginByEmail()}"
             android:text="@string/login_sign_in"
             android:textColor="?attr/colorPrimaryVariant"
             android:textSize="@dimen/text_size_small"

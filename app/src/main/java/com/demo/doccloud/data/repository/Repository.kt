@@ -11,6 +11,7 @@ interface Repository {
     val docs: LiveData<List<Doc>>
 
     suspend fun doLoginWithGoogle(data: Intent?) : User
+    suspend fun doLoginByEmail(email: String, password: String): User
     suspend fun registerUser(params: SignUpParams) : User
     suspend fun getUser() : User
     suspend fun doLogout()

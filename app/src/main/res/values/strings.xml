@@ -25,6 +25,8 @@
     <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
     <string name="login_error_api_google">Houve um erro com o Google. Tente novamente!</string>
     <string name="login_revokeAccess">Erro ao revogar acesso do google durante o logout</string>
+    <string name="login_error_sign_in_with_email">Usuário não encontrado</string>
+    <string name="login_error_retrieve_logged_user">Um erro ocorreu ao recuperar o usuário. Tente novamente.</string>
 
     <!-- Common -->
     <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>

@@ -59,16 +59,16 @@ class RegisterViewModel @Inject constructor(
 
     private fun validateFields(): Boolean {
         val invalidFields = arrayListOf<Pair<String, Int>>()
-        if (signupParams.name.isEmpty()) {
+        if (signupParams.name.trim().isEmpty()) {
             invalidFields.add(INPUT_NAME)
         }
-        if (signupParams.email.isEmpty()) {
+        if (signupParams.email.trim().isEmpty()) {
             invalidFields.add(INPUT_EMAIL)
         }
-        if (signupParams.password.isEmpty()) {
+        if (signupParams.password.trim().isEmpty()) {
             invalidFields.add(INPUT_PASSWORD)
         }
-        if (passwordConfirmation.isEmpty()) {
+        if (passwordConfirmation.trim().isEmpty()) {
             invalidFields.add(INPUT_CONFIRM_PASSWORD)
         }
 
