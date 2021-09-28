@@ -34,3 +34,6 @@ test intents
 https://imasters.com.br/android/espresso-intents-nao-e-magia-e-tecnologia
 https://www.youtube.com/watch?v=CpQQ6-vo5bw
 https://developer.android.com/training/testing/espresso/intents
+
+about lifecycle on DialogFragment
+https://stackoverflow.com/questions/54766112/getviewlifecycleowner-in-dialogfragment-leads-to-crash

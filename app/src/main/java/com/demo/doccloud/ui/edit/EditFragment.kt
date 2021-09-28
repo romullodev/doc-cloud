@@ -243,6 +243,7 @@ class EditFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
             )
         }
     }
+
     override fun onDialogPositiveClick(dialog: DialogFragment) {
         dialog.dismiss()
     }

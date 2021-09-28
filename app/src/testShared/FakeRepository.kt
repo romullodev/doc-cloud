@@ -85,7 +85,7 @@ class FakeRepository @Inject constructor(
     override val docs: LiveData<List<Doc>>
         get() = _docs
 
-    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): User{
+    override suspend fun doLoginWithGoogle(data: Intent?): User{
         return wrapEspressoIdlingResource {
             return@wrapEspressoIdlingResource withContext(dispatcher) {
                 //idlingResourceBooleanVersion.setIdleState(false)
@@ -107,6 +107,20 @@ class FakeRepository @Inject constructor(
             }
         }
         //idlingResourceBooleanVersion.setIdleState(true)
+    }
+
+    override suspend fun registerUser(params: SignUpParams): User {
+        return wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource withContext(dispatcher){
+                if(hasDelay){
+                    delay(delayDuration)
+                }
+                return@withContext User(
+                    displayName = "any",
+                    userId = "any"
+                )
+            }
+        }
     }
 
     override suspend fun doLogout(){
@@ -294,6 +308,15 @@ class FakeRepository @Inject constructor(
 
     override suspend fun uploadDoc(doc: Doc) = runBlocking {
         // do nothing
+    }
+
+    override suspend fun sendCustomIdForceUpdate(customId: Long) {
+        wrapEspressoIdlingResource {
+            withContext(dispatcher){
+                if(hasDelay)
+                    delay(delayDuration)
+            }
+        }
     }
 
     companion object{

@@ -37,8 +37,10 @@ class RepositoryImpl @Inject constructor(
 ) : Repository {
     override val docs: LiveData<List<Doc>> get() = localDatasource.getSavedDocs()
 
-    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long) =
-        remoteDatasource.doLoginWithGoogle(data, customId)
+    override suspend fun doLoginWithGoogle(data: Intent?) =
+        remoteDatasource.doLoginWithGoogle(data)
+
+    override suspend fun registerUser(params: SignUpParams) = remoteDatasource.registerUser(params)
 
     override suspend fun getUser() = remoteDatasource.getUser()
 
@@ -143,6 +145,10 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun uploadDoc(doc: Doc) =
         remoteDatasource.uploadDocFirebase(doc)
+
+    override suspend fun sendCustomIdForceUpdate(customId: Long) {
+        remoteDatasource.sendCustomIdForceUpdate(customId)
+    }
 
     override suspend fun updateDocPhoto(localId: Long, photo: Photo) {
         localDatasource.updateDocPhoto(localId = localId, photo = photo)

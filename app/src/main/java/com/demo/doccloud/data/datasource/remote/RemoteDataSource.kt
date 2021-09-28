@@ -1,14 +1,12 @@
 package com.demo.doccloud.data.datasource.remote
 
 import android.content.Intent
-import com.demo.doccloud.domain.entities.Doc
-import com.demo.doccloud.domain.entities.Photo
-import com.demo.doccloud.domain.entities.SyncStrategy
-import com.demo.doccloud.domain.entities.User
+import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.Result
 
 interface RemoteDataSource {
-    suspend fun doLoginWithGoogle(data: Intent?, customId: Long) : User
+    suspend fun doLoginWithGoogle(data: Intent?) : User
+    suspend fun registerUser(params: SignUpParams) : User
     suspend fun getUser() : User
     suspend fun doLogout()
     suspend fun uploadDocFirebase(doc: Doc)
@@ -19,4 +17,5 @@ interface RemoteDataSource {
     suspend fun syncData(customId: Long): List<Doc>
     suspend fun getSyncStrategy() : SyncStrategy
     suspend fun addPhotosDoc(remoteId: Long, photos: List<Photo>, newJsonPages: String)
+    suspend fun sendCustomIdForceUpdate(customId: Long)
 }

@@ -8,7 +8,17 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.demo.doccloud.ui.login.LoginFragment"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_registerUser"
+            app:destination="@id/registerUser" />
+    </fragment>
+
+     <dialog
+        android:id="@+id/registerUser"
+        android:name="com.demo.doccloud.ui.register.RegisterFragment"
+        tools:layout="@layout/signup_dialog" />
+
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.demo.doccloud.ui.home.HomeFragment"

@@ -9,6 +9,7 @@ import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.*
 import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOC_NAME_KEY
@@ -30,7 +31,9 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -53,7 +56,7 @@ class FirebaseServices @Inject constructor(
     private val database: FirebaseDatabase,
     @ApplicationContext private val context: Context
 ) : RemoteDataSource {
-    override suspend fun doLoginWithGoogle(data: Intent?, customId: Long): User {
+    override suspend fun doLoginWithGoogle(data: Intent?): User {
         return withContext(dispatcher) {
             try {
                 val signedInTask: Task<GoogleSignInAccount> =
@@ -63,24 +66,27 @@ class FirebaseServices @Inject constructor(
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 val signInCredentialTask = auth.signInWithCredential(credential)
                 signInCredentialTask.await()
-                //send customId to database
-                val userId: String =
-                    auth.currentUser?.uid ?: throw Exception(context.getString(R.string.login_user_with_no_id))
-                //Firebase Database
-                val database = database.reference
-                //reference to save values into database
-                val refDatabase = database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
-
-                //save into Real Database
-                //set lastUpdated (field from Sync Strategy Model) to 0 (TIMESTAMP) (See SyncDataWorker)
-                //set customId
-
-                val mapDatabase: HashMap<String, String> = hashMapOf(
-                    REMOTE_DATABASE_CUSTOM_ID_KEY to customId.toString(),
-                    DATABASE_LAST_UPDATED_KEY to 0L.toString()
-                )
-                val sendValuesTask = refDatabase.setValue(mapDatabase)
-                sendValuesTask.await()
+                //STOP
+//                //send customId to database
+//                val userId: String =
+//                    auth.currentUser?.uid
+//                        ?: throw Exception(context.getString(R.string.login_user_with_no_id))
+//                //Firebase Database
+//                val database = database.reference
+//                //reference to save values into database
+//                val refDatabase =
+//                    database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
+//
+//                //save into Real Database
+//                //set lastUpdated (field from Sync Strategy Model) to 0 (TIMESTAMP) (See SyncDataWorker)
+//                //set customId
+//
+//                val mapDatabase: HashMap<String, String> = hashMapOf(
+//                    REMOTE_DATABASE_CUSTOM_ID_KEY to customId.toString(),
+//                    DATABASE_LAST_UPDATED_KEY to 0L.toString()
+//                )
+//                val sendValuesTask = refDatabase.setValue(mapDatabase)
+//                sendValuesTask.await()
                 return@withContext auth.currentUser?.asDomain()!!
             } catch (e: Exception) {
                 if (e is ApiException) {
@@ -89,10 +95,59 @@ class FirebaseServices @Inject constructor(
                 if (e is NetworkErrorException || e is HttpException) {
                     throw Exception(context.getString(R.string.common_no_internet))
                 }
+                Timber.d(e.toString())
                 throw Exception(context.getString(R.string.common_unknown_error))
             }
         }
     }
+
+    override suspend fun registerUser(params: SignUpParams) =
+        withContext(dispatcher) {
+            try {
+                val authTask =
+                    auth.createUserWithEmailAndPassword(params.email, params.password)
+                authTask.await()
+            } catch (e: Exception) {
+                throw Exception(context.getString(R.string.signup_error_on_register_user))
+            }
+
+            val firebaseUser: FirebaseUser = auth.currentUser
+                ?: throw Exception(context.getString(R.string.signup_error_user_not_found))
+
+            try {
+                val profileUpdates =
+                    UserProfileChangeRequest.Builder().setDisplayName(params.name).build()
+                val updateProfileTask = firebaseUser.updateProfile(profileUpdates)
+                updateProfileTask.await()
+            } catch (e: Exception) {
+                throw Exception(context.getString(R.string.signup_error_update_user_profile))
+            }
+            return@withContext firebaseUser.asDomain()
+            //STOP
+//            //send customId to database
+//            val userId: String = firebaseUser.uid
+//            //Firebase Database
+//            val database = database.reference
+//            //reference to save values into database
+//            val refDatabase =
+//                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
+//
+//            //save into Real Database
+//            //set lastUpdated (field from Sync Strategy Model) to 0 (TIMESTAMP) (See SyncDataWorker)
+//            //set customId
+//
+//            val mapDatabase: HashMap<String, String> = hashMapOf(
+//                REMOTE_DATABASE_CUSTOM_ID_KEY to customId.toString(),
+//                DATABASE_LAST_UPDATED_KEY to 0L.toString()
+//            )
+//            try {
+//                val sendValuesTask = refDatabase.setValue(mapDatabase)
+//                sendValuesTask.await()
+//                return@withContext firebaseUser.asDomain()
+//            }catch (e: Exception){
+//                throw Exception(context.getString(R.string.signup_error_send_custom_id_to_server))
+//            }
+        }
 
     override suspend fun getUser(): User {
         return withContext(dispatcher) {
@@ -105,7 +160,7 @@ class FirebaseServices @Inject constructor(
         }
     }
 
-    override suspend fun doLogout(){
+    override suspend fun doLogout() {
         //this code bellow make user choose an account whenever he do log in after a logout
         return withContext(dispatcher) {
             auth.signOut()
@@ -128,7 +183,8 @@ class FirebaseServices @Inject constructor(
     override suspend fun uploadDocFirebase(doc: Doc) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //send all photos to cloud
@@ -180,7 +236,8 @@ class FirebaseServices @Inject constructor(
     override suspend fun deleteDocFirebase(remoteId: Long, pages: List<Photo>) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //delete all photos from server
@@ -218,7 +275,8 @@ class FirebaseServices @Inject constructor(
     override suspend fun updateDocNameFirebase(remoteId: Long, name: String) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Database
             val database = database.reference
             //reference to save values into database
@@ -240,7 +298,8 @@ class FirebaseServices @Inject constructor(
     override suspend fun updateDocPhotoFirebase(remoteId: Long, photo: Photo) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //delete old photo from server
@@ -273,7 +332,8 @@ class FirebaseServices @Inject constructor(
     ) {
         withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Storage
             val fireStorage = storage.reference
             //delete photo from server
@@ -310,7 +370,8 @@ class FirebaseServices @Inject constructor(
     override suspend fun syncData(customId: Long): List<Doc> {
         return withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Database
             val database = database.reference
             //reference to delete values from database
@@ -356,7 +417,8 @@ class FirebaseServices @Inject constructor(
 
             //update sync strategy info on firebase
             //reference to save values into database
-            val refSyncStrategy = database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY" )
+            val refSyncStrategy =
+                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
             //save into Real Database
             //set lastUpdated (field from Sync Strategy Model) to NOW (TIMESTAMP) (See SyncDataWorker)
             val mapDatabase: HashMap<String, Any> = HashMap()
@@ -371,9 +433,10 @@ class FirebaseServices @Inject constructor(
     }
 
     override suspend fun getSyncStrategy(): SyncStrategy {
-       return withContext(dispatcher) {
+        return withContext(dispatcher) {
             val userId: String =
-                auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
             //Firebase Database
             val database = database.reference
             //reference to get expiration info
@@ -429,13 +492,14 @@ class FirebaseServices @Inject constructor(
 
                 //expiration is localed on app level directory on firebase
                 val expiration =
-                    expirationDataSnapshot.child(DATABASE_APP_LEVEL_EXPIRATION_KEY).value.toString()
+                    expirationDataSnapshot.child("$DATABASE_APP_LEVEL_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXPIRATION_KEY").value.toString()
                 return@withContext SyncStrategy(
                     expiration = expiration.toLong(),
                     lastUpdated = lastUpdated.toLong(),
                     customId = customId.toLong()
                 )
             } catch (e: Exception) {
+                Timber.d(e.printStackTrace().toString())
                 throw e
             }
         }
@@ -443,7 +507,8 @@ class FirebaseServices @Inject constructor(
 
     override suspend fun addPhotosDoc(remoteId: Long, photos: List<Photo>, newJsonPages: String) {
         val userId: String =
-            auth.currentUser?.uid ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+            auth.currentUser?.uid
+                ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
         //Firebase Storage
         val fireStorage = storage.reference
         //send all photos to cloud
@@ -476,6 +541,35 @@ class FirebaseServices @Inject constructor(
             task.await()
         } catch (e: Exception) {
             throw Exception(e)
+        }
+    }
+
+    override suspend fun sendCustomIdForceUpdate(customId: Long) {
+        withContext(dispatcher){
+            //send customId to database
+            val userId: String =
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+            //Firebase Database
+            val database = database.reference
+            //reference to save values into database
+            val refDatabase =
+                database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
+
+            //save into Real Database
+            //set lastUpdated (field from Sync Strategy Model) to 0 (TIMESTAMP) (See SyncDataWorker)
+            //set customId
+
+            val mapDatabase: HashMap<String, String> = hashMapOf(
+                REMOTE_DATABASE_CUSTOM_ID_KEY to customId.toString(),
+                DATABASE_LAST_UPDATED_KEY to 0L.toString()
+            )
+            try {
+                val sendValuesTask = refDatabase.setValue(mapDatabase)
+                sendValuesTask.await()
+            }catch (e: Exception){
+                throw Exception(context.getString(R.string.common_error_send_custom_id_to_server))
+            }
         }
     }
 

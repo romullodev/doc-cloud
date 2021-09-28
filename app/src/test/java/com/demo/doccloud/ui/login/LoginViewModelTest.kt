@@ -7,6 +7,7 @@ import androidx.test.espresso.IdlingResource
 import com.demo.doccloud.*
 import com.demo.doccloud.domain.usecases.impl.DoLoginWithGoogleImpl
 import com.demo.doccloud.domain.usecases.impl.SaveCustomIdSyncStrategyImpl
+import com.demo.doccloud.domain.usecases.impl.SendCustomIdAndForceUpdateImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -32,7 +33,8 @@ class LoginViewModelTest{
         repository = FakeRepository(ApplicationProvider.getApplicationContext())
         val fakeScheduleToSyncData = FakeScheduleToSyncDataImpl()
         val saveCustomIdSyncStrategy = SaveCustomIdSyncStrategyImpl(repository)
-        val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, repository)
+        val sendCustomIdAndForceUpdate = SendCustomIdAndForceUpdateImpl(repository)
+        val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, sendCustomIdAndForceUpdate, repository)
         loginViewModel = LoginViewModel(fakeScheduleToSyncData, doLoginWithGoogle)
     }
     @After
