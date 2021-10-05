@@ -46,6 +46,8 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun registerUser(params: SignUpParams) = remoteDatasource.registerUser(params)
 
+    override suspend fun recoverPassword(email: String) = remoteDatasource.recoverPassword(email)
+
     override suspend fun getUser() = remoteDatasource.getUser()
 
     override suspend fun doLogout() {

@@ -5,6 +5,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import com.demo.doccloud.*
+import com.demo.doccloud.domain.usecases.contracts.SaveCustomIdSyncStrategy
+import com.demo.doccloud.domain.usecases.contracts.SendCustomIdAndForceUpdate
+import com.demo.doccloud.domain.usecases.impl.DoLoginByEmailImpl
 import com.demo.doccloud.domain.usecases.impl.DoLoginWithGoogleImpl
 import com.demo.doccloud.domain.usecases.impl.SaveCustomIdSyncStrategyImpl
 import com.demo.doccloud.domain.usecases.impl.SendCustomIdAndForceUpdateImpl
@@ -35,7 +38,8 @@ class LoginViewModelTest{
         val saveCustomIdSyncStrategy = SaveCustomIdSyncStrategyImpl(repository)
         val sendCustomIdAndForceUpdate = SendCustomIdAndForceUpdateImpl(repository)
         val doLoginWithGoogle = DoLoginWithGoogleImpl(saveCustomIdSyncStrategy, sendCustomIdAndForceUpdate, repository)
-        loginViewModel = LoginViewModel(fakeScheduleToSyncData, doLoginWithGoogle)
+        val doLoginByEmail = DoLoginByEmailImpl(saveCustomIdSyncStrategy, sendCustomIdAndForceUpdate, repository)
+        loginViewModel = LoginViewModel(fakeScheduleToSyncData, doLoginWithGoogle, doLoginByEmail)
     }
     @After
     fun teardown(){
@@ -53,7 +57,7 @@ class LoginViewModelTest{
     @Test
     fun `do login with empty username field`() = mainCoroutineRule.runBlockingTest {
         loginViewModel.password = "any"
-        loginViewModel.doLogin()
+        loginViewModel.doLoginByEmail()
         val value = loginViewModel.loginState.getOrAwaitValue()
         assertThat(value.getContentIfNotHandled()).isInstanceOf(LoginViewModel.LoginState.InvalidCredentials::class.java)
     }

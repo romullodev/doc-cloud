@@ -37,3 +37,12 @@ https://developer.android.com/training/testing/espresso/intents
 
 about lifecycle on DialogFragment
 https://stackoverflow.com/questions/54766112/getviewlifecycleowner-in-dialogfragment-leads-to-crash
+
+problem with roboletric tests
+https://github.com/grpc/grpc-java/issues/8264
+
+runBlock and threads
+https://proandroiddev.com/how-to-deadlock-your-android-app-with-runblocking-8dab02c2624d
+
+include modules with Hilt
+https://stackoverflow.com/questions/66505024/error-dagger-missingbinding-swiperepository-cannot-be-provided-without-an-pr

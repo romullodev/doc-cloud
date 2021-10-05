@@ -12,12 +12,20 @@
         <action
             android:id="@+id/action_loginFragment_to_registerUser"
             app:destination="@id/registerUser" />
+        <action
+            android:id="@+id/action_loginFragment_to_forgotFragment"
+            app:destination="@id/forgotFragment" />
     </fragment>
 
      <dialog
         android:id="@+id/registerUser"
         android:name="com.demo.doccloud.ui.register.RegisterFragment"
         tools:layout="@layout/signup_dialog" />
+
+    <dialog
+        android:id="@+id/forgotFragment"
+        android:name="com.demo.doccloud.ui.forgot.ForgotFragment"
+        tools:layout="@layout/forgot_fragment" />
 
     <fragment
         android:id="@+id/homeFragment"

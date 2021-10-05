@@ -37,6 +37,10 @@ Este aplicativo foi desenvolido utilizando o padrão de design Model-View-ViewMo
 </p>
 
 <p align="center">
+  <img width="320" height="568" src=img/ForgotEmailScreen.jpeg>
+</p>
+
+<p align="center">
   <img width="320" height="568" src=img/HomeScreen.jpeg>
 </p>
 

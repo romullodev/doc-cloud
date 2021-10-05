@@ -98,4 +98,6 @@ abstract class UseCaseModule {
     @Binds
     abstract fun bindDoLoginByEmailUseCase(doLoginByEmail: DoLoginByEmailImpl): DoLoginByEmail
 
+    @Binds
+    abstract fun bindRecoverPasswordUseCase(recoverPassword: RecoverPasswordImpl): RecoverPassword
 }

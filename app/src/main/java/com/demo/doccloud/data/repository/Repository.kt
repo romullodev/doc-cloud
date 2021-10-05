@@ -13,6 +13,7 @@ interface Repository {
     suspend fun doLoginWithGoogle(data: Intent?) : User
     suspend fun doLoginByEmail(email: String, password: String): User
     suspend fun registerUser(params: SignUpParams) : User
+    suspend fun recoverPassword(email: String)
     suspend fun getUser() : User
     suspend fun doLogout()
     suspend fun saveDoc(doc: Doc) : Long

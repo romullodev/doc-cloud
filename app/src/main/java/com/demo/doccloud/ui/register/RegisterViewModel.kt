@@ -96,7 +96,7 @@ class RegisterViewModel @Inject constructor(
     companion object {
         val INPUT_NAME =
             "INPUT_NAME" to R.string.signup_field_invalid_name
-        val INPUT_EMAIL = "INPUT_EMAIL" to R.string.signup_field_invalid_email
+        val INPUT_EMAIL = "INPUT_EMAIL" to R.string.common_field_invalid_email
         val INPUT_PASSWORD =
             "INPUT_PASSWORD" to R.string.signup_field_invalid_password
         val INPUT_CONFIRM_PASSWORD =

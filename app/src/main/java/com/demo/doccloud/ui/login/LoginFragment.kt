@@ -100,6 +100,9 @@ class LoginFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
         binding.textViewLoginRegistration.setOnClickListener {
             findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegisterUser())
         }
+        binding.textViewLoginForgot.setOnClickListener {
+            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToForgotFragment())
+        }
     }
 
     private fun setupObservers() {

@@ -109,6 +109,10 @@ class FakeRepository @Inject constructor(
         //idlingResourceBooleanVersion.setIdleState(true)
     }
 
+    override suspend fun doLoginByEmail(email: String, password: String): User {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun registerUser(params: SignUpParams): User {
         return wrapEspressoIdlingResource {
             return@wrapEspressoIdlingResource withContext(dispatcher){
@@ -121,6 +125,10 @@ class FakeRepository @Inject constructor(
                 )
             }
         }
+    }
+
+    override suspend fun recoverPassword(email: String) {
+        TODO("Not yet implemented")
     }
 
     override suspend fun doLogout(){

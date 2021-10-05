@@ -161,6 +161,13 @@ class FirebaseServices @Inject constructor(
 //            }
         }
 
+    override suspend fun recoverPassword(email: String){
+        withContext(dispatcher){
+            val taskSend = auth.sendPasswordResetEmail(email)
+            taskSend.await()
+        }
+    }
+
     override suspend fun getUser(): User {
         return withContext(dispatcher) {
             auth.currentUser?.let {
