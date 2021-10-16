@@ -1,14 +1,12 @@
 package com.demo.doccloud.ui.camera
 
 import android.content.Context
-import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.GlobalVariablesTest
 import com.demo.doccloud.MainCoroutineRule
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.getOrAwaitValue
-import com.demo.doccloud.ui.crop.CropViewModel
 import com.google.common.truth.Truth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After

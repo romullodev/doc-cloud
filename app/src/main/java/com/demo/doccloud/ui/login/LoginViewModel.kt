@@ -28,10 +28,6 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel(),
     LoadingDialogViewModel {
 
-    //fragment_login.xml use this variables to set login and password by Two-way data binding
-    var login: String = ""
-    var password: String = ""
-
     //handle Login states
     sealed class LoginState {
         object Authenticated : LoginState()
@@ -43,6 +39,10 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableLiveData<Event<LoginState>>()
     val loginState: LiveData<Event<LoginState>>
         get() = _loginState
+
+    //fragment_login.xml use this variables to set login and password by Two-way data binding
+    var login: String = ""
+    var password: String = ""
 
     fun doLoginWithGoogle(data: Intent?){
         showDialog(R.string.loading_dialog_message_login)

@@ -141,34 +141,20 @@ class FakeRepository @Inject constructor(
         }
         //do nothing
     }
-
-//    override suspend fun doLoginWithGoogle(data: Intent?) = runBlocking {
-//        if (shouldThrowNetworkingException) {
-//            return@runBlocking Result.error(context.getString(R.string.common_no_internet))
-//        }
-//        if (hasDelay) {
-//            delay(3000)
-//        }
-//        if (shouldReturnErrorOnLogin) {
-//            return@runBlocking Result.error(context.getString(R.string.login_error_api_google))
-//        }
-//        return@runBlocking Result.success(User("any", "any"))
-//    }
-
-    override suspend fun getUser() = runBlocking {
-        if(shouldThrowExceptionWhenGetUser){
-            throw Exception()
+    override suspend fun getUser(): User {
+        return wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource withContext(dispatcher){
+                if(shouldThrowExceptionWhenGetUser){
+                    throw Exception()
+                }
+                return@withContext User(
+                    displayName = "any",
+                    userId = "any"
+                )
+            }
         }
-        return@runBlocking User(
-            displayName = "any",
-            userId = "any"
-        )
     }
 
-
-//    override suspend fun getUser() = runBlocking {
-//        return@runBlocking Result.success(User("any", "any"))
-//    }
 
     override suspend fun saveDoc(doc: Doc): Long{
         return wrapEspressoIdlingResource {
@@ -335,7 +321,6 @@ class FakeRepository @Inject constructor(
             pages = listOf(),
             status = DocStatus.NOT_SENT,
         )
-        val idlingResourceBooleanVersion = IdlingResourceBooleanVersion()
     }
 
 }

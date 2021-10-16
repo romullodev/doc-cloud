@@ -42,7 +42,7 @@ object HelperDatasourceModule {
 
     @Singleton
     @Provides
-    fun provideSigDatabase(@ApplicationContext app: Context): AppDatabase {
+    fun provideAppDatabase(@ApplicationContext app: Context): AppDatabase {
         return Room.databaseBuilder(
             app,
             AppDatabase::class.java,

@@ -70,7 +70,7 @@ class EditCropFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
         viewModel.cropState.observe(viewLifecycleOwner){
             it.getContentIfNotHandled()?.let { state->
                 when(state){
-                    is EditViewModel.CropState.CropAlertDialog -> {
+                    is EditViewModel.EditCropState.CropAlertDialog -> {
                         DialogsHelper.showAlertDialog(
                             DialogsHelper.getInfoAlertParams(
                                 msg = getString(state.msg)

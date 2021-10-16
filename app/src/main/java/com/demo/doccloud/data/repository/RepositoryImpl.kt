@@ -100,7 +100,6 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun addPhotos(localId: Long, photos: List<Photo>) {
         localDatasource.addPhotosToDoc(localId = localId, photos = photos)
-        //setupAddPhotoDocSchedule(localId = localId, photosId = photos.map { it.id })
     }
 
     override suspend fun saveLong(key: String, value: Long) {

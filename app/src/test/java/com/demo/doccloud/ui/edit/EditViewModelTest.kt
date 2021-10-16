@@ -7,6 +7,7 @@ import com.demo.doccloud.*
 import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.usecases.impl.*
+import com.demo.doccloud.ui.crop.CropViewModel
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.ListPhotoArg
 import com.demo.doccloud.utils.RootDestination
@@ -162,8 +163,8 @@ class EditViewModelTest {
     fun `throw unknown exception when update doc photo`(){
         GlobalVariablesTest.shouldThrowException = true
         editViewModel.updateDocPhoto(Uri.EMPTY)
-        val value = editViewModel.editState.getOrAwaitValue()
-        Truth.assertThat((value.getContentIfNotHandled() as EditViewModel.EditState.EditAlertDialog).msg).isEqualTo(
+        val value = editViewModel.cropState.getOrAwaitValue()
+        Truth.assertThat((value.getContentIfNotHandled() as EditViewModel.EditCropState.CropAlertDialog).msg).isEqualTo(
             R.string.common_unknown_error
         )
     }

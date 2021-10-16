@@ -71,6 +71,7 @@ class CropViewModel @Inject constructor(
                 )
                 navigateToRoot()
             }catch (e: Exception){
+                Timber.d(e.toString())
                 _cropState.value = Event(
                     CropState.CropAlertDialog(
                         R.string.common_unknown_error
@@ -86,6 +87,7 @@ class CropViewModel @Inject constructor(
                 addPhotosUseCase(localId!!, listPhoto.value!!)
                 _navigationCommands.value = Event(NavigationCommand.ToRoot)
             }catch (e: Exception){
+                Timber.d(e.toString())
                 _cropState.value = Event(
                     CropState.CropAlertDialog(
                         R.string.common_unknown_error

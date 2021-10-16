@@ -186,7 +186,7 @@ dependencies {
     implementation "androidx.hilt:hilt-work:$hilt_work_manager_version"
 
     //work manager
-    def work_version = "2.5.0"
+    def work_version = "2.6.0"
     implementation "android.arch.work:work-runtime-ktx:$work_version"
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
@@ -249,5 +249,6 @@ dependencies {
 
     def mockk_version = '1.12.0'
     testImplementation "io.mockk:mockk:$mockk_version"
+    androidTestImplementation "io.mockk:mockk-android:$mockk_version"
 
 }

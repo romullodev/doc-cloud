@@ -39,16 +39,16 @@ class EditViewModel @Inject constructor(
         class EditAlertDialog(val msg: Int) : EditState()
     }
 
-    sealed class CropState {
-        class CropAlertDialog(val msg: Int) : CropState()
+    sealed class EditCropState {
+        class CropAlertDialog(val msg: Int) : EditCropState()
     }
 
     private val _editState = MutableLiveData<Event<EditState>>()
     val editState: LiveData<Event<EditState>>
         get() = _editState
 
-    private val _cropState = MutableLiveData<Event<CropState>>()
-    val cropState: LiveData<Event<CropState>>
+    private val _cropState = MutableLiveData<Event<EditCropState>>()
+    val cropState: LiveData<Event<EditCropState>>
         get() = _cropState
 
 
@@ -182,8 +182,9 @@ class EditViewModel @Inject constructor(
                     photo = selectedPhoto.value!!
                 )
             }catch (e: Exception){
+                Timber.d(e.toString())
                 _cropState.value = Event(
-                    CropState.CropAlertDialog(R.string.common_unknown_error)
+                    EditCropState.CropAlertDialog(R.string.common_unknown_error)
                 )
             }
         }

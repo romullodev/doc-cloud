@@ -47,7 +47,7 @@ class AppLocalServices @Inject constructor(
     }
 
     override suspend fun updateDocName(id: Long, name: String) = withContext(dispatcher) {
-        val doc = appDatabase.docDao.getDoc(id)
+        val doc : DatabaseDoc = appDatabase.docDao.getDoc(id)
         appDatabase.docDao.update(doc.copy(name = name, status = DocStatus.NOT_SENT))
     }
 
@@ -76,38 +76,6 @@ class AppLocalServices @Inject constructor(
         appDatabase.docDao.clearTable()
         appDatabase.docDao.insertAll(docs.asDatabase())
     }
-
-//    override suspend fun getSavedCustomId(): Long {
-//        return withContext(dispatcher) {
-//            val result =  persistSimpleData.getLong(
-//                LOCAL_DATABASE_CUSTOM_ID_KEY,
-//                DATABASE_DEFAULT_CUSTOM_ID
-//            )
-//            when(result.status){
-//                Result.Status.SUCCESS -> {
-//                    return@withContext result.data!!
-//                }
-//                Result.Status.ERROR -> {
-//                    return@withContext DATABASE_DEFAULT_CUSTOM_ID
-//                }
-//            }
-//        }
-//    }
-//
-//    override suspend fun saveCustomId(): Result<Long> {
-//        return withContext(dispatcher) {
-//            val id = System.currentTimeMillis()
-//            val result = persistSimpleData.saveLong(LOCAL_DATABASE_CUSTOM_ID_KEY, id)
-//            when(result.status){
-//                Result.Status.SUCCESS -> {
-//                    return@withContext Result.success(id)
-//                }
-//                Result.Status.ERROR -> {
-//                    return@withContext Result.error("failure on save custom id", null)
-//                }
-//            }
-//        }
-//    }
 
     override suspend fun addPhotosToDoc(localId: Long, photos: List<Photo>) {
         withContext(dispatcher){

@@ -36,7 +36,7 @@ class FakeGenerateDocPdfImpl @Inject constructor(
     }
 }
 class FakeCopyFileImpl @Inject constructor(): CopyFile {
-    override suspend fun invoke(uri: Uri): File? {
+    override suspend fun invoke(uri: Uri): File {
         if(GlobalVariablesTest.shouldThrowException){
             throw Exception()
         }

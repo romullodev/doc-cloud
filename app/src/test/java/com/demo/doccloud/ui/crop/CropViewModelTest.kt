@@ -87,7 +87,7 @@ class CropViewModelTest {
 
     @Test
     fun `add photos and navigate to root`() {
-        cropViewModel.addPhotos(localId = -1L)
+        cropViewModel.addPhotos(localId = 1L)
         val value = cropViewModel.navigationCommands.getOrAwaitValue()
         Truth.assertThat(value.getContentIfNotHandled()).isEqualTo(CropViewModel.NavigationCommand.ToRoot)
     }

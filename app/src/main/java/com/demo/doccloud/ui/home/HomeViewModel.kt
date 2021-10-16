@@ -30,6 +30,14 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel(),
     LoadingDialogViewModel {
 
+    private val _navigationCommands = MutableLiveData<Event<NavigationCommand>>()
+    val navigationCommands: LiveData<Event<NavigationCommand>>
+        get() = _navigationCommands
+
+    init {
+        setupInitVariables()
+    }
+
     //this liveData is used from xml
     var docs: LiveData<List<Doc>> = getAllDocsUseCase()
 
@@ -55,10 +63,6 @@ class HomeViewModel @Inject constructor(
     sealed class NavigationCommand {
         data class To(val directions: NavDirections) : NavigationCommand()
     }
-
-    private val _navigationCommands = MutableLiveData<Event<NavigationCommand>>()
-    val navigationCommands: LiveData<Event<NavigationCommand>>
-        get() = _navigationCommands
 
     //helper method to help navigate using navigation command
     fun navigate(directions: NavDirections) {
@@ -137,6 +141,7 @@ class HomeViewModel @Inject constructor(
                     )
                 )
             }catch (e: Exception){
+                Timber.d(e.toString())
                 _homeState.value = Event(
                     HomeState.HomeAlertDialog(
                         R.string.home_alert_error_copy_image_from_gallery
@@ -161,10 +166,6 @@ class HomeViewModel @Inject constructor(
                 navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
             }
         }
-    }
-
-    init {
-        setupInitVariables()
     }
 
     //handle loading dialog to show feedback to user (this approaches does not depend on Fragments)
