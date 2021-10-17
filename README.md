@@ -4,7 +4,6 @@
 Este aplicativo é destinado ao gerenciamento e backup em nuvem de documentos no formato PDF. O registro dos documentos pode ser feito pela câmera do dispositivo ou pela seleção de fotos na galeria, com possibilidade de recorte das imagens obtidas. Além disso, o App foi projetado para ser funcional no modo offline, com sincronização automática após estabelecer conexão com a internt.
 
 ## Implementação
-# Aplicativo Doc Cloud
 Este aplicativo foi desenvolido utilizando o padrão de design Model-View-ViewModel (MVVM), utilizando os conceitos do Single-Activity, com diversas bibliotecas do android Jetpack como, por exemplo, Navigation Component, ViewModel e Databinding. Além disso, este app utiliza injenção de dependência com Hilt e possui testes locais (com Robolectric) e instrumentados (com Espresso) em todas as telas. Para salvar os documentos registrados, o app possui integração com o Firebase, utilizando o Realtime Database para o armazenamento dos dados e o Storage para os arquivos.
 
 A sincronização dos documentos registrados em nuvem com o aplicativo é realizada da seguinte maneira:
