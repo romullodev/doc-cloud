@@ -1,0 +1,138 @@
+<resources>
+    <string name="app_name">DocCloud</string>
+
+    <!-- Work Manager -->
+    <string name="work_manager_failure_recover_list_or_id">falha ao recuperar a lista ou localId</string>
+
+
+    <!-- Shared Preference -->
+    <string name="share_preference_doc_cloud_app_file_key">SharePreferenceDocCloudFileKey</string>
+    <string name="share_preference_instance_error">failure on get  sharedPreference instance</string>
+
+
+    <!-- Login Screen -->
+    <string name="login_doc_cloud_name">Doc Cloud</string>
+    <string name="login_user_with_no_id">Erro ao recuperar ID do usuário. Tente novamente.</string>
+    <string name="login_password_hint">Senha</string>
+    <string name="login_email_hint">E-mail</string>
+    <string name="login_sign_in">entrar</string>
+    <string name="login_sign_in_google">continuar com o google</string>
+    <string name="login_no_account">Não tem conta?</string>
+    <string name="login_sign_up">Cadastre-se</string>
+    <string name="login_forgot_password">Esqueci minha senha</string>
+    <string name="login_input_layout_error_invalid">Insira seu login</string>
+    <string name="login_input_password_error">Insira sua senha</string>
+    <string name="login_invalid_login_or_password">Login ou senha inválido(s)</string>
+    <string name="login_error_api_google">Houve um erro com o Google. Tente novamente!</string>
+    <string name="login_revokeAccess">Erro ao revogar acesso do google durante o logout</string>
+    <string name="login_error_sign_in_with_email">Usuário não encontrado</string>
+    <string name="login_error_retrieve_logged_user">Um erro ocorreu ao recuperar o usuário. Tente novamente.</string>
+
+    <!-- Common -->
+    <string name="common_no_internet">Sem conexão. Conecte-se para continuar!</string>
+    <string name="common_delete_label">Excluir</string>
+    <string name="common_user_not_logged_in">O usuário não está logado</string>
+    <string name="common_unknown_error">Ocorreu um erro desconhecido. Tente novamente</string>
+    <string name="common_share_with">Compartilhar com</string>
+    <string name="common_error_send_custom_id_to_server">Erro ao enviar dados ao servidor!</string>
+    <string name="common_field_invalid_email">Insira um email válido</string>
+
+
+    <!-- Home Screen -->
+    <string name="home_menu_logout">Sair</string>
+    <string name="home_doc_name">Nome: %1$s</string>
+    <string name="home_doc_date">Data: %1$s</string>
+    <string name="home_doc_status">Status: %1$s</string>
+    <string name="home_new_doc_menu">Novo Documento</string>
+    <string name="home_doc_item_share">Compartilhar</string>
+    <string name="home_doc_item_edit">Editar</string>
+    <string name="home_new_doc_dialog_camera">Câmera</string>
+    <string name="home_new_doc_dialog_gallery">Galeria</string>
+    <string name="home_select_option_label">Selecione uma opção:</string>
+    <string name="home_recent_label">Recentes</string>
+    <string name="home_toast_delete_success">%1$s foi excluído</string>
+    <string name="home_toast_delete_error">Erro ao excluir documento. Tente novamente.</string>
+    <string name="home_doc_status_sent">Enviado</string>
+    <string name="home_doc_status_sending">Enviando…</string>
+    <string name="home_doc_status_not_sent">Não Enviado</string>
+    <string name="home_welcome_title">Olá, %1$s</string>
+    <string name="home_month_january">janeiro</string>
+    <string name="home_month_february">fevereiro</string>
+    <string name="home_month_march">março</string>
+    <string name="home_month_april">abril</string>
+    <string name="home_month_may">maio</string>
+    <string name="home_month_june">junho</string>
+    <string name="home_month_july">julho</string>
+    <string name="home_month_august">agosto</string>
+    <string name="home_month_september">setembro</string>
+    <string name="home_month_october">outubro</string>
+    <string name="home_month_november">november</string>
+    <string name="home_month_december">dezembro</string>
+    <string name="home_week_sunday">Domingo</string>
+    <string name="home_week_monday">Segunda-Feira</string>
+    <string name="home_week_tuesday">Terça-Feira</string>
+    <string name="home_week_wednesday">Quarta-Feira</string>
+    <string name="home_week_thursday">Quinta-Feira</string>
+    <string name="home_week_friday">Sexta-Feira</string>
+    <string name="home_week_saturday">Sábado</string>
+    <string name="home_welcome_subtitle">%1$s, %2$s de %3$s</string>
+    <string name="home_alert_error_generate_pdf">Erro ao gerar PDF. Tente novamente.</string>
+    <string name="home_alert_error_copy_image_from_gallery">Um erro ocorreu com sua galeria. Tente novamente.</string>
+
+    <!-- Crop Screen -->
+    <string name="crop_screen_title">Recortar</string>
+    <string name="crop_screen_touch_label">Toque na Foto</string>
+    <string name="crop_screen_continue_label">Continuar</string>
+    <string name="crop_screen_add_label">Adicionar</string>
+    <string name="crop_screen_dialog_title_label">Insira um nome</string>
+    <string name="crop_screen_dialog_hint">Nome</string>
+    <string name="crop_screen_cancel_btn">Cancelar</string>
+    <string name="crop_screen_save_btn">Salvar</string>
+    <string name="crop_screen_error_on_save_crop">Erro ao recortar imagem. Tente novamente</string>
+
+    <!-- Edit Screen -->
+    <string name="edit_screen_rename_doc_dialog">Renomear para</string>
+    <string name="edit_screen_menu_share" translatable="false">share</string>
+    <string name="edit_screen_menu_crop" translatable="false">crop</string>
+
+    <!-- Loading dialog messages -->
+    <string name="loading_dialog_message_login">Entrando …</string>
+    <string name="loading_dialog_message_logout">Saindo …</string>
+    <string name="loading_dialog_message_searching">Buscando …</string>
+    <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
+    <string name="loading_dialog_message_generating_pdf">Gerando PDF …</string>
+
+    <!-- Alerts Dialogs -->
+    <string name="alert_dialog_info_tittle">Atenção</string>
+    <string name="alert_dialog_info_ok_button">OK</string>
+    <string name="alert_dialog_yes_button">SIM</string>
+    <string name="alert_dialog_No_button">NÃO</string>
+    <string name="alert_dialog_question_delete_tittle">Excluir</string>
+    <string name="alert_dialog_question_delete_msg">Deseja realmente excluir?</string>
+
+    <!-- Register Dialog -->
+    <string name="signup_field_invalid_name">Insira um nome válido</string>
+    <string name="signup_field_invalid_password">Insira números e letras com no mínimo 6 caracteres</string>
+    <string name="signup_field_invalid_confirm_password">Senha diferente da informada</string>
+    <string name="signup_field_name_label">Nome</string>
+    <string name="signup_field_name_hint">Nome</string>
+    <string name="signup_field_email_label">E-mail</string>
+    <string name="signup_field_password_label">Senha</string>
+    <string name="signup_field_password_hint">Senha</string>
+    <string name="signup_field_password_insert_again_label">Repita sua senha</string>
+    <string name="signup_sign_up_button">Cadastrar</string>
+
+
+    <string name="signup_error_email_already_exists">Email informado já em uso!</string>
+    <string name="signup_error_user_not_found">Erro ao recuperar usuário registrado!</string>
+    <string name="signup_error_on_register_user">Erro ao registrar usuário!</string>
+    <string name="signup_error_update_user_profile">Erro ao atualizar dados do usuário registrado!</string>
+
+    <!-- Forgot Dialog -->
+    <string name="forgot_check_your_email">Verifique sua caixa de entrada.</string>
+    <string name="forgot_insert_your_email">Insira seu email</string>
+    <string name="forgot_recover_email">recuperar</string>
+
+
+
+</resources>

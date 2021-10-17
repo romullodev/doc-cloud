@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.demo.doccloud.ui.login.LoginFragment"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_registerUser"
+            app:destination="@id/registerUser" />
+        <action
+            android:id="@+id/action_loginFragment_to_forgotFragment"
+            app:destination="@id/forgotFragment" />
+    </fragment>
+
+     <dialog
+        android:id="@+id/registerUser"
+        android:name="com.demo.doccloud.ui.register.RegisterFragment"
+        tools:layout="@layout/signup_dialog" />
+
+    <dialog
+        android:id="@+id/forgotFragment"
+        android:name="com.demo.doccloud.ui.forgot.ForgotFragment"
+        tools:layout="@layout/forgot_fragment" />
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.demo.doccloud.ui.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/home_fragment">
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_editFragment"
+            app:destination="@id/edit_navigation">
+            <argument
+                android:name="docLocalId"
+                app:argType="long" />
+            <argument
+                android:name="docRemoteId"
+                app:argType="long" />
+        </action>
+        <action
+            android:id="@+id/action_homeFragment_to_cropFragment"
+            app:destination="@id/cropFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.demo.doccloud.ui.camera.CameraFragment"
+        android:label="CameraFragment"
+        tools:layout="@layout/camera_fragment">
+        <action
+            android:id="@+id/action_cameraFragment_to_cropFragment"
+            app:destination="@id/cropFragment" />
+        <argument
+            android:name="root"
+            app:argType="com.demo.doccloud.utils.BackToRoot" />
+    </fragment>
+    <fragment
+        android:id="@+id/cropFragment"
+        android:name="com.demo.doccloud.ui.crop.CropFragment"
+        android:label="@string/crop_screen_title"
+        tools:layout="@layout/crop_fragment">
+        <argument
+            android:name="photos"
+            app:argType="com.demo.doccloud.utils.ListPhotoArg" />
+        <argument
+            android:name="root"
+            app:argType="com.demo.doccloud.utils.BackToRoot" />
+    </fragment>
+
+    <navigation
+        android:id="@+id/edit_navigation"
+        app:startDestination="@id/editFragment">
+        <fragment
+            android:id="@+id/editFragment"
+            android:name="com.demo.doccloud.ui.edit.EditFragment"
+            tools:layout="@layout/edit_fragment">
+            <argument
+                android:name="docLocalId"
+                app:argType="long" />
+            <argument
+                android:name="docRemoteId"
+                app:argType="long" />
+            <action
+                android:id="@+id/action_editFragment_to_editCropFragment"
+                app:destination="@id/editCropFragment" />
+            <action
+                android:id="@+id/action_global_cameraFragment"
+                app:destination="@id/cameraFragment" />
+            <action
+                android:id="@+id/action_global_cropFragment"
+                app:destination="@id/cropFragment" />
+
+        </fragment>
+        <fragment
+            android:id="@+id/editCropFragment"
+            android:name="com.demo.doccloud.ui.edit.EditCropFragment"
+            android:label="fragment_edit_crop"
+            tools:layout="@layout/fragment_edit_crop" />
+    </navigation>
+</navigation>

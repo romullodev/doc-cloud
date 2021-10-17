@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/home_select_option_label"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:tint="?attr/colorPrimary"
+            app:srcCompat="@drawable/ic_close_24" />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/galleryIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/cameraTv"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cameraTv"
+            app:srcCompat="@drawable/ic_camera_alt_24" />
+
+        <TextView
+            android:id="@+id/cameraTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/home_new_doc_dialog_camera"
+            android:textSize="21sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/galleryIcon"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/cameraIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/galleryIcon"
+            app:layout_constraintStart_toStartOf="@+id/galleryIcon"
+            app:layout_constraintTop_toBottomOf="@+id/galleryIcon"
+            app:srcCompat="@drawable/ic_image_24" />
+
+        <TextView
+            android:id="@+id/galleryTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/home_new_doc_dialog_gallery"
+            android:textSize="21sp"
+            app:layout_constraintBottom_toBottomOf="@+id/cameraIcon"
+            app:layout_constraintStart_toEndOf="@+id/cameraIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cameraIcon" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

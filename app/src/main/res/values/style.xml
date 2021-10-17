@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.DocCloud.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_corner</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_corner</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_corner</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_corner</item>
+    </style>
+
+    <style name="MaterialButton.InvertColors" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorPrimaryVariant</item>
+    </style>
+
+    <!-- ******************************************************************** -->
+    <!-- >>>>>>>>>>>>>>>>>>>>Material Alert Dialog Default>>>>>>>>>>>>>>>>>>> -->
+    <!-- ******************************************************************** -->
+
+    <style name="ThemeOverlay.DocCloud.MaterialComponents.MaterialAlertDialog.Default" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Body.Text</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Text</item>
+        <item name="materialAlertDialogTitleIconStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Icon</item>
+        <item name="buttonBarPositiveButtonStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/thunder_bird</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Title.Icon" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
+        <item name="android:tint">@color/thunder_bird</item>
+    </style>
+    <style name="MaterialAlertDialog.PalletApp.MaterialComponents.Default.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="rippleColor">@color/a_20_black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
+    </style>
+
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:backgroundDimAmount">0.8</item>
+    </style>
+
+    <!--    reference: https://philio.me/styling-the-searchview-with-appcompat-v21/amp/-->
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_search_solid</item>
+        <item name="closeIcon">@drawable/ic_close_24</item>
+        <item name="hintTextColor">@color/a_60_white</item>
+    </style>
+
+    <style name="ThemeOverlay.DocCloud.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColor">@color/black</item>
+    </style>
+</resources>

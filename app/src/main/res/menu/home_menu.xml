@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_sign_out_alt_solid"
+        app:showAsAction="never"
+        android:title="@string/home_menu_logout" />
+
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search_solid"
+        android:title="Search"
+        app:showAsAction="always"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+</menu>

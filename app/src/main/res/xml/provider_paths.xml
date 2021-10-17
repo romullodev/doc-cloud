@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- if you change this name, don't forget to change PDF_FOLDER_NAME constant on AppConstants -->
+    <files-path
+        name="files"
+        path="." />
+</paths>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="forgotViewModel"
+            type="com.demo.doccloud.ui.forgot.ForgotViewModel" />
+
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/corn_flower_blue">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="end"
+            android:tint="?attr/colorPrimary"
+            app:srcCompat="@drawable/ic_close_24" />
+
+        <include
+            android:id="@+id/content"
+            layout="@layout/forgot_content"
+            bind:viewModel="@{forgotViewModel}"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

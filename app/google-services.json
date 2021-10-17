@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "359966686742",
+    "project_id": "doc-cloud-e595b",
+    "storage_bucket": "doc-cloud-e595b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359966686742:android:48455f0dec22c85e94bf37",
+        "android_client_info": {
+          "package_name": "com.demo.doccloud"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359966686742-dqlbp4b7f49hhforvlj02nr5uil6n7ep.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demo.doccloud",
+            "certificate_hash": "e522e6f799891b065df2ec0c47e7a09e81d33ec3"
+          }
+        },
+        {
+          "client_id": "359966686742-oll4mn988ji5oihg005eijdplhmqn92h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTArVnMjgykOAsevxFwlT0dUFXqQiF2ck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359966686742-oll4mn988ji5oihg005eijdplhmqn92h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

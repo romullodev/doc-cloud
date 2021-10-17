@@ -1,0 +1,36 @@
+- create use case to send customId to Real Database
+
+- change Real Database Rules to security mode
+
+- change FakecopyFile to CopyFileImpl
+
+- implement alert dialog to generate pdf file
+    option 1: generate file
+    option 2: generate link
+    in case of option 2, inform that this link has a limit time
+
+- improve feedback of usecases
+
+- reduce size of the generated pdfs
+
+- load a failure image on gallery in case of error
+
+- improve border of generated pdf
+
+- analyze photo format when sync data
+
+- track progress when sync data
+
+- analyze use of singleton on DI
+
+- change SharedPreference to DataStore
+
+- improve HomeScreen layout
+	- improve colors
+	- improve doc layout
+	- implement multiple selection
+
+- improve EditScreen layout
+
+
+	
