@@ -4,7 +4,13 @@
 Este aplicativo é destinado ao gerenciamento e backup em nuvem de documentos no formato PDF. O registro dos documentos pode ser feito pela câmera do dispositivo ou pela seleção de fotos na galeria, com possibilidade de recorte das imagens obtidas. Além disso, o App foi projetado para ser funcional no modo offline, com sincronização automática após estabelecer conexão com a internt.
 
 ## Implementação
-Este aplicativo foi desenvolido utilizando o padrão de design Model-View-ViewModel (MVVM), utilizando os conceitos do Single-Activity, com diversas bibliotecas do android Jetpack como, por exemplo, Navigation Component, ViewModel e Databinding. Além disso, este app utiliza injenção de dependência com Hilt e possui testes locais (com Robolectric) e instrumentados (com Espresso) em todas as telas. Para o salvar os documentos registrados, o app possui integração com o Firebase, utilizando o Realtime Database para o armazenamento dos dados e o Storage para os arquivos.
+Este aplicativo foi desenvolido utilizando o padrão de design Model-View-ViewModel (MVVM), utilizando os conceitos do Single-Activity, com diversas bibliotecas do android Jetpack como, por exemplo, Navigation Component, ViewModel e Databinding. Além disso, este app utiliza injenção de dependência com Hilt e possui testes locais (com Robolectric) e instrumentados (com Espresso) em todas as telas. Para salvar os documentos registrados, o app possui integração com o Firebase, utilizando o Realtime Database para o armazenamento dos dados e o Storage para os arquivos.
+
+A sincronização dos documentos registrados em nuvem com o aplicativo é realizada da seguinte maneira:
+
+1 – Os dados são sincronizados periodicamente, em que esse período pode ser configurado diretamente no Realtime Database.
+
+2 – Caso o usuário faça login em outro dispositivo estando com sua conta já conectada em outro aparelho, a sincronização é feita imediatamente, garantindo que os dados em nuvem fiquem atualizados em ambos os dispositivos
 
 ## Funcionalidades
 
