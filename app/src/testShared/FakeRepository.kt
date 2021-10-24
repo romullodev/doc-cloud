@@ -6,9 +6,9 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.demo.doccloud.data.repository.Repository
-import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.di.MainDispatcher
 import com.demo.doccloud.domain.entities.*
+import com.demo.doccloud.idling.wrapEspressoIdlingResource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import javax.inject.Inject

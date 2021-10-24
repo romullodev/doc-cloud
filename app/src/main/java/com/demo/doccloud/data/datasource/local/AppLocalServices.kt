@@ -10,6 +10,8 @@ import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.entities.asDatabase
+import com.demo.doccloud.idling.IdlingRes
+import com.demo.doccloud.idling.IdlingResImpl
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DEFAULT_CUSTOM_ID
 import com.demo.doccloud.utils.AppConstants.Companion.LOCAL_DATABASE_CUSTOM_ID_KEY
 import com.demo.doccloud.utils.Result
@@ -23,93 +25,127 @@ class AppLocalServices @Inject constructor(
     private val appDatabase: AppDatabase,
     private val persistSimpleData: PersistSimpleData,
 ) : LocalDataSource {
-    override suspend fun saveDocOnDevice(doc: Doc) = withContext(dispatcher) {
-        return@withContext appDatabase.docDao.insert(doc.asDatabase())
-    }
 
-    override suspend fun deleteDocOnDevice(doc: Doc) = withContext(dispatcher) {
-        appDatabase.docDao.delete(doc.asDatabase(copyIdFlag = true))
-        doc.pages.forEach {
-            File(it.path).delete()
+    private val idling: IdlingRes = IdlingResImpl()
+
+    override suspend fun saveDocOnDevice(doc: Doc) = idling.wrapEspressoIdlingResource {
+        return@wrapEspressoIdlingResource withContext(dispatcher) {
+            return@withContext appDatabase.docDao.insert(doc.asDatabase())
         }
     }
 
-    override suspend fun getDoc(id: Long) = withContext(dispatcher) {
-        appDatabase.docDao.getDoc(id).asDomain()
+
+    override suspend fun deleteDocOnDevice(doc: Doc) = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
+            appDatabase.docDao.delete(doc.asDatabase(copyIdFlag = true))
+            doc.pages.forEach {
+                File(it.path).delete()
+            }
+        }
     }
 
-    override suspend fun updateDoc(doc: Doc) = withContext(dispatcher) {
-        appDatabase.docDao.update(doc.asDatabase(copyIdFlag = true))
+    override suspend fun getDoc(id: Long) = idling.wrapEspressoIdlingResource {
+        return@wrapEspressoIdlingResource withContext(dispatcher) {
+            val dataBaseDoc =  appDatabase.docDao.getDoc(id)
+            val doc = dataBaseDoc.asDomain()
+            return@withContext doc
+        }
+    }
+
+    override suspend fun updateDoc(doc: Doc) = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
+            appDatabase.docDao.update(doc.asDatabase(copyIdFlag = true))
+        }
     }
 
     override fun getSavedDocs() = appDatabase.docDao.getDocs().map {
         it.asDomain()
     }
 
-    override suspend fun updateDocName(id: Long, name: String) = withContext(dispatcher) {
-        val doc : DatabaseDoc = appDatabase.docDao.getDoc(id)
-        appDatabase.docDao.update(doc.copy(name = name, status = DocStatus.NOT_SENT))
-    }
-
-
-    override suspend fun updateDocPhoto(localId: Long, photo: Photo) = withContext(dispatcher) {
-        val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
-        val pages = doc.pages.map {
-            if (it.id == photo.id) photo else it
-        }
-        val databaseDoc: DatabaseDoc =
-            doc.copy(pages = pages, status = DocStatus.NOT_SENT).asDatabase(copyIdFlag = true)
-        appDatabase.docDao.update(databaseDoc)
-    }
-
-    override suspend fun deleteDocPhoto(localId: Long, photo: Photo) = withContext(dispatcher) {
-        val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
-        val newPages = doc.pages.filter { photoFromDoc: Photo ->
-            photoFromDoc.id != photo.id
-        }
-        val databaseDoc: DatabaseDoc =
-            doc.copy(pages = newPages, status = DocStatus.NOT_SENT).asDatabase(copyIdFlag = true)
-        appDatabase.docDao.update(databaseDoc)
-    }
-
-    override suspend fun syncData(docs: List<Doc>) = withContext(dispatcher) {
-        appDatabase.docDao.clearTable()
-        appDatabase.docDao.insertAll(docs.asDatabase())
-    }
-
-    override suspend fun addPhotosToDoc(localId: Long, photos: List<Photo>) {
-        withContext(dispatcher){
-            val doc : DatabaseDoc = appDatabase.docDao.getDoc(localId)
-            val addedPages = ArrayList(doc.pages)
-            addedPages.addAll(photos)
-            appDatabase.docDao.update(
-                doc.copy(pages = addedPages)
-            )
+    override suspend fun updateDocName(id: Long, name: String) = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
+            val doc: DatabaseDoc = appDatabase.docDao.getDoc(id)
+            appDatabase.docDao.update(doc.copy(name = name, status = DocStatus.NOT_SENT))
         }
     }
 
-    override suspend fun clearAllData() {
-        withContext(dispatcher){
+
+    override suspend fun updateDocPhoto(localId: Long, photo: Photo) =
+        idling.wrapEspressoIdlingResource {
+            withContext(dispatcher) {
+                val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
+                val pages = doc.pages.map {
+                    if (it.id == photo.id) photo else it
+                }
+                val databaseDoc: DatabaseDoc =
+                    doc.copy(pages = pages, status = DocStatus.NOT_SENT)
+                        .asDatabase(copyIdFlag = true)
+                appDatabase.docDao.update(databaseDoc)
+            }
+        }
+
+    override suspend fun deleteDocPhoto(localId: Long, photo: Photo) =
+        idling.wrapEspressoIdlingResource {
+            withContext(dispatcher) {
+                val doc: Doc = appDatabase.docDao.getDoc(localId).asDomain()
+                val newPages = doc.pages.filter { photoFromDoc: Photo ->
+                    photoFromDoc.id != photo.id
+                }
+                val databaseDoc: DatabaseDoc =
+                    doc.copy(pages = newPages, status = DocStatus.NOT_SENT)
+                        .asDatabase(copyIdFlag = true)
+                appDatabase.docDao.update(databaseDoc)
+            }
+        }
+
+    override suspend fun syncData(docs: List<Doc>) = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
+            appDatabase.docDao.clearTable()
+            appDatabase.docDao.insertAll(docs.asDatabase())
+        }
+    }
+
+    override suspend fun addPhotosToDoc(localId: Long, photos: List<Photo>) =
+        idling.wrapEspressoIdlingResource {
+            withContext(dispatcher) {
+                val doc: DatabaseDoc = appDatabase.docDao.getDoc(localId)
+                val addedPages = ArrayList(doc.pages)
+                addedPages.addAll(photos)
+                appDatabase.docDao.update(
+                    doc.copy(pages = addedPages)
+                )
+            }
+        }
+
+    override suspend fun clearAllData() = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
             appDatabase.clearAllTables()
             persistSimpleData.clearAllData()
         }
     }
 
-    override suspend fun saveLong(key: String, value: Long) {
-        withContext(dispatcher){
+    override suspend fun saveLong(key: String, value: Long) = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
             persistSimpleData.saveLong(key, value)
         }
     }
 
-    override suspend fun getLong(key: String, defaultValue: Long) = withContext(dispatcher){
-        persistSimpleData.getLong(key, defaultValue)
+    override suspend fun getLong(key: String, defaultValue: Long) =
+        idling.wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource withContext(dispatcher) {
+                return@withContext persistSimpleData.getLong(key, defaultValue)
+            }
+        }
+
+    override suspend fun insertDocs(docs: List<Doc>) = idling.wrapEspressoIdlingResource {
+        return@wrapEspressoIdlingResource withContext(dispatcher) {
+            return@withContext appDatabase.docDao.insertAll(docs.asDatabase())
+        }
     }
 
-    override suspend fun insertDocs(docs: List<Doc>)  = withContext(dispatcher){
-        appDatabase.docDao.insertAll(docs.asDatabase())
-    }
-
-    override suspend fun clearDocs() = withContext(dispatcher) {
-        appDatabase.docDao.clearTable()
+    override suspend fun clearDocs() = idling.wrapEspressoIdlingResource {
+        withContext(dispatcher) {
+            appDatabase.docDao.clearTable()
+        }
     }
 }

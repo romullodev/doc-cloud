@@ -18,6 +18,7 @@ import com.demo.doccloud.*
 import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.data.repository.RepositoryImpl
+import com.demo.doccloud.idling.EspressoIdlingResource
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.AndroidTestUtil
 import com.demo.doccloud.ui.home.HomeFragmentDirections

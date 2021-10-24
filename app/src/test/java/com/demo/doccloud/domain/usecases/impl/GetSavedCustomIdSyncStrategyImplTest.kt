@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import org.robolectric.annotation.Config
 
 class GetSavedCustomIdSyncStrategyImplTest {
 

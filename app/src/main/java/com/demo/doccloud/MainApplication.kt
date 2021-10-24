@@ -21,6 +21,7 @@ class MainApplication : Application(),  Configuration.Provider{
     //setup Hilt
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
             .setWorkerFactory(workerFactory)
             .build()
     }

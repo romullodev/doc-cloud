@@ -1,4 +1,4 @@
-package com.demo.doccloud
+package com.demo.doccloud.idling
 
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.idling.CountingIdlingResource

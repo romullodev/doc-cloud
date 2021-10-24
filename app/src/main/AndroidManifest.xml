@@ -22,8 +22,9 @@
 
         <activity
             android:name=".SplashScreenActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name">
+            android:screenOrientation="fullSensor"
+            android:label="@string/app_name"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,9 +35,20 @@
         <activity android:name=".ui.MainActivity"/>
 
         <provider
-            android:name="androidx.work.impl.WorkManagerInitializer"
-            android:authorities="com.demo.doccloud.workmanager-init"
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
+            tools:node="merge">
+            <!-- If you are using androidx.startup to initialize other components -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
 
         <provider

@@ -10,7 +10,6 @@ import android.content.Intent.ACTION_OPEN_DOCUMENT
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.test.core.app.ActivityScenario
@@ -29,22 +28,21 @@ import androidx.work.Configuration
 import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.demo.doccloud.*
-import com.demo.doccloud.data.datasource.local.LocalDataSource
+import com.demo.doccloud.data.datasource.local.AppLocalServices
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.data.repository.RepositoryImpl
+import com.demo.doccloud.idling.EspressoIdlingResource
 import com.demo.doccloud.ui.AndroidTestUtil
-import com.demo.doccloud.ui.AndroidTestUtil.Companion.getRealDocs
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.utils.AppConstants
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.spyk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.containsString
@@ -73,50 +71,54 @@ class HomeFragmentTest {
     lateinit var repository: RepositoryImpl
     private lateinit var mIdlingResource: IdlingResource
     private lateinit var context: Context
-    private var localDataSource: LocalDataSource = mockk()
-    private var remoteDataSource: RemoteDataSource = mockk()
+    private lateinit var localDataSource: AppLocalServices
+    private var mockRemoteDataSource: RemoteDataSource = mockk()
+
+    private fun launchScreen() {
+        activityScenario = launchMyMainActivity().onActivity {
+            navController = it.findNavController(R.id.nav_host_fragment)
+        }
+    }
 
     @Before
-    fun setup() {
+    fun setup(): Unit = runBlocking {
         hiltRule.inject()
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        repository = RepositoryImpl(remoteDataSource, localDataSource, context)
-        mIdlingResource = EspressoIdlingResource.countingIdlingResource
-
-        coEvery { localDataSource.getSavedDocs() } returns MutableLiveData(
-            AndroidTestUtil.getRealDocs(
-                context
-            )
-        )
-        coEvery { remoteDataSource.getUser() } returns AndroidTestUtil.getUser()
-
-        homeViewModel = AndroidTestUtil.getHomeViewModel(context, repository)
-
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
             .setExecutor(SynchronousExecutor())
             .build()
         // Initialize WorkManager for instrumentation tests.
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+        localDataSource = AndroidTestUtil.getLocalDataSource(context)
+        repository = RepositoryImpl(mockRemoteDataSource, localDataSource, context)
+        mIdlingResource = EspressoIdlingResource.countingIdlingResource
+
+        coEvery { mockRemoteDataSource.getUser() } returns AndroidTestUtil.getUser()
+
+        homeViewModel = AndroidTestUtil.getHomeViewModel(context, repository)
+
         Intents.init()
         IdlingRegistry.getInstance().register(mIdlingResource)
+        //require coroutineScope to be executed
+        localDataSource.saveDocOnDevice(AndroidTestUtil.getRealDoc(context))
     }
 
     @After
-    fun teardown() {
+    fun teardown(): Unit = runBlocking {
         IdlingRegistry.getInstance().unregister(mIdlingResource)
         activityScenario.close()
         Intents.release()
+        //require coroutineScope to be executed
+        localDataSource.clearAllData()
+        GlobalVariablesTest.clearFlags()
     }
 
     @Test
     fun do_logout_successfully() {
         //Arrange
-        coEvery { localDataSource.clearAllData() } returns mockk() //coAnswers { wrapEspressoIdlingResource {} }
-        coEvery { remoteDataSource.doLogout() } returns mockk()//coAnswers { wrapEspressoIdlingResource {} }
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        coEvery { mockRemoteDataSource.doLogout() } returns mockk()
+        launchScreen()
 
         //Act
         openContextualActionModeOverflowMenu()
@@ -133,9 +135,7 @@ class HomeFragmentTest {
         intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         intending(hasAction(Intent.ACTION_SEND)).respondWith(result)
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Act
         EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
@@ -173,9 +173,7 @@ class HomeFragmentTest {
             repository,
             fakeGenerateDocPdf
         )
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Act
         EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
@@ -188,24 +186,7 @@ class HomeFragmentTest {
     @Test
     fun delete_doc() {
         //Arrange
-        localDataSource = spyk()
-        coEvery { localDataSource.getSavedDocs() } returns MutableLiveData(
-            AndroidTestUtil.getRealDocs(
-                context
-            )
-        )
-        repository = RepositoryImpl(remoteDataSource, localDataSource, context)
-        homeViewModel = AndroidTestUtil.getHomeViewModel(context, repository)
-        coEvery { localDataSource.getSavedDocs() } returns MutableLiveData(
-            AndroidTestUtil.getRealDocs(
-                context
-            )
-        )
-        coEvery { localDataSource.deleteDocOnDevice(any()) } returns mockk()
-
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Act
         EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
@@ -213,20 +194,21 @@ class HomeFragmentTest {
         EspressoActions.performClickOnText(R.string.alert_dialog_yes_button)
 
         //Assert
-        coVerify { localDataSource.deleteDocOnDevice(any()) }
+        EspressoActions.checkSizeOnRecyclerView(R.id.rvHome, 0)
     }
 
     @Test
     fun throw_exception_when_delete_doc() {
         //Arrange
-        coEvery { localDataSource.deleteDocOnDevice(any()) } throws (RuntimeException(
-            Exception(
-                context.getString(R.string.home_toast_delete_error)
-            )
-        ))
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        //workaround to throw an exception on this use case
+        val fakeDeleteDoc = FakeDeleteDoc(context)
+        GlobalVariablesTest.shouldThrowException = true
+        homeViewModel = AndroidTestUtil.getHomeViewModelWithMockDeleteDocUseCase(
+            context,
+            repository,
+            fakeDeleteDoc
+        )
+        launchScreen()
 
         //Act
         EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
@@ -244,9 +226,7 @@ class HomeFragmentTest {
         intent.data = FileUtil.getStubFile(context).toUri()
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         intending(hasAction(ACTION_OPEN_DOCUMENT)).respondWith(result)
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Act
         EspressoActions.performClickOnView(R.id.addButton)
@@ -269,9 +249,7 @@ class HomeFragmentTest {
         intent.clipData!!.addItem(clipItem)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         intending(hasAction(ACTION_OPEN_DOCUMENT)).respondWith(result)
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Act
         EspressoActions.performClickOnView(R.id.addButton)
@@ -288,9 +266,7 @@ class HomeFragmentTest {
         intent.data = Uri.EMPTY
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         intending(hasAction(ACTION_OPEN_DOCUMENT)).respondWith(result)
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Act
         EspressoActions.performClickOnView(R.id.addButton)
@@ -303,15 +279,13 @@ class HomeFragmentTest {
     @Test
     fun move_user_to_login_page() {
         //Arrange
-        remoteDataSource = mockk()
-        repository = RepositoryImpl(remoteDataSource, localDataSource, context)
+        mockRemoteDataSource = mockk()
+        repository = RepositoryImpl(mockRemoteDataSource, localDataSource, context)
         homeViewModel = AndroidTestUtil.getHomeViewModel(context, repository)
-        coEvery { remoteDataSource.getUser() } throws (RuntimeException(Exception()))
+        coEvery { mockRemoteDataSource.getUser() } throws (RuntimeException(Exception()))
 
         //Act
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Assert
         assertThat(navController.currentDestination?.id, Matchers.`is`(R.id.loginFragment))
@@ -321,12 +295,10 @@ class HomeFragmentTest {
     fun show_docs_on_recycler_view() {
 
         //Act
-        activityScenario = launchMyMainActivity().onActivity {
-            navController = it.findNavController(R.id.nav_host_fragment)
-        }
+        launchScreen()
 
         //Assert
-        EspressoActions.checkSizeOnRecyclerView(R.id.rvHome, getRealDocs(context).size)
+        EspressoActions.checkSizeOnRecyclerView(R.id.rvHome, 1)
     }
 
     @Test
@@ -342,7 +314,6 @@ class HomeFragmentTest {
         //Assert
         assertThat(navController.currentDestination?.id, Matchers.`is`(R.id.editFragment))
     }
-
 }
 //val receivedIntent: Intent = Iterables.getOnlyElement(Intents.getIntents())
 //        intended(

@@ -9,12 +9,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.room.util.FileUtil
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.intent.Intents
@@ -26,14 +23,13 @@ import androidx.work.Configuration
 import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.demo.doccloud.*
-import com.demo.doccloud.data.datasource.local.LocalDataSource
+import com.demo.doccloud.data.datasource.local.AppLocalServices
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.data.repository.RepositoryImpl
 import com.demo.doccloud.domain.entities.Photo
-import com.demo.doccloud.domain.usecases.impl.*
+import com.demo.doccloud.idling.EspressoIdlingResource
 import com.demo.doccloud.ui.AndroidTestUtil
 import com.demo.doccloud.ui.MainActivity
-import com.demo.doccloud.ui.edit.EditViewModel
 import com.demo.doccloud.ui.home.HomeFragmentDirections
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.ListPhotoArg
@@ -43,14 +39,13 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 @HiltAndroidTest
 @MediumTest
@@ -70,53 +65,36 @@ class CropFragmentTest {
     lateinit var repository: RepositoryImpl
     private lateinit var mIdlingResource: IdlingResource
     private lateinit var context: Context
-    private var mockLocalDataSource: LocalDataSource = mockk()
+    private lateinit var localDataSource: AppLocalServices
     private var mockRemoteDataSource: RemoteDataSource = mockk()
+    private var localId = 0L
 
     @Before
-    fun setup() {
+    fun setup(): Unit = runBlocking {
         hiltRule.inject()
         context = InstrumentationRegistry.getInstrumentation().targetContext
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
             .setExecutor(SynchronousExecutor())
             .build()
-        mIdlingResource = EspressoIdlingResource.countingIdlingResource
-        repository = RepositoryImpl(mockRemoteDataSource, mockLocalDataSource, context)
-        coEvery { mockRemoteDataSource.getUser() } returns AndroidTestUtil.getUser()
-        coEvery { mockLocalDataSource.getSavedDocs() } returns MutableLiveData(
-            AndroidTestUtil.getRealDocs(
-                context
-            )
-        )
-
         // Initialize WorkManager for instrumentation tests.
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
-
-        val saveLocalDoc = SaveLocalDocImpl(repository)
-        val scheduleToSaveRemoteDocImpl = ScheduleToSaveRemoteDocImpl(context)
-        val saveDocUseCase = SaveDocImpl(saveLocalDoc, scheduleToSaveRemoteDocImpl)
-
-        val addPhotosToLocalDoc = AddPhotosToLocalDocImpl(repository)
-        val scheduleToAddRemoteDocPhotos = ScheduleToAddRemoteDocPhotosImpl(context)
-        val addPhotosUseCase = AddPhotosImpl(addPhotosToLocalDoc, scheduleToAddRemoteDocPhotos)
-
-        val copyFileUseCase = CopyFileImpl(context, Dispatchers.Main)
-
-        cropViewModel = CropViewModel(
-            saveDocUseCase,
-            addPhotosUseCase,
-            copyFileUseCase
-        )
-        Intents.init()
+        localDataSource = AndroidTestUtil.getLocalDataSource(context)
+        repository = RepositoryImpl(mockRemoteDataSource, localDataSource, context)
+        coEvery { mockRemoteDataSource.getUser() } returns AndroidTestUtil.getUser()
+        localDataSource.clearAllData()
+        localId = localDataSource.saveDocOnDevice(AndroidTestUtil.getRealDoc(context))
+        cropViewModel = AndroidTestUtil.getCropViewModel(context, repository)
+        mIdlingResource = EspressoIdlingResource.countingIdlingResource
         IdlingRegistry.getInstance().register(mIdlingResource)
+        Intents.init()
     }
 
     @After
     fun teardown() {
         IdlingRegistry.getInstance().unregister(mIdlingResource)
         GlobalVariablesTest.clearFlags()
-//        activityScenario.close()
+        activityScenario.close()
         Intents.release()
     }
 
@@ -143,7 +121,6 @@ class CropFragmentTest {
     @Test
     fun save_doc_navigate_to_home() {
         //Arrange
-        coEvery { mockLocalDataSource.saveDocOnDevice(any()) } returns 1L
         launchFragment()
 
         //Act
@@ -161,8 +138,6 @@ class CropFragmentTest {
     @Test
     fun save_doc_navigate_to_edit() {
         //Arrange
-        coEvery { mockLocalDataSource.addPhotosToDoc(any(), any()) } returns mockk()
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
         activityScenario = launchMyMainActivity().onActivity {
             navController = it.findNavController(R.id.nav_host_fragment)
         }
@@ -190,6 +165,7 @@ class CropFragmentTest {
             Matchers.`is`(R.id.editFragment)
         )
     }
+
 
     @Test
     fun check_continue_button_from_edit() {

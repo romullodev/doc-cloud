@@ -17,8 +17,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdk 31
 
     signingConfigs {
         docCloud {
@@ -31,8 +30,8 @@ android {
 
     defaultConfig {
         applicationId "com.demo.doccloud"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 31
         versionCode 1
         versionName "1.0.0"
         testInstrumentationRunner "com.demo.doccloud.HiltTestRunner"
@@ -65,10 +64,18 @@ android {
             java.srcDirs += "$projectDir/src/testShared"
         }
 
+        debug {
+            java.srcDirs('src/debug/java')
+        }
+
         main {
             res {
                 srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\home', 'src\\main\\res\\layouts\\login', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\camera', 'src\\main\\res\\drawables\\home', 'src\\main\\res\\drawables\\login', 'src\\main\\res\\drawables\\camera', 'src\\main\\res\\layouts\\crop', 'src\\main\\res\\drawables\\crop', 'src\\main\\res\\drawables\\common', 'src\\main\\res\\layouts\\edit', 'src\\main\\res\\drawables\\edit', 'src\\main\\res\\layouts\\forgot', 'src\\main\\res\\layouts\\register'
             }
+        }
+
+        release {
+            java.srcDirs('src/release/java')
         }
     }
 
@@ -186,7 +193,7 @@ dependencies {
     implementation "androidx.hilt:hilt-work:$hilt_work_manager_version"
 
     //work manager
-    def work_version = "2.6.0"
+    def work_version = "2.7.0"
     implementation "android.arch.work:work-runtime-ktx:$work_version"
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
@@ -250,5 +257,8 @@ dependencies {
     def mockk_version = '1.12.0'
     testImplementation "io.mockk:mockk:$mockk_version"
     androidTestImplementation "io.mockk:mockk-android:$mockk_version"
+
+    def startup_version = '1.1.0'
+    implementation "androidx.startup:startup-runtime:${startup_version}"
 
 }

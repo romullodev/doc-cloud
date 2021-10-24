@@ -20,7 +20,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
+import org.robolectric.annotation.Config
 
+@Config(sdk = [30])
 @RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
 class LoginViewModelTest{

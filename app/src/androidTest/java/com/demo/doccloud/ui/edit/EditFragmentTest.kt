@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.test.core.app.ActivityScenario
@@ -26,10 +25,10 @@ import androidx.work.Configuration
 import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.demo.doccloud.*
-import com.demo.doccloud.data.datasource.local.LocalDataSource
+import com.demo.doccloud.data.datasource.local.AppLocalServices
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.data.repository.RepositoryImpl
-import com.demo.doccloud.domain.usecases.impl.*
+import com.demo.doccloud.idling.EspressoIdlingResource
 import com.demo.doccloud.ui.AndroidTestUtil
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.home.HomeFragmentDirections
@@ -41,13 +40,13 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.lang.RuntimeException
 
 @HiltAndroidTest
 @MediumTest
@@ -59,6 +58,7 @@ class EditFragmentTest {
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var navController: NavController
+    private var localId: Long = 0
 
     @BindValue
     lateinit var editViewModel: EditViewModel
@@ -67,15 +67,16 @@ class EditFragmentTest {
     lateinit var repository: RepositoryImpl
     private lateinit var mIdlingResource: IdlingResource
     private lateinit var context: Context
-    private var mockLocalDataSource: LocalDataSource = mockk()
+    private lateinit var localDataSource: AppLocalServices
     private var mockRemoteDataSource: RemoteDataSource = mockk()
 
     @Before
-    fun setup() {
+    fun setup(): Unit = runBlocking {
         hiltRule.inject()
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        repository = RepositoryImpl(mockRemoteDataSource, mockLocalDataSource, context)
-        val dispatcher = Dispatchers.Default
+        localDataSource = AndroidTestUtil.getLocalDataSource(context)
+        repository = RepositoryImpl(mockRemoteDataSource, localDataSource, context)
+        editViewModel = AndroidTestUtil.getEditViewModel(context, repository)
 
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
@@ -86,51 +87,30 @@ class EditFragmentTest {
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
 
         mIdlingResource = EspressoIdlingResource.countingIdlingResource
-        val copyFileUseCase = FakeCopyFileImpl()
-        val generateDocPdfUseCase = FakeGenerateDocPdfImpl(dispatcher, context)
-        val getDocByIdUseCase = GetDocByIdImpl(repository)
-        val scheduleToUpdateRemoteDocName = ScheduleToUpdateRemoteDocNameImpl(context)
-        val updateLocalDocName = UpdateLocalDocNameImpl(repository)
-        val updatedDocNameUseCase =
-            UpdatedDocNameImpl(scheduleToUpdateRemoteDocName, updateLocalDocName)
-        val deleteLocalDocPhoto = DeleteLocalDocPhotoImpl(repository)
-        val scheduleToDeleteRemoteDocPhoto = ScheduleToDeleteRemoteDocPhotoImpl(context)
-        val deleteDocPhotoUseCase =
-            DeleteDocPhotoImpl(deleteLocalDocPhoto, scheduleToDeleteRemoteDocPhoto)
-        val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
-        val scheduleToUpdateRemoteDocPhoto = ScheduleToUpdateRemoteDocPhotoImpl(context)
-        val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, scheduleToUpdateRemoteDocPhoto)
 
-        editViewModel = EditViewModel(
-            copyFileUseCase,
-            generateDocPdfUseCase,
-            getDocByIdUseCase,
-            updatedDocNameUseCase,
-            deleteDocPhotoUseCase,
-            updateDocPhoto
-        )
         coEvery { mockRemoteDataSource.getUser() } returns AndroidTestUtil.getUser()
-        coEvery { mockLocalDataSource.getSavedDocs() } returns MutableLiveData(
-            AndroidTestUtil.getRealDocs(
-                context
-            )
-        )
+        //require coroutineScope to be executed
+        localDataSource.clearAllData()
+        localId = localDataSource.saveDocOnDevice(AndroidTestUtil.getRealDoc(context))
+
         Intents.init()
         IdlingRegistry.getInstance().register(mIdlingResource)
     }
 
     @After
-    fun teardown() {
+    fun teardown(): Unit = runBlocking {
         IdlingRegistry.getInstance().unregister(mIdlingResource)
         activityScenario.close()
         GlobalVariablesTest.clearFlags()
         Intents.release()
+        //require coroutineScope to be executed
+        localDataSource.clearAllData()
     }
 
     private fun launchFragment() {
         activityScenario = launchFromMainActivityToFragment(
             direction = HomeFragmentDirections.actionHomeFragmentToEditFragment(
-                docLocalId = 1L,
+                docLocalId = localId,
                 docRemoteId = 1L,
             )
         ).onActivity {
@@ -139,10 +119,8 @@ class EditFragmentTest {
     }
 
     @Test
-    fun update_doc_name_with_success() {
+    fun update_doc_name_with_success(): Unit = runBlocking {
         //Arrange
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
-        coEvery { mockLocalDataSource.updateDocName(any(), any()) } returns mockk()
         launchFragment()
 
         //Act
@@ -157,8 +135,14 @@ class EditFragmentTest {
     @Test
     fun throw_exception_when_update_doc_name() {
         //Arrange
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
-        coEvery { mockLocalDataSource.updateDocName(any(), any()) } throws (RuntimeException())
+        //workaround to throw an exception on this use case
+        val fakeUpdatedDocName = FakeUpdatedDocName()
+        GlobalVariablesTest.shouldThrowException = true
+        editViewModel = AndroidTestUtil.getEditViewModelWithMockUpdatedDocName(
+            context,
+            repository,
+            fakeUpdatedDocName
+        )
         launchFragment()
 
         //Act
@@ -172,15 +156,14 @@ class EditFragmentTest {
 
     @Test
     fun show_selected_doc() {
-        //Arrange
-        val doc = AndroidTestUtil.getRealDoc(context)
-        coEvery { mockLocalDataSource.getDoc(any()) } returns doc
-
         //Act
         launchFragment()
 
         //Assert
-        EspressoActions.checkTextOnTextView(R.id.toolbar_title, doc.name)
+        EspressoActions.checkTextOnTextView(
+            R.id.toolbar_title,
+            AndroidTestUtil.getRealDoc(context).name
+        )
     }
 
     @Test
@@ -190,7 +173,6 @@ class EditFragmentTest {
         intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         Intents.intending(IntentMatchers.hasAction(Intent.ACTION_SEND)).respondWith(result)
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
         launchFragment()
 
         //Act
@@ -223,12 +205,20 @@ class EditFragmentTest {
     @Test
     fun throw_exception_when_share_doc() {
         //Arrange
+        //workaround to throw an exception on this use case
+        val fakeGenerateDocPdf = FakeGenerateDocPdfImpl(Dispatchers.Default, context)
         GlobalVariablesTest.shouldThrowException = true
+        editViewModel = AndroidTestUtil.getEditViewModelWithMockGeneratePdfDoc(
+            context,
+            repository,
+            fakeGenerateDocPdf
+        )
+
+
         val intent = Intent()
         intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         Intents.intending(IntentMatchers.hasAction(Intent.ACTION_SEND)).respondWith(result)
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
         launchFragment()
 
         //Act
@@ -245,7 +235,6 @@ class EditFragmentTest {
         intent.data = Uri.fromFile(getStubFile(context))
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         Intents.intending(IntentMatchers.hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(result)
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
         launchFragment()
 
         //Act
@@ -272,7 +261,6 @@ class EditFragmentTest {
         intent.clipData!!.addItem(clipItem)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         Intents.intending(IntentMatchers.hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(result)
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
         launchFragment()
 
         //Act
@@ -289,12 +277,19 @@ class EditFragmentTest {
     @Test
     fun throw_exception_when_pick_imgs_from_gallery() {
         //Arrange
+        //workaround to throw an exception on this use case
+        val fakeCopyFile = FakeCopyFileImpl()
         GlobalVariablesTest.shouldThrowException = true
+        editViewModel = AndroidTestUtil.getEditViewModelWithMockFakeCopyFile(
+            context,
+            repository,
+            fakeCopyFile
+        )
+
         val intent = Intent()
         intent.data = Uri.EMPTY
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         Intents.intending(IntentMatchers.hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(result)
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
         launchFragment()
 
         //Act
@@ -305,41 +300,39 @@ class EditFragmentTest {
         EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_copy_image_from_gallery)
     }
 
-//    @Test
-//    fun delete_single_photo() {
-//        //Arrange
-//        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
-//        launchFragment()
-//        activityScenario.onActivity {
-//            val value = editViewModel.doc.getOrAwaitValue()
-//            ViewMatchers.assertThat(
-//                value.pages.size,
-//                Matchers.`is`(1)
-//            )
-//        }
-//        EspressoActions.performClickOnRecyclerViewItem(R.id.rv_doc_photos, 0)
-//        Espresso.openContextualActionModeOverflowMenu()
-//        EspressoActions.performMenuItemClick(R.string.common_delete_label, R.id.edit_delete)
-//        EspressoActions.performClickOnText(R.string.alert_dialog_yes_button)
-//        ViewMatchers.assertThat(
-//            navController.currentDestination?.id,
-//            Matchers.`is`(R.id.editFragment)
-//        )
-//        activityScenario.onActivity {
-//            val value = editViewModel.doc.getOrAwaitValue()
-//            ViewMatchers.assertThat(
-//                value.pages.size,
-//                Matchers.`is`(0)
-//            )
-//        }
-//    }
-//}
+    @Test
+    fun delete_single_photo(): Unit = runBlocking {
+        //Arrange
+        launchFragment()
+
+        //Act
+        EspressoActions.performClickOnRecyclerViewItem(R.id.rv_doc_photos, 0)
+        Espresso.openContextualActionModeOverflowMenu()
+        EspressoActions.performMenuItemClick(R.string.common_delete_label, R.id.edit_delete)
+        EspressoActions.performClickOnText(R.string.alert_dialog_yes_button)
+
+        //Assert
+        activityScenario.onActivity {
+            it.runOnUiThread {
+                val value = editViewModel.doc.getOrAwaitValue()
+                val updatedSize = AndroidTestUtil.getRealDoc(context).pages.size - 1
+                ViewMatchers.assertThat(value.pages.size, Matchers.`is`(updatedSize))
+            }
+        }
+    }
 
     @Test
     fun throw_unknown_exception_when_delete_doc_photo() {
         //Arrange
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
-        coEvery { mockLocalDataSource.deleteDocPhoto(any(), any()) } throws (RuntimeException())
+        //workaround to throw an exception on this use case
+        val fakeDeleteDocPhoto = FakeDeleteDocPhoto()
+        GlobalVariablesTest.shouldThrowException = true
+        editViewModel = AndroidTestUtil.getEditViewModelWithMockDeleteDocPhoto(
+            context,
+            repository,
+            fakeDeleteDocPhoto
+        )
+
         launchFragment()
 
         //Act
@@ -355,14 +348,7 @@ class EditFragmentTest {
     @Test
     fun crop_real_photo() {
         //Arrange
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
-        coEvery { mockLocalDataSource.updateDocPhoto(any(), any()) } returns mockk()
         launchFragment()
-//        activityScenario.onActivity {
-//            val doc = editViewModel.doc.getOrAwaitValue()
-//            editViewModel.doc.value =
-//                doc.copy(pages = listOf(Photo(id = 1, path = getStubFile(context).path)))
-//        }
 
         //Act
         EspressoActions.performClickOnRecyclerViewItem(R.id.rv_doc_photos, 0)
@@ -376,14 +362,15 @@ class EditFragmentTest {
     @Test
     fun throw_unknown_exception_when_crop_doc_photo() {
         //Arrange
-        coEvery { mockLocalDataSource.getDoc(any()) } returns AndroidTestUtil.getRealDoc(context)
-        coEvery { mockLocalDataSource.updateDocPhoto(any(), any()) } throws RuntimeException()
+        //workaround to throw an exception on this use case
+        val fakeCopyFile = FakeCopyFileImpl()
+        GlobalVariablesTest.shouldThrowException = true
+        editViewModel = AndroidTestUtil.getEditViewModelWithMockFakeCopyFile(
+            context,
+            repository,
+            fakeCopyFile
+        )
         launchFragment()
-//        activityScenario.onActivity {
-//            val doc = editViewModel.doc.getOrAwaitValue()
-//            editViewModel.doc.value =
-//                doc.copy(pages = listOf(Photo(id = 1, path = getStubFile(context).path)))
-//        }
 
         //Act
         EspressoActions.performClickOnRecyclerViewItem(R.id.rv_doc_photos, 0)

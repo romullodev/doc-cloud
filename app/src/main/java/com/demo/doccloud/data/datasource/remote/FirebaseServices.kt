@@ -56,6 +56,7 @@ class FirebaseServices @Inject constructor(
     private val database: FirebaseDatabase,
     @ApplicationContext private val context: Context
 ) : RemoteDataSource {
+
     override suspend fun doLoginWithGoogle(data: Intent?): User {
         return withContext(dispatcher) {
             try {
@@ -66,27 +67,6 @@ class FirebaseServices @Inject constructor(
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 val signInCredentialTask = auth.signInWithCredential(credential)
                 signInCredentialTask.await()
-                //STOP
-//                //send customId to database
-//                val userId: String =
-//                    auth.currentUser?.uid
-//                        ?: throw Exception(context.getString(R.string.login_user_with_no_id))
-//                //Firebase Database
-//                val database = database.reference
-//                //reference to save values into database
-//                val refDatabase =
-//                    database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
-//
-//                //save into Real Database
-//                //set lastUpdated (field from Sync Strategy Model) to 0 (TIMESTAMP) (See SyncDataWorker)
-//                //set customId
-//
-//                val mapDatabase: HashMap<String, String> = hashMapOf(
-//                    REMOTE_DATABASE_CUSTOM_ID_KEY to customId.toString(),
-//                    DATABASE_LAST_UPDATED_KEY to 0L.toString()
-//                )
-//                val sendValuesTask = refDatabase.setValue(mapDatabase)
-//                sendValuesTask.await()
                 return@withContext auth.currentUser?.asDomain()!!
             } catch (e: Exception) {
                 if (e is ApiException) {

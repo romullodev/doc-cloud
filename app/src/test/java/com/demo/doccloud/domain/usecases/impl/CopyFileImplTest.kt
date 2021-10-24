@@ -12,9 +12,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowContentResolver
 import java.io.ByteArrayInputStream
 
+@Config(sdk = [30])
 @RunWith(RobolectricTestRunner::class)
 class CopyFileImplTest {
 
