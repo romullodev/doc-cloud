@@ -1,15 +1,19 @@
-- create use case to send customId to Real Database
-
-- change Real Database Rules to security mode
-
-- change FakecopyFile to CopyFileImpl
-
-- implement alert dialog to generate pdf file
+1) OK
+implement alert dialog to generate pdf file
     option 1: generate file
     option 2: generate link
     in case of option 2, inform that this link has a limit time
 
-- improve feedback of usecases
+1.1) realizar testes com a nova funcionalidade
+
+2)
+improve HomeScreen layout
+	- improve colors
+	- improve doc layout
+	- implement multiple selection
+
+3)
+change Real Database Rules to security mode
 
 - reduce size of the generated pdfs
 
@@ -25,12 +29,13 @@
 
 - change SharedPreference to DataStore
 
-- improve HomeScreen layout
-	- improve colors
-	- improve doc layout
-	- implement multiple selection
-
 - improve EditScreen layout
+
+4) Testar workers
+
+5) não permitir inserir o nome de um documento já existente
+
+6) parametrizar o tempo  de remoção do temp file
 
 
 	

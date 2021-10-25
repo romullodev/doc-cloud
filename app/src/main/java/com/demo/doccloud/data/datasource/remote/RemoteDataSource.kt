@@ -1,8 +1,10 @@
 package com.demo.doccloud.data.datasource.remote
 
 import android.content.Intent
+import android.net.Uri
 import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.Result
+import java.io.File
 
 interface RemoteDataSource {
     suspend fun doLoginWithGoogle(data: Intent?) : User
@@ -20,4 +22,7 @@ interface RemoteDataSource {
     suspend fun getSyncStrategy() : SyncStrategy
     suspend fun addPhotosDoc(remoteId: Long, photos: List<Photo>, newJsonPages: String)
     suspend fun sendCustomIdForceUpdate(customId: Long)
+    suspend fun generatePDFLink(file: File, customId: Long): Uri
+    suspend fun removeTempFile(customId: Long)
+    suspend fun getRemoveTempFileTime(): Long
 }

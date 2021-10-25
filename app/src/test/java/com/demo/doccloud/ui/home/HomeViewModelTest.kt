@@ -7,6 +7,7 @@ import com.demo.doccloud.*
 import com.demo.doccloud.FakeRepository
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
+import com.demo.doccloud.domain.usecases.contracts.GetRemoveTempFileTime
 import com.demo.doccloud.domain.usecases.impl.*
 import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.utils.ListPhotoArg
@@ -50,6 +51,9 @@ class HomeViewModelTest{
         val deleteDocUseCase = DeleteDocImpl(deleteLocalDoc, fakeScheduleToDeleteRemoteDoc, context)
         val getUserUseCase = GetUserImpl(repository)
         val fakeScheduleToSyncData = FakeScheduleToSyncDataImpl()
+        val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+        val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+        val generatePDFLinkImpl = GeneratePDFLinkImpl(fakeGenerateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
         val getAllDocsUse = GetAllDocsImpl(repository)
 
         homeViewModel = HomeViewModel(
@@ -59,6 +63,7 @@ class HomeViewModelTest{
             deleteDocUseCase,
             getUserUseCase,
             fakeScheduleToSyncData,
+            generatePDFLinkImpl,
             getAllDocsUse
         )
 
@@ -90,7 +95,7 @@ class HomeViewModelTest{
     @Test
     fun `share doc successfully`() = mainCoroutineRule.runBlockingTest{
         homeViewModel.currDoc = doc
-        homeViewModel.shareDoc()
+        homeViewModel.sharePdfDoc()
         val value = homeViewModel.homeState.getOrAwaitValue()
         Truth.assertThat((value.getContentIfNotHandled() as HomeViewModel.HomeState.SharePdf).data.isFile)
     }
@@ -100,7 +105,7 @@ class HomeViewModelTest{
     fun `share doc with exception`() = mainCoroutineRule.runBlockingTest{
         GlobalVariablesTest.shouldThrowException = true
         homeViewModel.currDoc = doc
-        homeViewModel.shareDoc()
+        homeViewModel.sharePdfDoc()
         val value = homeViewModel.homeState.getOrAwaitValue()
         Truth.assertThat((value.getContentIfNotHandled() as HomeViewModel.HomeState.HomeAlertDialog).msg).isEqualTo(
             R.string.home_alert_error_generate_pdf

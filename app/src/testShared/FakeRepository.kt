@@ -11,6 +11,7 @@ import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.idling.wrapEspressoIdlingResource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -312,6 +313,19 @@ class FakeRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun generatePDFLink(file: File, customId: Long): Uri {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun removeTempFile(customId: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getRemoveTempFileTime(): Long {
+        TODO("Not yet implemented")
+    }
+
 
     companion object{
         val fakeDoc = Doc(

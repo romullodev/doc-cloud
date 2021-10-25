@@ -53,6 +53,7 @@ class CameraFragmentTest {
     lateinit var repository: RepositoryImpl
     private val mIdlingResource: IdlingResource = EspressoIdlingResource.countingIdlingResource
     private lateinit var context: Context
+    private val sleepTime = 2000L
 
     @Before
     fun setup() {
@@ -95,19 +96,20 @@ class CameraFragmentTest {
 
     @Test
     fun capture_photos() {
+        Thread.sleep(sleepTime)
         EspressoActions.performClickOnView(R.id.capture_btn)
-        Thread.sleep(2000)
+        Thread.sleep(sleepTime)
         EspressoActions.performClickOnView(R.id.capture_btn)
-        Thread.sleep(2000)
+        Thread.sleep(sleepTime)
         EspressoActions.performClickOnView(R.id.capture_btn)
-        Thread.sleep(2000)
+        Thread.sleep(sleepTime)
         EspressoActions.checkSizeOnRecyclerView(R.id.rv_thumbnails, 3)
     }
     @Test
     fun capture_photos_and_continue() {
         EspressoActions.checkIsNotVisible(R.id.finish_photos)
         EspressoActions.performClickOnView(R.id.capture_btn)
-        Thread.sleep(2000)
+        Thread.sleep(sleepTime)
         EspressoActions.checkIsVisible(R.id.finish_photos)
         EspressoActions.performClickOnView(R.id.finish_photos)
         ViewMatchers.assertThat(
@@ -119,7 +121,7 @@ class CameraFragmentTest {
     fun check_continue_button_visibility() {
         EspressoActions.checkIsNotVisible(R.id.finish_photos)
         EspressoActions.performClickOnView(R.id.capture_btn)
-        Thread.sleep(2000)
+        Thread.sleep(sleepTime)
         EspressoActions.checkIsVisible(R.id.finish_photos)
     }
 

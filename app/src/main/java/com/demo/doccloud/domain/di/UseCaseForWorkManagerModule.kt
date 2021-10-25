@@ -45,4 +45,7 @@ abstract class UseCaseForWorkManagerModule{
 
     @Binds
     abstract fun bindUploadDocUseCase(uploadDoc: UploadDocImpl): UploadDoc
+
+    @Binds
+    abstract fun bindRemoveTempFileUseCase(RemoveTempFile: RemoveTempFileImpl): RemoveTempFile
 }

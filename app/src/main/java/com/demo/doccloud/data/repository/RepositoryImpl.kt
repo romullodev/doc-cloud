@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.demo.doccloud.R
@@ -153,6 +154,18 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun sendCustomIdForceUpdate(customId: Long) {
         remoteDatasource.sendCustomIdForceUpdate(customId)
+    }
+
+    override suspend fun generatePDFLink(file: File, customId: Long): Uri {
+        return remoteDatasource.generatePDFLink(file, customId)
+    }
+
+    override suspend fun removeTempFile(customId: Long) {
+        remoteDatasource.removeTempFile(customId)
+    }
+
+    override suspend fun getRemoveTempFileTime(): Long {
+        return remoteDatasource.getRemoveTempFileTime()
     }
 
     override suspend fun updateDocPhoto(localId: Long, photo: Photo) {

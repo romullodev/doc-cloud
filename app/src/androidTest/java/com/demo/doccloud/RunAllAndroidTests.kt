@@ -1,6 +1,8 @@
 package com.demo.doccloud
 
 import com.demo.doccloud.domain.usecases.impl.GenerateDocPdfImplTest
+import com.demo.doccloud.domain.usecases.impl.GeneratePDFLinkImplTest
+import com.demo.doccloud.domain.usecases.impl.GetRemoveTempFileTimeImplTest
 import com.demo.doccloud.ui.camera.CameraFragmentTest
 import com.demo.doccloud.ui.crop.CropFragmentTest
 import com.demo.doccloud.ui.edit.EditFragmentTest
@@ -18,6 +20,8 @@ import org.junit.runners.Suite
     EditFragmentTest::class,
     CropFragmentTest::class,
     CameraFragmentTest::class,
-    GenerateDocPdfImplTest::class
+    GenerateDocPdfImplTest::class,
+    GeneratePDFLinkImplTest::class,
+    GetRemoveTempFileTimeImplTest::class
 )
 class RunAllAndroidTests

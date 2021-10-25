@@ -18,6 +18,9 @@ abstract class UseCaseModule {
     @Binds
     abstract fun bindGenerateDocPdfUseCase(generateDocPdf: GenerateDocPdfImpl): GenerateDocPdf
 
+    @Binds
+    abstract fun bindGeneratePDFLinkUseCase(generatePDFLink: GeneratePDFLinkImpl): GeneratePDFLink
+
     //used inside UpdatedDocName
     @Binds
     abstract fun bindScheduleToUpdateDocNameUseCase(schedule: ScheduleToUpdateRemoteDocNameImpl): ScheduleToUpdateRemoteDocName
@@ -90,6 +93,9 @@ abstract class UseCaseModule {
     abstract fun bindScheduleToSaveRemoteDocUseCase(schedule: ScheduleToSaveRemoteDocImpl): ScheduleToSaveRemoteDoc
 
     @Binds
+    abstract fun bindScheduleToRemoveTempFileUseCase(schedule: ScheduleToRemoveTempFileImpl): ScheduleToRemoveTempFile
+
+    @Binds
     abstract fun bindSendCustomIdAndForceUpdateUseCase(sendCustomIdAndForceUpdate: SendCustomIdAndForceUpdateImpl): SendCustomIdAndForceUpdate
 
     @Binds
@@ -100,4 +106,7 @@ abstract class UseCaseModule {
 
     @Binds
     abstract fun bindRecoverPasswordUseCase(recoverPassword: RecoverPasswordImpl): RecoverPassword
+
+    @Binds
+    abstract fun bindGetRemoveTempFileTimeUseCase(getRemoveTempFileTime: GetRemoveTempFileTimeImpl): GetRemoveTempFileTime
 }

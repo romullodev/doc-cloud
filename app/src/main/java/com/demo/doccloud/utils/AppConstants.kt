@@ -31,11 +31,13 @@ class AppConstants {
         const val PHOTO_PATH_KEY = "photo.path.key"
         const val DOC_NAME_ID_KEY = "doc.name.id.key"
         const val LIST_PHOTO_ADD_KEY = "list.photo.add.key"
+        const val CUSTOM_ID_KEY = "custom.id.key"
         //Firebase directories
         const val DATABASE_USERS_DIRECTORY = "users_database"
         const val DATABASE_DOCUMENTS_DIRECTORY = "documents"
         const val STORAGE_USERS_DIRECTORY = "users_storage"
         const val STORAGE_IMAGES_DIRECTORY = "images"
+        const val STORAGE_TEMP_DIRECTORY = "temporary"
         //Firebase fields for each doc
         const val DATABASE_DATE_KEY = "Date"
         const val DATABASE_REMOTE_ID_KEY = "RemoteId"
@@ -44,6 +46,7 @@ class AppConstants {
         //Firebase fields for sync strategy model
         const val DATABASE_APP_LEVEL_STRATEGY_KEY = "strategy"
         const val DATABASE_APP_LEVEL_EXPIRATION_KEY = "Sync Data Strategy Expiration"
+        const val DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY = "Exclude Temp Files Time"
         const val REMOTE_DATABASE_CUSTOM_ID_KEY = "Custom ID" //localed on users level
         const val DATABASE_LAST_UPDATED_KEY = "Last Updated" //localed on users level
         const val DATABASE_SYNC_STRATEGY_KEY = "Sync Data Strategy" //key for access sync directory localed on users level

@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
+import com.demo.doccloud.databinding.GeneratePdfLayoutBinding
 import com.demo.doccloud.ui.home.adapters.DocAdapter
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.databinding.HomeFragmentBinding
@@ -289,7 +290,26 @@ class HomeFragment() :
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.share -> {
-                homeViewModel.shareDoc()
+                val dialog = MaterialAlertDialogBuilder(
+                    requireContext(),
+                    R.style.ThemeOverlay_App_MaterialAlertDialog
+                ).create()
+                val layoutInflater = LayoutInflater.from(requireContext())
+                val view = GeneratePdfLayoutBinding.inflate(layoutInflater, null, false)
+                view.btnClose.setOnClickListener {
+                    dialog.dismiss()
+                }
+                view.sharePdfFileTv.setOnClickListener {
+                    homeViewModel.sharePdfDoc()
+                    dialog.dismiss()
+                }
+                view.sharePdfLinkTv.setOnClickListener {
+                    homeViewModel.sharePdfLink()
+                    dialog.dismiss()
+                }
+                dialog.setView(view.root)
+                dialog.show()
+
                 true
             }
 //            R.id.edit -> {
@@ -365,6 +385,13 @@ class HomeFragment() :
                     is HomeViewModel.HomeState.SharePdf -> {
                         Global.sharedPdfDoc(
                             file = state.data,
+                            context = requireContext(),
+                            act = requireActivity() as MainActivity
+                        )
+                    }
+                    is HomeViewModel.HomeState.SharePdfLink -> {
+                        Global.sharedPdfLink(
+                            uri = state.uri,
                             context = requireContext(),
                             act = requireActivity() as MainActivity
                         )

@@ -8,6 +8,7 @@ import com.demo.doccloud.R
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.*
 import com.demo.doccloud.domain.entities.*
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
@@ -20,6 +21,7 @@ import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_SYNC_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_USERS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.REMOTE_DATABASE_CUSTOM_ID_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_IMAGES_DIRECTORY
+import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_TEMP_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_USERS_DIRECTORY
 import com.demo.doccloud.utils.Global
 import com.demo.doccloud.utils.Result
@@ -85,10 +87,12 @@ class FirebaseServices @Inject constructor(
         try {
             val taskLogin = FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             taskLogin.await()
-        }catch (e: Exception){
+        } catch (e: Exception) {
             throw Exception(context.getString(R.string.login_error_sign_in_with_email))
         }
-        val firebaseUser : FirebaseUser = FirebaseAuth.getInstance().currentUser ?: throw Exception(context.getString(R.string.login_error_retrieve_logged_user))
+        val firebaseUser: FirebaseUser = FirebaseAuth.getInstance().currentUser ?: throw Exception(
+            context.getString(R.string.login_error_retrieve_logged_user)
+        )
 
         return@withContext firebaseUser.asDomain()
     }
@@ -141,8 +145,8 @@ class FirebaseServices @Inject constructor(
 //            }
         }
 
-    override suspend fun recoverPassword(email: String){
-        withContext(dispatcher){
+    override suspend fun recoverPassword(email: String) {
+        withContext(dispatcher) {
             val taskSend = auth.sendPasswordResetEmail(email)
             taskSend.await()
         }
@@ -569,6 +573,80 @@ class FirebaseServices @Inject constructor(
             } catch (e: Exception) {
                 throw Exception(context.getString(R.string.common_error_send_custom_id_to_server))
             }
+        }
+    }
+
+    override suspend fun generatePDFLink(file: File, customId: Long): Uri {
+        return withContext(dispatcher) {
+            val userId: String = auth.currentUser?.uid
+                ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+            //Firebase Storage
+            val fireStorage = storage.reference
+            //reference to save pdf file into Storage
+            val refStorage =
+                fireStorage.child("$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_TEMP_DIRECTORY/${customId}.pdf")
+
+            //can throw an exception
+            val uriFile = Uri.fromFile(file)
+            val sendFileTask = refStorage.putFile(uriFile)
+            sendFileTask.await()
+
+            //download uri
+            val downloadUriTask = refStorage.downloadUrl
+            downloadUriTask.await()
+            //pdf uri
+            return@withContext downloadUriTask.result
+        }
+    }
+
+    override suspend fun removeTempFile(customId: Long) {
+        withContext(dispatcher) {
+            val userId: String =
+                auth.currentUser?.uid
+                    ?: throw Exception(context.getString(R.string.common_user_not_logged_in))
+            //Firebase Storage
+            val fireStorage = storage.reference
+
+            //reference to delete pdf file
+            val refStorageImage = fireStorage.child(
+                "$STORAGE_USERS_DIRECTORY/$userId/$STORAGE_TEMP_DIRECTORY/${customId}.pdf"
+            )
+            //can throw an exception
+            val task1 = refStorageImage.delete()
+            task1.await()
+        }
+    }
+
+    override suspend fun getRemoveTempFileTime(): Long {
+        return withContext(dispatcher){
+            //Firebase Database
+            val database = database.reference
+            //reference to get exclude temp file time info
+            val refDbTempFileTime = database.child(DATABASE_USERS_DIRECTORY)
+
+            //to save expiration info query task
+            val tempFileTimeSource: TaskCompletionSource<Any> = TaskCompletionSource()
+
+            refDbTempFileTime.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(p0: DataSnapshot) {
+                    tempFileTimeSource.setResult(p0)
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+                    tempFileTimeSource.setResult(p0)
+                }
+            })
+
+            val tempFileTimeTask = tempFileTimeSource.task
+            //this code bellow can throw an exception
+            tempFileTimeTask.await()
+
+            val tempFileTimeDataSnapshot = (tempFileTimeTask.result as DataSnapshot)
+            return@withContext tempFileTimeDataSnapshot
+                .child("$DATABASE_APP_LEVEL_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY")
+                    .value
+                    .toString()
+                    .toLong()
         }
     }
 

@@ -2,6 +2,7 @@ package com.demo.doccloud.utils
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
@@ -59,6 +60,14 @@ class Global {
             shareIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             shareIntent.type = AppConstants.INTENT_PDF_TYPE
             act.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.common_share_with)))
+        }
+
+        fun sharedPdfLink(uri: Uri, context: Context, act: AppCompatActivity){
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TEXT, uri.toString())
+            act.startActivity(Intent.createChooser(intent, context.getString(R.string.common_share_with)))
         }
     }
 }

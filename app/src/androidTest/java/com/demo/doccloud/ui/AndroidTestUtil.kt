@@ -51,6 +51,9 @@ class AndroidTestUtil {
             val deleteDocUseCase = DeleteDocImpl(deleteLocalDoc, scheduleToDeleteRemoteDoc, context)
             val getUserUseCase = GetUserImpl(repository)
             val scheduleToSyncData = ScheduleToSyncDataImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdf, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val getAllDocsUse = GetAllDocsImpl(repository)
 
             return HomeViewModel(
@@ -60,6 +63,7 @@ class AndroidTestUtil {
                 deleteDocUseCase,
                 getUserUseCase,
                 scheduleToSyncData,
+                generatePDFLink,
                 getAllDocsUse
             )
         }
@@ -70,6 +74,9 @@ class AndroidTestUtil {
             val doLogoutUseCase = DoLogoutImpl(repository)
             val getUserUseCase = GetUserImpl(repository)
             val scheduleToSyncData = ScheduleToSyncDataImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val getAllDocsUse = GetAllDocsImpl(repository)
 
             return HomeViewModel(
@@ -79,6 +86,7 @@ class AndroidTestUtil {
                 deleteDocUseCase,
                 getUserUseCase,
                 scheduleToSyncData,
+                generatePDFLink,
                 getAllDocsUse
             )
         }
@@ -92,6 +100,9 @@ class AndroidTestUtil {
             val deleteDocUseCase = DeleteDocImpl(deleteLocalDoc, scheduleToDeleteRemoteDoc, context)
             val getUserUseCase = GetUserImpl(repository)
             val scheduleToSyncData = ScheduleToSyncDataImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val getAllDocsUse = GetAllDocsImpl(repository)
 
             return HomeViewModel(
@@ -101,6 +112,7 @@ class AndroidTestUtil {
                 deleteDocUseCase,
                 getUserUseCase,
                 scheduleToSyncData,
+                generatePDFLink,
                 getAllDocsUse
             )
         }

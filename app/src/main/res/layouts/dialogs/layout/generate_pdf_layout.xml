@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/home_select_option_label"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:tint="?attr/colorPrimary"
+            app:srcCompat="@drawable/ic_close_24" />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/share_pdf_file"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/share_pdf_file_tv"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/share_pdf_file_tv"
+            app:srcCompat="@drawable/ic_share_pdf" />
+
+        <TextView
+            android:id="@+id/share_pdf_file_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/common_share_pdf"
+            android:textSize="21sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/share_pdf_file"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/share_pdf_link"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/share_pdf_file"
+            app:layout_constraintStart_toStartOf="@+id/share_pdf_file"
+            app:layout_constraintTop_toBottomOf="@+id/share_pdf_file"
+            app:srcCompat="@drawable/ic_share_pdf_link" />
+
+        <TextView
+            android:id="@+id/share_pdf_link_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/common_share_pdf_link"
+            android:textSize="21sp"
+            app:layout_constraintBottom_toBottomOf="@+id/share_pdf_link"
+            app:layout_constraintStart_toEndOf="@+id/share_pdf_link"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/share_pdf_link" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

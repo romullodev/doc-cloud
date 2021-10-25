@@ -36,6 +36,8 @@
     <string name="common_share_with">Compartilhar com</string>
     <string name="common_error_send_custom_id_to_server">Erro ao enviar dados ao servidor!</string>
     <string name="common_field_invalid_email">Insira um email válido</string>
+    <string name="common_share_pdf_link">Criar link</string>
+    <string name="common_share_pdf">Gerar PDF</string>
 
 
     <!-- Home Screen -->
@@ -77,6 +79,7 @@
     <string name="home_week_saturday">Sábado</string>
     <string name="home_welcome_subtitle">%1$s, %2$s de %3$s</string>
     <string name="home_alert_error_generate_pdf">Erro ao gerar PDF. Tente novamente.</string>
+    <string name="home_alert_error_generate_pdf_link">Erro ao gerar link. Tente novamente.</string>
     <string name="home_alert_error_copy_image_from_gallery">Um erro ocorreu com sua galeria. Tente novamente.</string>
 
     <!-- Crop Screen -->
@@ -101,6 +104,7 @@
     <string name="loading_dialog_message_searching">Buscando …</string>
     <string name="loading_dialog_message_please_wait">Por favor, aguarde …</string>
     <string name="loading_dialog_message_generating_pdf">Gerando PDF …</string>
+    <string name="loading_dialog_message_generating_pdf_link">Gerando link …</string>
 
     <!-- Alerts Dialogs -->
     <string name="alert_dialog_info_tittle">Atenção</string>

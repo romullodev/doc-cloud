@@ -140,6 +140,7 @@ class HomeFragmentTest {
         //Act
         EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
         EspressoActions.performMenuItemClick(R.string.home_doc_item_share, R.id.share)
+        EspressoActions.performClickOnView(R.id.share_pdf_file_tv)
 
         //Assert
         intended(
@@ -178,6 +179,7 @@ class HomeFragmentTest {
         //Act
         EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
         EspressoActions.performMenuItemClick(R.string.home_doc_item_share, R.id.share)
+        EspressoActions.performClickOnView(R.id.share_pdf_file_tv)
 
         //Assert
         EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_generate_pdf)

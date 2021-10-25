@@ -26,6 +26,7 @@ class HomeViewModel @Inject constructor(
     private val deleteDocUseCase: DeleteDoc,
     private val getUserUseCase: GetUser,
     private val scheduleToSyncDataUseCase: ScheduleToSyncData,
+    private val generatePDFLink: GeneratePDFLink,
     getAllDocsUseCase: GetAllDocs
 ) : ViewModel(),
     LoadingDialogViewModel {
@@ -50,6 +51,7 @@ class HomeViewModel @Inject constructor(
         class HomeToastMessage(val msg: String) : HomeState()
         class HomeAlertDialog(val msg: Int) : HomeState()
         data class SharePdf(val data: File) : HomeState()
+        data class SharePdfLink(val uri: Uri) : HomeState()
     }
 
     private val _homeState = MutableLiveData<Event<HomeState>>()
@@ -69,7 +71,7 @@ class HomeViewModel @Inject constructor(
         _navigationCommands.value = Event(NavigationCommand.To(directions))
     }
 
-    fun shareDoc() {
+    fun sharePdfDoc() {
         showDialog(R.string.loading_dialog_message_generating_pdf)
         viewModelScope.launch {
             try {
@@ -80,6 +82,24 @@ class HomeViewModel @Inject constructor(
                 _homeState.value = Event(
                     HomeState.HomeAlertDialog(
                         R.string.home_alert_error_generate_pdf
+                    )
+                )
+            }
+            hideDialog()
+        }
+    }
+
+    fun sharePdfLink(){
+        showDialog(R.string.loading_dialog_message_generating_pdf_link)
+        viewModelScope.launch {
+            try {
+                val uri = generatePDFLink(currDoc!!)
+                _homeState.value = Event(HomeState.SharePdfLink(uri))
+            }catch (e: Exception){
+                Timber.d(e.printStackTrace().toString())
+                _homeState.value = Event(
+                    HomeState.HomeAlertDialog(
+                        R.string.home_alert_error_generate_pdf_link
                     )
                 )
             }

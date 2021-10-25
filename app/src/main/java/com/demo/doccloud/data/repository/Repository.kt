@@ -1,6 +1,7 @@
 package com.demo.doccloud.data.repository
 
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.Result
@@ -38,4 +39,7 @@ interface Repository {
     suspend fun updateRemoteDocPhoto(remoteId: Long, photo: Photo)
     suspend fun uploadDoc(doc: Doc)
     suspend fun sendCustomIdForceUpdate(customId: Long)
+    suspend fun generatePDFLink(file: File, customId: Long): Uri
+    suspend fun removeTempFile(customId: Long)
+    suspend fun getRemoveTempFileTime(): Long
 }
