@@ -46,3 +46,6 @@ https://proandroiddev.com/how-to-deadlock-your-android-app-with-runblocking-8dab
 
 include modules with Hilt
 https://stackoverflow.com/questions/66505024/error-dagger-missingbinding-swiperepository-cannot-be-provided-without-an-pr
+
+using dataStore like SharedPreference
+https://medium.com/@vgoyal_1/datastore-android-how-to-use-it-like-a-pro-using-kotlin-2c2440683d78

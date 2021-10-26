@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.demo.doccloud.data.datasource.local.AppLocalServices
 import com.demo.doccloud.data.datasource.local.LocalDataSource
+import com.demo.doccloud.data.datasource.local.persist.DataStoreManagerImpl
 import com.demo.doccloud.data.datasource.local.persist.PersistSimpleData
 import com.demo.doccloud.data.datasource.local.persist.SharedPreferenceImpl
 import com.demo.doccloud.data.datasource.local.room.AppDatabase
@@ -29,7 +30,7 @@ abstract class DatasourceModule {
     abstract fun bindRemoteDataSource(remoteDatasource: FirebaseServices): RemoteDataSource
 
     @Binds
-    abstract fun bindPersistSimpleData(persistSimpleData: SharedPreferenceImpl): PersistSimpleData
+    abstract fun bindPersistSimpleData(persistSimpleData: DataStoreManagerImpl): PersistSimpleData
 
     @Binds
     abstract fun bindLocalDataSource(localDataSource: AppLocalServices): LocalDataSource

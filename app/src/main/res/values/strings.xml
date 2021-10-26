@@ -9,6 +9,8 @@
     <string name="share_preference_doc_cloud_app_file_key">SharePreferenceDocCloudFileKey</string>
     <string name="share_preference_instance_error">failure on get  sharedPreference instance</string>
 
+    <!-- Data Store -->
+    <string name="data_store_preference">dataStorePreference</string>
 
     <!-- Login Screen -->
     <string name="login_doc_cloud_name">Doc Cloud</string>

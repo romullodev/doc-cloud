@@ -219,6 +219,9 @@ dependencies {
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     kaptAndroidTest "com.google.dagger:hilt-compiler:$hilt_version"
 
+    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptTest "com.google.dagger:hilt-compiler:$hilt_version"
+
     def mockito_version = '1.10.19'
     androidTestImplementation "org.mockito:mockito-core:$mockito_version"
 
@@ -260,5 +263,8 @@ dependencies {
 
     def startup_version = '1.1.0'
     implementation "androidx.startup:startup-runtime:${startup_version}"
+
+    def data_store_version = "1.0.0"
+    implementation "androidx.datastore:datastore-preferences:$data_store_version"
 
 }

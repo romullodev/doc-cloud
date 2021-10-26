@@ -3,6 +3,7 @@ package com.demo.doccloud
 import com.demo.doccloud.domain.usecases.impl.GenerateDocPdfImplTest
 import com.demo.doccloud.domain.usecases.impl.GeneratePDFLinkImplTest
 import com.demo.doccloud.domain.usecases.impl.GetRemoveTempFileTimeImplTest
+import com.demo.doccloud.domain.usecases.impl.SaveCustomIdSyncStrategyImplTest
 import com.demo.doccloud.ui.camera.CameraFragmentTest
 import com.demo.doccloud.ui.crop.CropFragmentTest
 import com.demo.doccloud.ui.edit.EditFragmentTest
@@ -22,6 +23,7 @@ import org.junit.runners.Suite
     CameraFragmentTest::class,
     GenerateDocPdfImplTest::class,
     GeneratePDFLinkImplTest::class,
-    GetRemoveTempFileTimeImplTest::class
+    GetRemoveTempFileTimeImplTest::class,
+    SaveCustomIdSyncStrategyImplTest::class
 )
 class RunAllAndroidTests

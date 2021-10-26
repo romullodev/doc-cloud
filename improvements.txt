@@ -1,10 +1,18 @@
-2)
+1) change SharedPreference to DataStore
+
+2) Testar workers
+
+3) não permitir inserir o nome de um documento já existente
+
+4) update readme file about remove temp file time
+
+5)
 improve HomeScreen layout
 	- improve colors
 	- improve doc layout
 	- implement multiple selection
 
-3)
+6)
 change Real Database Rules to security mode
 
 - reduce size of the generated pdfs
@@ -19,15 +27,8 @@ change Real Database Rules to security mode
 
 - analyze use of singleton on DI
 
-- change SharedPreference to DataStore
-
 - improve EditScreen layout
 
-4) Testar workers
-
-5) não permitir inserir o nome de um documento já existente
-
-6) parametrizar o tempo  de remoção do temp file
 
 
 	

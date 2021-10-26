@@ -28,7 +28,6 @@ import org.junit.runners.Suite
     GetSavedCustomIdSyncStrategyImplTest::class,
     GetSyncStrategyImplTest::class,
     RecoverPasswordImplTest::class,
-    SaveCustomIdSyncStrategyImplTest::class,
     SyncDataImplTest::class,
     UpdateLocalDocImplTest::class,
     UpdateLocalDocNameImplTest::class,
