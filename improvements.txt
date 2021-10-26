@@ -1,11 +1,3 @@
-1) OK
-implement alert dialog to generate pdf file
-    option 1: generate file
-    option 2: generate link
-    in case of option 2, inform that this link has a limit time
-
-1.1) realizar testes com a nova funcionalidade
-
 2)
 improve HomeScreen layout
 	- improve colors

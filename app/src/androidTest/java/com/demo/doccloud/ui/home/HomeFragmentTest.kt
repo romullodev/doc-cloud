@@ -129,7 +129,7 @@ class HomeFragmentTest {
     }
 
     @Test
-    fun share_doc_successfully() {
+    fun share_pdf_file_successfully() {
         //Arrange
         val intent = Intent()
         intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
@@ -164,7 +164,7 @@ class HomeFragmentTest {
     }
 
     @Test
-    fun share_doc_with_exception() {
+    fun share_pdf_file_with_exception() {
         //Arrange
         //workaround to throw an exception on this use case
         val fakeGenerateDocPdf = FakeGenerateDocPdfImpl(Dispatchers.Default, context)
@@ -183,6 +183,66 @@ class HomeFragmentTest {
 
         //Assert
         EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_generate_pdf)
+    }
+
+    @Test
+    fun share_link_pdf_successfully(){
+        //Arrange
+        val link = "link to be shared"
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_TEXT, link)
+        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
+        intending(hasAction(Intent.ACTION_SEND)).respondWith(result)
+        coEvery { mockRemoteDataSource.generatePDFLink(any(), any()) } returns Uri.EMPTY
+        coEvery { mockRemoteDataSource.getRemoveTempFileTime() } returns 1L
+        launchScreen()
+
+        //Act
+        EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
+        EspressoActions.performMenuItemClick(R.string.home_doc_item_share, R.id.share)
+        EspressoActions.performClickOnView(R.id.share_pdf_link_tv)
+
+        //Assert
+        intended(
+            allOf(
+                hasExtras(
+                    allOf(
+                        hasEntry(equalTo(Intent.EXTRA_INTENT), hasAction(Intent.ACTION_SEND)),
+                        hasEntry(
+                            equalTo(Intent.EXTRA_INTENT),
+                            hasType(AppConstants.INTENT_TEXT_PLAIN_TYPE)
+                        ),
+                        hasEntry(
+                            equalTo(Intent.EXTRA_TITLE),
+                            containsString(context.getString(R.string.common_share_with))
+                        )
+                    )
+                ),
+                hasAction(equalTo(Intent.ACTION_CHOOSER))
+            )
+        )
+    }
+
+    @Test
+    fun share_link_pdf_with_exception(){
+        //Arrange
+        //workaround to throw an exception on this use case
+        val fakeGenerateDocPdf = FakeGenerateDocPdfImpl(Dispatchers.Default, context)
+        GlobalVariablesTest.shouldThrowException = true
+        homeViewModel = AndroidTestUtil.getHomeViewModelWithMockGeneratePdfUseCase(
+            context,
+            repository,
+            fakeGenerateDocPdf
+        )
+        launchScreen()
+
+        //Act
+        EspressoActions.performLongClickOnRecyclerViewItem(R.id.rvHome, 0)
+        EspressoActions.performMenuItemClick(R.string.home_doc_item_share, R.id.share)
+        EspressoActions.performClickOnView(R.id.share_pdf_link_tv)
+
+        //Assert
+        EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_generate_pdf_link)
     }
 
     @Test
@@ -317,29 +377,3 @@ class HomeFragmentTest {
         assertThat(navController.currentDestination?.id, Matchers.`is`(R.id.editFragment))
     }
 }
-//val receivedIntent: Intent = Iterables.getOnlyElement(Intents.getIntents())
-//        intended(
-//            allOf(
-//                hasAction(ACTION_OPEN_DOCUMENT),
-//                hasCategories(hasItem(equalTo(Intent.CATEGORY_OPENABLE))),
-//                hasExtra(Intent.EXTRA_ALLOW_MULTIPLE, true),
-//                hasType("image/*")
-//                )
-//        )
-//assertThat(receivedIntent).hasAction(Intent.ACTION_VIEW)
-//assertThat(intent).categories().containsExactly(Intent.CATEGORY_BROWSABLE)
-//
-//
-//intended(
-//allOf(
-//hasExtras(
-//allOf(
-////hasEntry(equalTo(Intent.EXTRA_INTENT), hasAction(ACTION_OPEN_DOCUMENT)),
-//hasEntry(equalTo(Intent.EXTRA_INTENT), hasType("image/*")),
-//)
-//),
-//hasCategories(hasItem(equalTo(Intent.CATEGORY_OPENABLE))),
-//hasAction(equalTo(ACTION_OPEN_DOCUMENT))
-//)
-//)
-//)

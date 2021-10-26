@@ -130,6 +130,9 @@ class AndroidTestUtil {
             val deleteDocPhotoUseCase = DeleteDocPhotoImpl(deleteLocalDocPhoto, scheduleToDeleteRemoteDocPhoto)
             val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
             val scheduleToUpdateRemoteDocPhoto = ScheduleToUpdateRemoteDocPhotoImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, scheduleToUpdateRemoteDocPhoto)
 
             return EditViewModel(
@@ -138,7 +141,8 @@ class AndroidTestUtil {
                 getDocByIdUseCase,
                 updatedDocNameUseCase,
                 deleteDocPhotoUseCase,
-                updateDocPhoto
+                updateDocPhoto,
+                generatePDFLink
             )
         }
 
@@ -152,6 +156,9 @@ class AndroidTestUtil {
             val deleteDocPhotoUseCase = DeleteDocPhotoImpl(deleteLocalDocPhoto, scheduleToDeleteRemoteDocPhoto)
             val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
             val scheduleToUpdateRemoteDocPhoto = ScheduleToUpdateRemoteDocPhotoImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, scheduleToUpdateRemoteDocPhoto)
 
             return EditViewModel(
@@ -160,7 +167,8 @@ class AndroidTestUtil {
                 getDocByIdUseCase,
                 updatedDocName,
                 deleteDocPhotoUseCase,
-                updateDocPhoto
+                updateDocPhoto,
+                generatePDFLink
             )
         }
 
@@ -176,6 +184,9 @@ class AndroidTestUtil {
             val deleteDocPhotoUseCase = DeleteDocPhotoImpl(deleteLocalDocPhoto, scheduleToDeleteRemoteDocPhoto)
             val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
             val scheduleToUpdateRemoteDocPhoto = ScheduleToUpdateRemoteDocPhotoImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdf, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, scheduleToUpdateRemoteDocPhoto)
 
             return EditViewModel(
@@ -184,7 +195,8 @@ class AndroidTestUtil {
                 getDocByIdUseCase,
                 updatedDocNameUseCase,
                 deleteDocPhotoUseCase,
-                updateDocPhoto
+                updateDocPhoto,
+                generatePDFLink
             )
         }
 
@@ -200,6 +212,9 @@ class AndroidTestUtil {
             val deleteDocPhotoUseCase = DeleteDocPhotoImpl(deleteLocalDocPhoto, scheduleToDeleteRemoteDocPhoto)
             val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
             val scheduleToUpdateRemoteDocPhoto = ScheduleToUpdateRemoteDocPhotoImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, scheduleToUpdateRemoteDocPhoto)
 
             return EditViewModel(
@@ -208,7 +223,8 @@ class AndroidTestUtil {
                 getDocByIdUseCase,
                 updatedDocNameUseCase,
                 deleteDocPhotoUseCase,
-                updateDocPhoto
+                updateDocPhoto,
+                generatePDFLink
             )
         }
 
@@ -222,6 +238,9 @@ class AndroidTestUtil {
             val updatedDocNameUseCase = UpdatedDocNameImpl(scheduleToUpdateRemoteDocName, updateLocalDocName)
             val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
             val scheduleToUpdateRemoteDocPhoto = ScheduleToUpdateRemoteDocPhotoImpl(context)
+            val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+            val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+            val generatePDFLink = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
             val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, scheduleToUpdateRemoteDocPhoto)
 
             return EditViewModel(
@@ -230,7 +249,8 @@ class AndroidTestUtil {
                 getDocByIdUseCase,
                 updatedDocNameUseCase,
                 deleteDocPhoto,
-                updateDocPhoto
+                updateDocPhoto,
+                generatePDFLink
             )
         }
 

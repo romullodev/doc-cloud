@@ -31,11 +31,13 @@ class EditViewModel @Inject constructor(
     private val updatedDocNameUseCase: UpdatedDocName,
     private val deleteDocPhotoUseCase: DeleteDocPhoto,
     private val updateDocPhotoUseCase: UpdateDocPhoto,
+    private val generatePDFLink: GeneratePDFLink,
 ) : ViewModel(),
     LoadingDialogViewModel {
 
     sealed class EditState {
-        data class SharePdf(val data: File): EditState()
+        data class SharePdfFile(val data: File): EditState()
+        data class SharePdfLink(val uri: Uri): EditState()
         class EditAlertDialog(val msg: Int) : EditState()
     }
 
@@ -98,11 +100,28 @@ class EditViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val pdfFile = generateDocPdfUseCase(_doc.value!!)
-                _editState.value = Event(EditState.SharePdf(pdfFile))
+                _editState.value = Event(EditState.SharePdfFile(pdfFile))
             }catch (e: Exception){
                 _editState.value = Event(
                     EditState.EditAlertDialog(
                         R.string.home_alert_error_generate_pdf
+                    )
+                )
+            }
+            hideDialog()
+        }
+    }
+
+    fun sharePdfLink(){
+        showDialog(R.string.loading_dialog_message_generating_pdf_link)
+        viewModelScope.launch {
+            try {
+                val uri = generatePDFLink(_doc.value!!)
+                _editState.value = Event(EditState.SharePdfLink(uri))
+            }catch (e: Exception){
+                _editState.value = Event(
+                    EditState.EditAlertDialog(
+                        R.string.home_alert_error_generate_pdf_link
                     )
                 )
             }

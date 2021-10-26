@@ -55,6 +55,9 @@ class EditViewModelTest {
         val updateLocalDocPhoto = UpdateLocalDocPhotoImpl(repository)
         val fakeScheduleToUpdateRemoteDocPhoto = FakeScheduleToUpdateRemoteDocPhotoImpl()
         val updateDocPhoto = UpdateDocPhotoImpl(updateLocalDocPhoto, fakeScheduleToUpdateRemoteDocPhoto)
+        val scheduleToRemoveTempFile = ScheduleToRemoveTempFileImpl(context)
+        val getRemoveTempFileTime = GetRemoveTempFileTimeImpl(repository)
+        val generatePDFLinkImpl = GeneratePDFLinkImpl(generateDocPdfUseCase, scheduleToRemoveTempFile, getRemoveTempFileTime, repository)
 
         doc = FakeRepository.fakeDoc.copy(localId = 1)
         editViewModel = EditViewModel(
@@ -63,7 +66,8 @@ class EditViewModelTest {
             getDocByIdUseCase,
             updatedDocNameUseCase,
             deleteDocPhotoUseCase,
-            updateDocPhoto
+            updateDocPhoto,
+            generatePDFLinkImpl
         )
         //this method is execute on onResume state of the fragment
         editViewModel.getDocById(id = 1L)
@@ -100,7 +104,7 @@ class EditViewModelTest {
     fun `share doc with success`(){
         editViewModel.shareDoc()
         val value = editViewModel.editState.getOrAwaitValue()
-        Truth.assertThat((value.getContentIfNotHandled() as EditViewModel.EditState.SharePdf).data.isFile)
+        Truth.assertThat((value.getContentIfNotHandled() as EditViewModel.EditState.SharePdfFile).data.isFile)
     }
 
     @Test

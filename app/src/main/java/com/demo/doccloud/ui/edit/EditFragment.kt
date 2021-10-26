@@ -26,11 +26,13 @@ import androidx.window.WindowManager
 import com.demo.doccloud.R
 import com.demo.doccloud.ui.edit.adapters.EditAdapter
 import com.demo.doccloud.databinding.EditFragmentBinding
+import com.demo.doccloud.databinding.GeneratePdfLayoutBinding
 import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
 import com.demo.doccloud.ui.dialogs.doc.CatchDocNameDialog
+import com.demo.doccloud.ui.home.HomeFragmentDirections
 import com.demo.doccloud.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -122,44 +124,38 @@ class EditFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
 
         binding.toolbar.setOnMenuItemClickListener { item ->
             if (item?.itemId == R.id.edit_share) {
-                viewModel.shareDoc()
+                DialogsHelper.showGeneratePdfOrLinkDialog(
+                    context = requireContext(),
+                    runOnPdfFile = {viewModel.shareDoc()},
+                    runCodeOnPdfLink = {viewModel.sharePdfLink()}
+                )
                 return@setOnMenuItemClickListener true
             }
             return@setOnMenuItemClickListener true
         }
 
         binding.fab.setOnClickListener {
-            val dialog = MaterialAlertDialogBuilder(
-                requireContext(),
-                R.style.ThemeOverlay_App_MaterialAlertDialog
-            ).create()//AlertDialog.Builder(requireContext()).create()
-            val layoutInflater = LayoutInflater.from(requireContext())
-            val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
-            view.btnClose.setOnClickListener {
-                dialog.dismiss()
-            }
-            view.cameraTv.setOnClickListener {
-                viewModel.navigate(
-                    EditFragmentDirections.actionGlobalCameraFragment(
-                        root = BackToRoot(
-                            rootDestination = RootDestination.EDIT_DESTINATION,
-                            localId = viewModel.doc.value?.localId
+            DialogsHelper.showAddDocDialog(
+                context = requireContext(),
+                runOnCamera = {
+                    viewModel.navigate(
+                        EditFragmentDirections.actionGlobalCameraFragment(
+                            root = BackToRoot(
+                                rootDestination = RootDestination.EDIT_DESTINATION,
+                                localId = viewModel.doc.value?.localId
+                            )
                         )
                     )
-                )
-                dialog.dismiss()
-            }
-            view.galleryTv.setOnClickListener {
-                // For latest versions API LEVEL 19+
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.type = "image/*"
-                galleryLauncher.launch(intent)
-                dialog.dismiss()
-            }
-            dialog.setView(view.root)
-            dialog.show()
+                },
+                runCodeOnGallery = {
+                    // For latest versions API LEVEL 19+
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                    intent.addCategory(Intent.CATEGORY_OPENABLE)
+                    intent.type = "image/*"
+                    galleryLauncher.launch(intent)
+                }
+            )
         }
     }
 
@@ -182,7 +178,7 @@ class EditFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
         viewModel.editState.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is EditViewModel.EditState.SharePdf -> {
+                    is EditViewModel.EditState.SharePdfFile -> {
                         Global.sharedPdfDoc(
                             file = state.data,
                             context = requireContext(),
@@ -197,6 +193,13 @@ class EditFragment() : Fragment(), AppAlertDialog.DialogMaterialListener {
                             this,
                             requireActivity(),
                             tag = AppConstants.INFO_DIALOG_TAG
+                        )
+                    }
+                    is EditViewModel.EditState.SharePdfLink -> {
+                        Global.sharedPdfLink(
+                            uri = state.uri,
+                            context = requireContext(),
+                            act = requireActivity() as MainActivity
                         )
                     }
                 }

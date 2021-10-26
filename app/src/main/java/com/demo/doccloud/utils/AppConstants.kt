@@ -13,6 +13,7 @@ class AppConstants {
         const val IMMERSIVE_FLAG_TIMEOUT = 500L
         const val TIMESTAMP_FORMAT_BR = "dd-MM-yyyy HH:mm:ss:SSS"
         const val INTENT_PDF_TYPE = "application/pdf"
+        const val INTENT_TEXT_PLAIN_TYPE = "text/plain"
 
         // previousBackStackEntry keys
         const val USER_SIGN_UP_KEY = "user.sign.up.key"

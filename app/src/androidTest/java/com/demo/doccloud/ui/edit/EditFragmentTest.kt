@@ -43,6 +43,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers
+import org.hamcrest.core.AllOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -177,6 +178,7 @@ class EditFragmentTest {
 
         //Act
         EspressoActions.performMenuItemClick(R.string.edit_screen_menu_share, R.id.edit_share)
+        EspressoActions.performClickOnView(R.id.share_pdf_file_tv)
 
         //Assert
         Intents.intended(
@@ -203,6 +205,70 @@ class EditFragmentTest {
     }
 
     @Test
+    fun share_link_pdf_successfully(){
+        //Arrange
+        val link = "link to be shared"
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_TEXT, link)
+        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
+        Intents.intending(IntentMatchers.hasAction(Intent.ACTION_SEND)).respondWith(result)
+        coEvery { mockRemoteDataSource.generatePDFLink(any(), any()) } returns Uri.EMPTY
+        coEvery { mockRemoteDataSource.getRemoveTempFileTime() } returns 1L
+        launchFragment()
+
+        //Act
+        EspressoActions.performMenuItemClick(R.string.edit_screen_menu_share, R.id.edit_share)
+        EspressoActions.performClickOnView(R.id.share_pdf_link_tv)
+
+        //Assert
+        Intents.intended(
+            AllOf.allOf(
+                IntentMatchers.hasExtras(
+                    AllOf.allOf(
+                        BundleMatchers.hasEntry(
+                            CoreMatchers.equalTo(Intent.EXTRA_INTENT),
+                            IntentMatchers.hasAction(Intent.ACTION_SEND)
+                        ),
+                        BundleMatchers.hasEntry(
+                            CoreMatchers.equalTo(Intent.EXTRA_INTENT),
+                            IntentMatchers.hasType(AppConstants.INTENT_TEXT_PLAIN_TYPE)
+                        ),
+                        BundleMatchers.hasEntry(
+                            CoreMatchers.equalTo(Intent.EXTRA_TITLE),
+                            Matchers.containsString(context.getString(R.string.common_share_with))
+                        )
+                    )
+                ),
+                IntentMatchers.hasAction(CoreMatchers.equalTo(Intent.ACTION_CHOOSER))
+            )
+        )
+    }
+
+    @Test
+    fun share_link_pdf_with_exception(){
+        //Arrange
+        //workaround to throw an exception on this use case
+        val fakeGenerateDocPdf = FakeGenerateDocPdfImpl(Dispatchers.Default, context)
+        GlobalVariablesTest.shouldThrowException = true
+        editViewModel = AndroidTestUtil.getEditViewModelWithMockGeneratePdfDoc(
+            context,
+            repository,
+            fakeGenerateDocPdf
+        )
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
+        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
+        Intents.intending(IntentMatchers.hasAction(Intent.ACTION_SEND)).respondWith(result)
+        launchFragment()
+
+        //Act
+        EspressoActions.performMenuItemClick(R.string.edit_screen_menu_share, R.id.edit_share)
+        EspressoActions.performClickOnView(R.id.share_pdf_link_tv)
+
+        //Assert
+        EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_generate_pdf_link)
+    }
+    @Test
     fun throw_exception_when_share_doc() {
         //Arrange
         //workaround to throw an exception on this use case
@@ -213,8 +279,6 @@ class EditFragmentTest {
             repository,
             fakeGenerateDocPdf
         )
-
-
         val intent = Intent()
         intent.putExtra(Intent.EXTRA_STREAM, Uri.EMPTY)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
@@ -223,6 +287,7 @@ class EditFragmentTest {
 
         //Act
         EspressoActions.performMenuItemClick(R.string.edit_screen_menu_share, R.id.edit_share)
+        EspressoActions.performClickOnView(R.id.share_pdf_file_tv)
 
         //Assert
         EspressoActions.checkTextOnAlertDialog(R.string.home_alert_error_generate_pdf)

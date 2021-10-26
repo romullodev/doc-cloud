@@ -206,35 +206,24 @@ class HomeFragment() :
 
     private fun setupListeners() {
         binding.addButton.setOnClickListener {
-            val dialog = MaterialAlertDialogBuilder(
-                requireContext(),
-                R.style.ThemeOverlay_App_MaterialAlertDialog
-            ).create()//AlertDialog.Builder(requireContext()).create()
-            val layoutInflater = LayoutInflater.from(requireContext())
-            val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
-            view.btnClose.setOnClickListener {
-                dialog.dismiss()
-            }
-            view.cameraTv.setOnClickListener {
-                homeViewModel.navigate(
-                    HomeFragmentDirections.actionHomeFragmentToCameraFragment(
-                        root = BackToRoot(rootDestination = RootDestination.HOME_DESTINATION)
+            DialogsHelper.showAddDocDialog(
+                context = requireContext(),
+                runOnCamera = {
+                    homeViewModel.navigate(
+                        HomeFragmentDirections.actionHomeFragmentToCameraFragment(
+                            root = BackToRoot(rootDestination = RootDestination.HOME_DESTINATION)
+                        )
                     )
-                )
-                dialog.dismiss()
-            }
-            view.galleryTv.setOnClickListener {
-                // For latest versions API LEVEL 19+
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.type = "image/*"
-                galleryLauncher.launch(intent)
-                dialog.dismiss()
-            }
-            dialog.setView(view.root)
-            dialog.show()
-
+                },
+                runCodeOnGallery = {
+                    // For latest versions API LEVEL 19+
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                    intent.addCategory(Intent.CATEGORY_OPENABLE)
+                    intent.type = "image/*"
+                    galleryLauncher.launch(intent)
+                }
+            )
             /*
                 val popup = PopupMenu(requireContext(), it)
                 val inflater: MenuInflater = popup.menuInflater
@@ -290,26 +279,11 @@ class HomeFragment() :
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.share -> {
-                val dialog = MaterialAlertDialogBuilder(
-                    requireContext(),
-                    R.style.ThemeOverlay_App_MaterialAlertDialog
-                ).create()
-                val layoutInflater = LayoutInflater.from(requireContext())
-                val view = GeneratePdfLayoutBinding.inflate(layoutInflater, null, false)
-                view.btnClose.setOnClickListener {
-                    dialog.dismiss()
-                }
-                view.sharePdfFileTv.setOnClickListener {
-                    homeViewModel.sharePdfDoc()
-                    dialog.dismiss()
-                }
-                view.sharePdfLinkTv.setOnClickListener {
-                    homeViewModel.sharePdfLink()
-                    dialog.dismiss()
-                }
-                dialog.setView(view.root)
-                dialog.show()
-
+                DialogsHelper.showGeneratePdfOrLinkDialog(
+                    context = requireContext(),
+                    runOnPdfFile = {homeViewModel.sharePdfDoc()},
+                    runCodeOnPdfLink = {homeViewModel.sharePdfLink()}
+                )
                 true
             }
 //            R.id.edit -> {

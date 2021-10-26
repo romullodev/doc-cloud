@@ -65,7 +65,7 @@ class Global {
         fun sharedPdfLink(uri: Uri, context: Context, act: AppCompatActivity){
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
-            intent.type = "text/plain"
+            intent.type = AppConstants.INTENT_TEXT_PLAIN_TYPE
             intent.putExtra(Intent.EXTRA_TEXT, uri.toString())
             act.startActivity(Intent.createChooser(intent, context.getString(R.string.common_share_with)))
         }
