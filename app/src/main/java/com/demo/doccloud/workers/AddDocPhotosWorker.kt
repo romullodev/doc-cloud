@@ -8,6 +8,7 @@ import com.demo.doccloud.R
 import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
+import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.usecases.contracts.AddPhotoToRemoteDoc
@@ -28,18 +29,20 @@ class AddDocPhotosWorker @AssistedInject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val updateLocalDocUseCase: UpdateLocalDoc,
     private val getDocByIdUseCase: GetDocById,
-    private val addPhotoToRemoteDocUseCase : AddPhotoToRemoteDoc
+    private val addPhotoToRemoteDocUseCase: AddPhotoToRemoteDoc
 ) :
     CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         return withContext(dispatcher) {
-            val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
-            val json: String = inputData.getString(AppConstants.LIST_PHOTO_ADD_KEY) ?: ""
-            val photosId: List<String> = Gson().fromJson(json, Array<String>::class.java).toList()
-            val doc = getDocByIdUseCase(localId)
+            var doc: Doc? = null
             try {
-                if (json != "" && localId != -1L) {
+                val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
+                val json: String = inputData.getString(AppConstants.LIST_PHOTO_ADD_KEY) ?: "[]"
+                val photosId: List<String> =
+                    Gson().fromJson(json, Array<String>::class.java).toList()
+                doc = getDocByIdUseCase(localId)
+                if (json != "[]" && localId != -1L) {
                     updateLocalDocUseCase(doc.copy(status = DocStatus.SENDING))
                     val filteredPhotos = ArrayList<Photo>()
                     val newJsonPages = ArrayList<Long>()
@@ -64,8 +67,10 @@ class AddDocPhotosWorker @AssistedInject constructor(
                 }
 
             } catch (e: Exception) {
-                Timber.d(applicationContext.getString(R.string.work_manager_failure_recover_list_or_id))
-                updateLocalDocUseCase(doc.copy(status = DocStatus.NOT_SENT))
+                Timber.d("ocorreu um problema no worker. \nDetalhes: $e")
+                doc?.let {
+                    updateLocalDocUseCase(it.copy(status = DocStatus.NOT_SENT))
+                }
                 return@withContext Result.failure()
             }
         }

@@ -47,8 +47,7 @@ class AppLocalServices @Inject constructor(
     override suspend fun getDoc(id: Long) = idling.wrapEspressoIdlingResource {
         return@wrapEspressoIdlingResource withContext(dispatcher) {
             val dataBaseDoc =  appDatabase.docDao.getDoc(id)
-            val doc = dataBaseDoc.asDomain()
-            return@withContext doc
+            return@withContext dataBaseDoc.asDomain()
         }
     }
 

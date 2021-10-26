@@ -199,6 +199,7 @@ dependencies {
 
     //for test workManager
     androidTestImplementation "androidx.work:work-testing:$work_version"
+    testImplementation "androidx.work:work-testing:$work_version"
 
     def espresso_version = '3.4.0'
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
@@ -218,9 +219,6 @@ dependencies {
 
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     kaptAndroidTest "com.google.dagger:hilt-compiler:$hilt_version"
-
-    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    kaptTest "com.google.dagger:hilt-compiler:$hilt_version"
 
     def mockito_version = '1.10.19'
     androidTestImplementation "org.mockito:mockito-core:$mockito_version"
