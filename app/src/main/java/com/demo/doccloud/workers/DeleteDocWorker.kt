@@ -28,12 +28,10 @@ class DeleteDocWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return withContext(dispatcher) {
-            //AppConstants.JSON_PAGES_KEY to jsonPages,
-            // Retrieve doc data
             val remoteId: Long = inputData.getLong(AppConstants.REMOTE_ID_KEY, -1L)
-            val jsonPages = inputData.getString(AppConstants.JSON_PAGES_KEY) ?: ""
+            val jsonPages = inputData.getString(AppConstants.JSON_PAGES_KEY) ?: "[]"
             try {
-                if (remoteId != -1L && jsonPages != "") {
+                if (remoteId != -1L && jsonPages != "[]") {
                     //could be Array<String>
                     val pages = Gson().fromJson(jsonPages, Array<Photo>::class.java).toList()
                     deleteRemoteDocUseCase(remoteId, pages)

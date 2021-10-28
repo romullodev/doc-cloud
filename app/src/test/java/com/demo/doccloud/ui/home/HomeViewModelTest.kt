@@ -101,7 +101,6 @@ class HomeViewModelTest{
     }
 
     @Test
-
     fun `share doc with exception`() = mainCoroutineRule.runBlockingTest{
         GlobalVariablesTest.shouldThrowException = true
         homeViewModel.currDoc = doc

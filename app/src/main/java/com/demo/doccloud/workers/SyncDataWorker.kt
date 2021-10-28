@@ -40,10 +40,9 @@ class SyncDataWorker @AssistedInject constructor(
                 //Before schedule, it checks if this sync is indeed necessary be retrieving sync strategy model
                 val syncStrategy = getSyncStrategyUseCase()
                 val customID: Long = getSavedCustomIdSyncStrategyUseCase()
-                if (
-                    syncStrategy.lastUpdated + syncStrategy.expiration <= System.currentTimeMillis() || // (2): user has passed much time with no synced data
-                    syncStrategy.customId != customID // (3): user do login in another device OR local service failure on get custom ID saves on the device
-                ) {
+                val firstCondition = syncStrategy.lastUpdated + syncStrategy.expiration <= System.currentTimeMillis() // (1): user has passed much time with no synced data
+                val secondCondition = syncStrategy.customId != customID // (2): user do login in another device OR local service failure on get custom ID saves on the device
+                if (firstCondition || secondCondition) {
                     val id: Long =
                         if (syncStrategy.customId == DATABASE_DEFAULT_CUSTOM_ID) saveCustomIdSyncStrategyUseCase() else customID
                     syncDataProgress.postValue(0L)

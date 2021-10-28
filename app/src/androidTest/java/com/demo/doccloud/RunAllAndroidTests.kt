@@ -16,11 +16,13 @@ import org.junit.runners.Suite
 @ExperimentalCoroutinesApi
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
+    //UI tests
     LoginFragmentTest::class,
     HomeFragmentTest::class,
     EditFragmentTest::class,
     CropFragmentTest::class,
     CameraFragmentTest::class,
+    //Use cases
     GenerateDocPdfImplTest::class,
     GeneratePDFLinkImplTest::class,
     GetRemoveTempFileTimeImplTest::class,
