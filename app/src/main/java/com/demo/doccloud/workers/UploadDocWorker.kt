@@ -7,6 +7,7 @@ import androidx.work.WorkerParameters
 import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
+import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.usecases.contracts.GetDocById
 import com.demo.doccloud.domain.usecases.contracts.UpdateLocalDoc
@@ -33,10 +34,11 @@ class UploadDocWorker @AssistedInject constructor(
         return withContext(dispatcher) {
             // Retrieve localId
             val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
-            val doc = getDocById(localId)
+            var doc: Doc? = null
             try {
                 //in case of deletion
                 if (localId != -1L) {
+                    doc = getDocById(localId)
                     updateLocalDoc(doc.copy(status = DocStatus.SENDING))
                     //upload to server
                     uploadDocUseCase(doc)
@@ -48,7 +50,9 @@ class UploadDocWorker @AssistedInject constructor(
                 }
             } catch (e: Exception) {
                 Timber.d("ocorreu um problema no worker. \nDetalhes: $e")
-                updateLocalDoc(doc.copy(status = DocStatus.NOT_SENT))
+                doc?.let {
+                    updateLocalDoc(it.copy(status = DocStatus.NOT_SENT))
+                }
                 //updateUploadStatus(localId, msg = DocStatus.NOT_SENT)
                 return@withContext Result.failure()
             }

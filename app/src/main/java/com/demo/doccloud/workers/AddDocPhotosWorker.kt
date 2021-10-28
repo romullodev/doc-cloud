@@ -35,14 +35,13 @@ class AddDocPhotosWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return withContext(dispatcher) {
+            val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
+            val json: String = inputData.getString(AppConstants.LIST_PHOTO_ADD_KEY) ?: "[]"
+            val photosId: List<String> = Gson().fromJson(json, Array<String>::class.java).toList()
             var doc: Doc? = null
             try {
-                val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
-                val json: String = inputData.getString(AppConstants.LIST_PHOTO_ADD_KEY) ?: "[]"
-                val photosId: List<String> =
-                    Gson().fromJson(json, Array<String>::class.java).toList()
-                doc = getDocByIdUseCase(localId)
                 if (json != "[]" && localId != -1L) {
+                    doc = getDocByIdUseCase(localId)
                     updateLocalDocUseCase(doc.copy(status = DocStatus.SENDING))
                     val filteredPhotos = ArrayList<Photo>()
                     val newJsonPages = ArrayList<Long>()

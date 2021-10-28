@@ -7,6 +7,7 @@ import androidx.work.WorkerParameters
 import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
 import com.demo.doccloud.di.IoDispatcher
+import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.usecases.contracts.GetDocById
 import com.demo.doccloud.domain.usecases.contracts.UpdateLocalDoc
@@ -35,8 +36,9 @@ class UpdateDocNameWorker @AssistedInject constructor(
             val localId: Long = inputData.getLong(AppConstants.LOCAL_ID_KEY, -1L)
             val remoteId: Long = inputData.getLong(AppConstants.REMOTE_ID_KEY, -1L)
             val name: String = inputData.getString(AppConstants.DOC_NAME_ID_KEY) ?: ""
-            val doc = getDocByIdUseCase(localId)
+            var doc : Doc? = null// = getDocByIdUseCase(localId)
             try {
+                doc = getDocByIdUseCase(localId)
                 //in case of deletion
                 if (remoteId != -1L && name != "") {
                     updateLocalDoc(doc.copy(status = DocStatus.SENDING))
@@ -53,7 +55,9 @@ class UpdateDocNameWorker @AssistedInject constructor(
                 }
             } catch (e: Exception) {
                 Timber.d("ocorreu um problema no worker. \nDetalhes: $e")
-                updateLocalDoc(doc.copy(status = DocStatus.NOT_SENT))
+                doc?.let {
+                    updateLocalDoc(it.copy(status = DocStatus.NOT_SENT))
+                }
                 // this result is ignored in case of cancelling
                 return@withContext Result.failure()
             }

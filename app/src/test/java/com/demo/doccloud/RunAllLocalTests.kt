@@ -6,7 +6,7 @@ import com.demo.doccloud.ui.crop.CropViewModelTest
 import com.demo.doccloud.ui.edit.EditViewModelTest
 import com.demo.doccloud.ui.home.HomeViewModelTest
 import com.demo.doccloud.ui.login.LoginViewModelTest
-import com.demo.doccloud.workers.AddDocPhotosWorkerTest
+import com.demo.doccloud.workers.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
@@ -34,7 +34,14 @@ import org.junit.runners.Suite
     UpdateLocalDocNameImplTest::class,
     UpdateLocalDocPhotoImplTest::class,
     //workers
-    AddDocPhotosWorkerTest::class
+    AddDocPhotosWorkerTest::class,
+    DeleteDocPageWorkerTest::class,
+    DeleteDocWorkerTest::class,
+    RemoveTempFileWorkerTest::class,
+    SyncDataWorkerTest::class,
+    UpdateDocNameWorkerTest::class,
+    UpdateDocPageWorkerTest::class,
+    UploadDocWorkerTest::class
 )
 
 class RunAllLocalTests

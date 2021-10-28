@@ -4,13 +4,10 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
 import androidx.work.testing.TestListenableWorkerBuilder
-import com.demo.doccloud.FakeRepository
-import com.demo.doccloud.domain.usecases.contracts.AddPhotoToRemoteDoc
-import com.demo.doccloud.domain.usecases.contracts.GetDocById
-import com.demo.doccloud.domain.usecases.contracts.UpdateLocalDoc
+import com.demo.doccloud.domain.entities.Photo
+import com.demo.doccloud.domain.usecases.contracts.DeleteRemoteDoc
 import com.demo.doccloud.utils.AppConstants
 import com.google.gson.Gson
-import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,43 +15,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-
 @Config(sdk = [30])
 @RunWith(RobolectricTestRunner::class)
-class AddDocPhotosWorkerTest {
+class DeleteDocWorkerTest {
 
     private lateinit var context: Context
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-    private val updateLocalDocUseCase: UpdateLocalDoc = mockk()
-    private val getDocByIdUseCase: GetDocById = mockk()
-    private val addPhotoToRemoteDocUseCase: AddPhotoToRemoteDoc = mockk()
+    private val dispatcher = Dispatchers.IO
+    private val deleteRemoteDocUseCase: DeleteRemoteDoc = mockk()
 
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
     }
 
-    @After
-    fun teardown() {
-        clearMocks(
-            updateLocalDocUseCase,
-            getDocByIdUseCase,
-            addPhotoToRemoteDocUseCase
-        )
-    }
-
-    private fun getWorker(data: Data? = null): AddDocPhotosWorker{
-        val worker = TestListenableWorkerBuilder<AddDocPhotosWorker>(context)
+    private fun getWorker(data: Data? = null): DeleteDocWorker{
+        val worker =  TestListenableWorkerBuilder<DeleteDocWorker>(context)
             .setWorkerFactory(
-                AddDocPhotosWorkerFactory()
+                DeleteDocWorkerFactory()
             )
+
         data?.let {
             worker.setInputData(it)
         }
@@ -62,16 +47,13 @@ class AddDocPhotosWorkerTest {
     }
 
     @Test
-    fun addDocPhotosSuccessfully() {
+    fun deleteDocPageSuccessfully() {
         //Arrange
         val data = workDataOf(
-            AppConstants.LOCAL_ID_KEY to 10L,
-            AppConstants.LIST_PHOTO_ADD_KEY to Gson().toJson(listOf(1L, 2L)),
+            AppConstants.REMOTE_ID_KEY to 10L,
+            AppConstants.JSON_PAGES_KEY to Gson().toJson(listOf(Photo(id=1, path = "dummyPath"))),
         )
-        coEvery { getDocByIdUseCase(any()) } returns FakeRepository.fakeDoc
-        coEvery { updateLocalDocUseCase(any()) } returns Unit
-        coEvery { addPhotoToRemoteDocUseCase(any(), any(), any()) } returns Unit
-
+        coEvery { deleteRemoteDocUseCase(any(), any()) } returns Unit
         val worker = getWorker(data)
 
         runBlocking {
@@ -84,10 +66,10 @@ class AddDocPhotosWorkerTest {
     }
 
     @Test
-    fun failureByLocalIdNotFound() {
+    fun failureByRemoteIdNotFound(){
         //Arrange
         val data = workDataOf(
-            AppConstants.LIST_PHOTO_ADD_KEY to Gson().toJson(listOf(1L, 2L)),
+            AppConstants.JSON_PAGES_KEY to Gson().toJson(listOf(Photo(id=1, path = "dummyPath"))),
         )
         val worker = getWorker(data)
 
@@ -101,10 +83,10 @@ class AddDocPhotosWorkerTest {
     }
 
     @Test
-    fun failureByEmptyJson() {
+    fun failureByPagesNotFound(){
         //Arrange
         val data = workDataOf(
-            AppConstants.LOCAL_ID_KEY to 10L,
+            AppConstants.REMOTE_ID_KEY to 10L
         )
         val worker = getWorker(data)
 
@@ -121,10 +103,10 @@ class AddDocPhotosWorkerTest {
     fun failureByException() {
         //Arrange
         val data = workDataOf(
-            AppConstants.LOCAL_ID_KEY to 10L,
-            AppConstants.LIST_PHOTO_ADD_KEY to Gson().toJson(listOf(1L, 2L)),
+            AppConstants.REMOTE_ID_KEY to 10L,
+            AppConstants.JSON_PAGES_KEY to Gson().toJson(listOf(Photo(id=1, path = "dummyPath"))),
         )
-        coEvery { getDocByIdUseCase(any()) } throws RuntimeException()
+        coEvery { deleteRemoteDocUseCase(any(), any()) } throws RuntimeException()
         val worker = getWorker(data)
 
         runBlocking {
@@ -135,20 +117,13 @@ class AddDocPhotosWorkerTest {
             MatcherAssert.assertThat(result, Matchers.`is`(ListenableWorker.Result.failure()))
         }
     }
-
-    private inner class AddDocPhotosWorkerFactory : WorkerFactory() {
-        override fun createWorker(
-            appContext: Context,
-            workerClassName: String,
-            workerParameters: WorkerParameters
-        ): ListenableWorker {
-            return AddDocPhotosWorker(
+    private inner class DeleteDocWorkerFactory: WorkerFactory() {
+        override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters): ListenableWorker {
+            return DeleteDocWorker(
                 appContext,
                 workerParameters,
                 dispatcher,
-                updateLocalDocUseCase,
-                getDocByIdUseCase,
-                addPhotoToRemoteDocUseCase
+                deleteRemoteDocUseCase
             )
         }
     }

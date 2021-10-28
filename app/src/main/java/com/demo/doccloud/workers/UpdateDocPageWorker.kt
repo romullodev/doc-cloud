@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.demo.doccloud.di.IoDispatcher
+import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.Photo
 import com.demo.doccloud.domain.usecases.contracts.GetDocById
@@ -35,10 +36,11 @@ class UpdateDocPageWorker @AssistedInject constructor(
             val photoId: Long = inputData.getLong(AppConstants.PHOTO_ID_KEY, -1L)
             val photoPath: String = inputData.getString(AppConstants.PHOTO_PATH_KEY) ?: ""
 
-            val doc = getDocById(localId)
+            var doc: Doc? = null
             try {
                 //in case of deletion
                 if (localId != -1L && photoId != -1L && photoPath != "") {
+                    doc = getDocById(localId)
                     updateLocalDocUseCase(doc.copy(status = DocStatus.SENDING))
                     //upload to server
                     updateRemoteDocPhotosUseCase(
@@ -53,7 +55,9 @@ class UpdateDocPageWorker @AssistedInject constructor(
                 }
             } catch (e: Exception) {
                 Timber.d("ocorreu um problema no worker. \nDetalhes: $e")
-                updateLocalDocUseCase(doc.copy(status = DocStatus.NOT_SENT))
+                doc?.let {
+                    updateLocalDocUseCase(it.copy(status = DocStatus.NOT_SENT))
+                }
                 // this result is ignored in case of cancelling
                 return@withContext Result.failure()
             }
