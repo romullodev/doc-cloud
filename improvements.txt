@@ -1,8 +1,10 @@
+- show app's licences
+
+- track progress when sync data
+
 - show message for no doc created yet
 
 - implement low / medium / hight quality image
-
-- implement zoom in and zoom out on editFragment
 
 - não permitir inserir o nome de um documento já existente
 
@@ -15,15 +17,11 @@
 	- improve doc layout
 	- implement multiple selection
 
-- reduce size of the generated pdfs
-
 - load a failure image on gallery in case of error
 
 - improve border of generated pdf
 
 - analyze photo format when sync data
-
-- track progress when sync data
 
 - analyze use of singleton on DI
 

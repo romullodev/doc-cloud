@@ -265,4 +265,8 @@ dependencies {
     def data_store_version = "1.0.0"
     implementation "androidx.datastore:datastore-preferences:$data_store_version"
 
+    //PhotoView
+    def photo_view_version = "2.0.0"
+    implementation "com.github.chrisbanes:PhotoView:$photo_view_version"
+
 }
