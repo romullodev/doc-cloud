@@ -9,8 +9,6 @@ improve HomeScreen layout
 	- implement multiple selection
 
 6)
-change Real Database Rules to security mode
-
 - reduce size of the generated pdfs
 
 - load a failure image on gallery in case of error

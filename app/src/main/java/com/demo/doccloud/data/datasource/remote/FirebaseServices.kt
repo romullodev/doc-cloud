@@ -10,6 +10,7 @@ import com.demo.doccloud.domain.*
 import com.demo.doccloud.domain.entities.*
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
@@ -443,7 +444,7 @@ class FirebaseServices @Inject constructor(
             //Firebase Database
             val database = database.reference
             //reference to get expiration info
-            val refDbExpiration = database.child(DATABASE_USERS_DIRECTORY)
+            val refDbExpiration = database.child("$DATABASE_USERS_DIRECTORY/$DATABASE_APP_LEVEL_STRATEGY_KEY")
             //reference to get sync strategy info directory (users level)
             val refDbSyncStrategy =
                 database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
@@ -483,19 +484,16 @@ class FirebaseServices @Inject constructor(
                 syncTask.await()
 
                 //lastUpdated and customId are localed in users level on firebase
-                val syncDataSnapshot = (syncTask.result as DataSnapshot)
-                val expirationDataSnapshot = (expirationTask.result as DataSnapshot)
-                Timber.d("$syncDataSnapshot")
-                Timber.d("$expirationDataSnapshot")
-                val customId =
-                    syncDataSnapshot.child(REMOTE_DATABASE_CUSTOM_ID_KEY).value.toString()
+                val syncDataSnapshot = (syncTask.result as? DataSnapshot) ?: throw Exception("syncTask: ${syncTask.result}")
+                val expirationDataSnapshot = (expirationTask.result as? DataSnapshot) ?: throw Exception("expirationTask: ${expirationTask.result}")
+                val customId = syncDataSnapshot.child(REMOTE_DATABASE_CUSTOM_ID_KEY).value.toString()
 
                 val lastUpdated =
                     syncDataSnapshot.child(DATABASE_LAST_UPDATED_KEY).value.toString()
 
                 //expiration is localed on app level directory on firebase
                 val expiration =
-                    expirationDataSnapshot.child("$DATABASE_APP_LEVEL_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXPIRATION_KEY").value.toString()
+                    expirationDataSnapshot.child("$DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXPIRATION_KEY").value.toString()
                 return@withContext SyncStrategy(
                     expiration = expiration.toLong(),
                     lastUpdated = lastUpdated.toLong(),

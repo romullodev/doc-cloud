@@ -46,6 +46,7 @@ class AppConstants {
         const val DATABASE_JSON_PAGES_KEY = "JsonPages"
         //Firebase fields for sync strategy model
         const val DATABASE_APP_LEVEL_STRATEGY_KEY = "strategy"
+        const val DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY = "setup strategy"
         const val DATABASE_APP_LEVEL_EXPIRATION_KEY = "Sync Data Strategy Expiration"
         const val DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY = "Exclude Temp Files Time"
         const val REMOTE_DATABASE_CUSTOM_ID_KEY = "Custom ID" //localed on users level
