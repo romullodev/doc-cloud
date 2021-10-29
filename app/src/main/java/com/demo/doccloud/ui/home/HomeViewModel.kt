@@ -179,7 +179,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val user = getUserUseCase()
-                Global.user.value = Event(user)
+                Global.user.value = user
                 scheduleToSyncDataUseCase()
             }catch (e: Exception){
                 Timber.d(e.toString())

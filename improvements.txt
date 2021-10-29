@@ -1,8 +1,8 @@
+- corrigit bug do desaparecimento da messagem de bem vindo
+
 - implement low / medium / hight quality image
 
 - implement zoom in and zoom out on editFragment
-
-- corrigit bug do desaparecimento da messagem de bem vindo
 
 - corrigir bug ao remover teclado durante a busca na tela home
 

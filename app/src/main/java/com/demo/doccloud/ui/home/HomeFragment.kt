@@ -374,11 +374,10 @@ class HomeFragment() :
             }
         }
 
-        Global.user.observe(viewLifecycleOwner){
-            it.getContentIfNotHandled()?.let { user->
+        Global.user.observe(viewLifecycleOwner){ user->
                 binding.title.text = context?.getString(R.string.home_welcome_title, user.displayName)
                 binding.subtitle.text = getFormattedSubtitle()
-            }
+            
         }
         //observe from SyncDataWorker to update view when sync data
         SyncDataWorker.syncDataProgress.observe(viewLifecycleOwner) {

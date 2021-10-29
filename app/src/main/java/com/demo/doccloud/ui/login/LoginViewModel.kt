@@ -49,7 +49,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val user = doLoginWithGoogleUseCase(data)
-                Global.user.value = Event(user)
+                Global.user.value = user
                 scheduleToSyncDataUseCase()
                 _loginState.value = Event(
                     LoginState.Authenticated
@@ -66,7 +66,7 @@ class LoginViewModel @Inject constructor(
     fun processRegisterUser(user: User?){
         viewModelScope.launch {
             try {
-                Global.user.value = Event(user!!)
+                Global.user.value = user
                 scheduleToSyncDataUseCase()
                 _loginState.value = Event(
                     LoginState.Authenticated
@@ -86,7 +86,7 @@ class LoginViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     val user = doLoginByEmailUseCase(login.trim(), password.trim())
-                    Global.user.value = Event(user)
+                    Global.user.value = user
                     scheduleToSyncDataUseCase()
                     _loginState.value = Event(
                         LoginState.Authenticated

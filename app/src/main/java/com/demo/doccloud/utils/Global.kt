@@ -13,7 +13,7 @@ import java.io.File
 
 class Global {
     companion object{
-        var user = MutableLiveData<Event<User>>()
+        var user = MutableLiveData<User>()
 
         /** Use external media if it is available, our app's file directory otherwise */
         fun getOutputDirectory(context: Context): File {
