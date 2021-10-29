@@ -9,6 +9,7 @@ import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.domain.usecases.contracts.GenerateDocPdf
 import com.demo.doccloud.utils.Global
+import com.demo.doccloud.utils.ImageResizer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -17,6 +18,8 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
+private const val MAX_SIZE_EACH_PHOTO_DOCUMENT = 1024 * 800
 
 class GenerateDocPdfImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -37,24 +40,19 @@ class GenerateDocPdfImpl @Inject constructor(
             if (bitmap.width > majorWidth)
                 majorWidth = bitmap.width
         }
-
         //create pdf with photos
         for ((index, path) in doc.pages.withIndex()) {
-            bitmap = BitmapFactory.decodeFile(path.path)
-            //bitmap = ImageResizer.reduceBitmapSize(bitmap, MAX_SIZE_EACH_PHOTO_DOCUMENT)
+            bitmap = ImageResizer.reduceBitmapSize(
+                BitmapFactory.decodeFile(path.path),
+                MAX_SIZE_EACH_PHOTO_DOCUMENT
+            )
             pageInfo =
-                PdfDocument.PageInfo.Builder(majorWidth, bitmap.height, index + 1) //A4 resolution
+                PdfDocument.PageInfo.Builder(majorWidth, bitmap.height, index + 1)
                     .create()
             page = document.startPage(pageInfo)
             canvas = page.canvas
-            //bitmap = Bitmap.createScaledBitmap(
-            //    bitmap,
-            //    2480,
-            //    3508,
-            //    true
-            //)
-            val startPointCenter = (majorWidth - bitmap.width) / 2.0f
-            canvas.drawBitmap(bitmap, startPointCenter, 0f, null)
+            val startPointLeft = (majorWidth - bitmap.width) / 2.0f
+            canvas.drawBitmap(bitmap, startPointLeft, 0f, null)
             document.finishPage(page)
         }
         // Create the pdf name + timeStamp

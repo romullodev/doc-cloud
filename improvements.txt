@@ -1,14 +1,22 @@
-3) não permitir inserir o nome de um documento já existente
+- implement low / medium / hight quality image
 
-4) update readme file about remove temp file time
+- implement zoom in and zoom out on editFragment
 
-5)
-improve HomeScreen layout
+- corrigit bug do desaparecimento da messagem de bem vindo
+
+- corrigir bug ao remover teclado durante a busca na tela home
+
+- não permitir inserir o nome de um documento já existente
+
+* update readme
+    - about remove temp file time (on release)
+    - about test workers
+
+* improve HomeScreen layout
 	- improve colors
 	- improve doc layout
 	- implement multiple selection
 
-6)
 - reduce size of the generated pdfs
 
 - load a failure image on gallery in case of error
@@ -22,8 +30,6 @@ improve HomeScreen layout
 - analyze use of singleton on DI
 
 - improve EditScreen layout
-
-7) update readme file about test workers
 
 
 
