@@ -1,10 +1,8 @@
-- corrigit bug do desaparecimento da messagem de bem vindo
+- show message for no doc created yet
 
 - implement low / medium / hight quality image
 
 - implement zoom in and zoom out on editFragment
-
-- corrigir bug ao remover teclado durante a busca na tela home
 
 - não permitir inserir o nome de um documento já existente
 

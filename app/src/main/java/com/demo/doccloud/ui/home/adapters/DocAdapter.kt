@@ -18,12 +18,15 @@ class DocAdapter(
 ) :
     ListAdapter<Doc, DocAdapter.DocAdapterViewHolder>(DeliveryDiffCallback()), Filterable {
 
-    var docs = mutableListOf<Doc>()
+    private var docs = mutableListOf<Doc>()
 
     fun setList(list: MutableList<Doc>){
         this.docs = list
         submitList(list)
     }
+
+    fun hasEmptyList() = docs.isEmpty()
+
 
     class DeliveryDiffCallback : DiffUtil.ItemCallback<Doc>() {
         override fun areItemsTheSame(oldItem: Doc, newItem: Doc): Boolean {

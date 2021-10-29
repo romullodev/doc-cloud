@@ -83,6 +83,9 @@
     <string name="home_alert_error_generate_pdf">Erro ao gerar PDF. Tente novamente.</string>
     <string name="home_alert_error_generate_pdf_link">Erro ao gerar link. Tente novamente.</string>
     <string name="home_alert_error_copy_image_from_gallery">Um erro ocorreu com sua galeria. Tente novamente.</string>
+    <string name="home_search_view_hint">Pesquisar</string>
+    <string name="home_screen_title">Início</string>
+
 
     <!-- Crop Screen -->
     <string name="crop_screen_title">Recortar</string>

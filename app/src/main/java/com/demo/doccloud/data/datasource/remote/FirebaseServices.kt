@@ -620,7 +620,7 @@ class FirebaseServices @Inject constructor(
             //Firebase Database
             val database = database.reference
             //reference to get exclude temp file time info
-            val refDbTempFileTime = database.child(DATABASE_USERS_DIRECTORY)
+            val refDbTempFileTime = database.child("$DATABASE_USERS_DIRECTORY/$DATABASE_APP_LEVEL_STRATEGY_KEY" )
 
             //to save expiration info query task
             val tempFileTimeSource: TaskCompletionSource<Any> = TaskCompletionSource()
@@ -641,7 +641,7 @@ class FirebaseServices @Inject constructor(
 
             val tempFileTimeDataSnapshot = (tempFileTimeTask.result as DataSnapshot)
             return@withContext tempFileTimeDataSnapshot
-                .child("$DATABASE_APP_LEVEL_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY")
+                .child("$DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY")
                     .value
                     .toString()
                     .toLong()

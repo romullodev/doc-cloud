@@ -22,23 +22,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.doccloud.R
-import com.demo.doccloud.databinding.GeneratePdfLayoutBinding
-import com.demo.doccloud.ui.home.adapters.DocAdapter
-import com.demo.doccloud.databinding.HomeDialogNewDocBinding
 import com.demo.doccloud.databinding.HomeFragmentBinding
 import com.demo.doccloud.domain.*
-import com.demo.doccloud.utils.BackToRoot
 import com.demo.doccloud.domain.entities.Doc
-import com.demo.doccloud.utils.RootDestination
 import com.demo.doccloud.ui.MainActivity
 import com.demo.doccloud.ui.dialogs.alert.AppAlertDialog
-import com.demo.doccloud.utils.AppConstants
-import com.demo.doccloud.utils.DialogsHelper
-import com.demo.doccloud.utils.Global
+import com.demo.doccloud.ui.home.adapters.DocAdapter
+import com.demo.doccloud.utils.*
 import com.demo.doccloud.workers.SyncDataWorker
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.reflect.Method
 import java.util.*
@@ -52,10 +45,6 @@ class HomeFragment() :
     AppAlertDialog.DialogMaterialListener {
     private var _binding: HomeFragmentBinding? = null
     private val binding get() = _binding!!
-
-    //workaround on searchView for configuration changes
-    //problem:  when configuration changes, setOnQueryTextListener triggers making data just go away
-    private var searchViewHasTrigger = false
 
     private val homeViewModel: HomeViewModel by activityViewModels()
 
@@ -160,24 +149,16 @@ class HomeFragment() :
                 R.color.a_60_white
             )
         )
-        editText.hint = "Pesquisar"
+        editText.hint = getString(R.string.home_search_view_hint)
         searchView.apply {
-            setOnQueryTextFocusChangeListener { _, hasFocus ->
-                searchViewHasTrigger = hasFocus
-            }
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String): Boolean {
-                    if (searchViewHasTrigger) {
-                        if (newText.isEmpty()) {
-                            adapter.filter.filter("")
-                        } else {
-                            adapter.filter.filter(newText)
-                        }
-                    }
+                    if(!adapter.hasEmptyList())
+                        adapter.filter.filter(newText)
                     return true
                 }
             })
@@ -193,7 +174,7 @@ class HomeFragment() :
                     scrollRange = appBarLayout.totalScrollRange
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    binding.toolbar.title = "Início"
+                    binding.toolbar.title = getString(R.string.home_screen_title)
                     isShow = true
                 } else if (isShow) {
                     binding.toolbar.title =
@@ -241,17 +222,6 @@ class HomeFragment() :
         binding.lifecycleOwner = viewLifecycleOwner
         adapter = DocAdapter(
             object : DocAdapter.OnDocClickListener {
-//                override fun onMoreOptionsClick(doc: Doc, view: View) {
-//                    //this doc could be used to share/delete/edit on onMenuItemClick() method
-//                    homeViewModel.currDoc = doc
-//                    val popup = PopupMenu(requireContext(), view)
-//                    val inflater: MenuInflater = popup.menuInflater
-//                    inflater.inflate(R.menu.home_doc_item, popup.menu)
-//                    popup.setOnMenuItemClickListener(this@HomeFragment)
-//                    forceIconOnMenu(popup)
-//                    popup.show()
-//                }
-
                 override fun onDocClick(doc: Doc) {
                     homeViewModel.navigate(
                         HomeFragmentDirections.actionHomeFragmentToEditFragment(
@@ -260,9 +230,7 @@ class HomeFragment() :
                         )
                     )
                 }
-
                 override fun onLongDocClick(doc: Doc, view: View) {
-                    //this doc could be used to share/delete/edit on onMenuItemClick() method
                     homeViewModel.currDoc = doc
                     val popup = PopupMenu(requireContext(), view, GravityCompat.END)
                     val inflater: MenuInflater = popup.menuInflater
@@ -377,7 +345,7 @@ class HomeFragment() :
         Global.user.observe(viewLifecycleOwner){ user->
                 binding.title.text = context?.getString(R.string.home_welcome_title, user.displayName)
                 binding.subtitle.text = getFormattedSubtitle()
-            
+
         }
         //observe from SyncDataWorker to update view when sync data
         SyncDataWorker.syncDataProgress.observe(viewLifecycleOwner) {
@@ -387,6 +355,10 @@ class HomeFragment() :
             } else {
                 binding.syncDataProgress.visibility = View.GONE
             }
+        }
+
+        homeViewModel.docs.observe(viewLifecycleOwner){
+            adapter.setList(it.toMutableList())
         }
     }
 
@@ -434,14 +406,7 @@ class HomeFragment() :
         dialog.dismiss()
     }
 
-    constructor(parcel: Parcel) : this() {
-        searchViewHasTrigger = parcel.readByte() != 0.toByte()
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        super.writeToParcel(dest, flags)
-        dest.writeByte(if (searchViewHasTrigger) 1 else 0)
-    }
+    constructor(parcel: Parcel) : this()
 
     companion object CREATOR : Parcelable.Creator<HomeFragment> {
         override fun createFromParcel(parcel: Parcel): HomeFragment {
