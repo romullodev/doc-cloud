@@ -34,11 +34,6 @@ class AppConstants {
         const val LIST_PHOTO_ADD_KEY = "list.photo.add.key"
         const val CUSTOM_ID_KEY = "custom.id.key"
         //Firebase directories
-        const val DATABASE_CONFIG_DIRECTORY = "config"
-        const val DATABASE_LICENCES_DIRECTORY = "licences"
-        const val DATABASE_APP_LICENCES_DIRECTORY = "app licences"
-        const val DATABASE_LICENCES_NAME = "licences name"
-
         const val DATABASE_USERS_DIRECTORY = "users_database"
         const val DATABASE_DOCUMENTS_DIRECTORY = "documents"
         const val STORAGE_USERS_DIRECTORY = "users_storage"
@@ -50,11 +45,18 @@ class AppConstants {
         const val DATABASE_REMOTE_ID_KEY = "RemoteId"
         const val DATABASE_DOC_NAME_KEY = "Name"
         const val DATABASE_JSON_PAGES_KEY = "JsonPages"
-        //Firebase fields for sync strategy model
-        const val DATABASE_APP_LEVEL_STRATEGY_KEY = "strategy"
-        const val DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY = "setup strategy"
+        // Expiration strategies keys
         const val DATABASE_APP_LEVEL_EXPIRATION_KEY = "Sync Data Strategy Expiration"
-        const val DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY = "Exclude Temp Files Time"
+        const val DATABASE_APP_LEVEL_EXCLUDE_TEMP_EXPIRATION_KEY = "Exclude Temp Files Expiration"
+        const val DATABASE_LICENCES_NAME_KEY = "licences name"
+        // Expiration strategies directories
+        const val DATABASE_APP_LEVEL_STRATEGIES_EXPIRATIONS_DIRECTORY = "expirations"
+        const val DATABASE_APP_LEVEL_STRATEGIES_DIRECTORY = "strategies"
+        const val DATABASE_CONFIG_DIRECTORY = "config"
+        const val DATABASE_LICENCES_DIRECTORY = "licences"
+        const val DATABASE_APP_LICENCES_DIRECTORY = "app licences"
+
+        //Firebase fields for sync strategy model
         const val REMOTE_DATABASE_CUSTOM_ID_KEY = "Custom ID" //localed on users level
         const val DATABASE_LAST_UPDATED_KEY = "Last Updated" //localed on users level
         const val DATABASE_SYNC_STRATEGY_KEY = "Sync Data Strategy" //key for access sync directory localed on users level

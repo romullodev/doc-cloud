@@ -1,3 +1,5 @@
+- implement get sync data strategy expiration usecase
+
 * improve HomeScreen layout
 	- improve colors
 	- improve doc layout
@@ -24,7 +26,5 @@
 - analyze use of singleton on DI
 
 - improve EditScreen layout
-
-- move the strategy folder out of users_database
 
 	

@@ -8,10 +8,10 @@ import com.demo.doccloud.R
 import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.*
 import com.demo.doccloud.domain.entities.*
-import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXCLUDE_TEMP_EXPIRATION_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
-import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY
-import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGY_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGIES_DIRECTORY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGIES_EXPIRATIONS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LICENCES_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_CONFIG_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
@@ -20,7 +20,7 @@ import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOC_NAME_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_JSON_PAGES_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LAST_UPDATED_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LICENCES_DIRECTORY
-import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LICENCES_NAME
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LICENCES_NAME_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_REMOTE_ID_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_SYNC_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_USERS_DIRECTORY
@@ -448,7 +448,7 @@ class FirebaseServices @Inject constructor(
             //Firebase Database
             val database = database.reference
             //reference to get expiration info
-            val refDbExpiration = database.child("$DATABASE_USERS_DIRECTORY/$DATABASE_APP_LEVEL_STRATEGY_KEY")
+            val refDbExpiration = database.child(DATABASE_CONFIG_DIRECTORY)
             //reference to get sync strategy info directory (users level)
             val refDbSyncStrategy =
                 database.child("$DATABASE_USERS_DIRECTORY/$userId/$DATABASE_SYNC_STRATEGY_KEY")
@@ -497,7 +497,7 @@ class FirebaseServices @Inject constructor(
 
                 //expiration is localed on app level directory on firebase
                 val expiration =
-                    expirationDataSnapshot.child("$DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXPIRATION_KEY").value.toString()
+                    expirationDataSnapshot.child("$DATABASE_APP_LEVEL_STRATEGIES_DIRECTORY/$DATABASE_APP_LEVEL_STRATEGIES_EXPIRATIONS_DIRECTORY/$DATABASE_APP_LEVEL_EXPIRATION_KEY").value.toString()
                 return@withContext SyncStrategy(
                     expiration = expiration.toLong(),
                     lastUpdated = lastUpdated.toLong(),
@@ -621,31 +621,26 @@ class FirebaseServices @Inject constructor(
 
     override suspend fun getRemoveTempFileTime(): Long {
         return withContext(dispatcher){
-            //Firebase Database
             val database = database.reference
-            //reference to get exclude temp file time info
-            val refDbTempFileTime = database.child("$DATABASE_USERS_DIRECTORY/$DATABASE_APP_LEVEL_STRATEGY_KEY" )
-
-            //to save expiration info query task
-            val tempFileTimeSource: TaskCompletionSource<Any> = TaskCompletionSource()
-
+            val refDbTempFileTime = database.child(DATABASE_CONFIG_DIRECTORY )
+            val tempFileExpirationSource: TaskCompletionSource<Any> = TaskCompletionSource()
             refDbTempFileTime.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(p0: DataSnapshot) {
-                    tempFileTimeSource.setResult(p0)
+                    tempFileExpirationSource.setResult(p0)
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
-                    tempFileTimeSource.setResult(p0)
+                    tempFileExpirationSource.setResult(p0)
                 }
             })
 
-            val tempFileTimeTask = tempFileTimeSource.task
+            val tempFileExpirationTask = tempFileExpirationSource.task
             //this code bellow can throw an exception
-            tempFileTimeTask.await()
+            tempFileExpirationTask.await()
 
-            val tempFileTimeDataSnapshot = (tempFileTimeTask.result as DataSnapshot)
-            return@withContext tempFileTimeDataSnapshot
-                .child("$DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY/$DATABASE_APP_LEVEL_EXCLUDE_TEMP_TIME_KEY")
+            val tempFileExpirationDataSnapshot = (tempFileExpirationTask.result as DataSnapshot)
+            return@withContext tempFileExpirationDataSnapshot
+                .child("$DATABASE_APP_LEVEL_STRATEGIES_DIRECTORY/$DATABASE_APP_LEVEL_STRATEGIES_EXPIRATIONS_DIRECTORY/$DATABASE_APP_LEVEL_EXCLUDE_TEMP_EXPIRATION_KEY")
                     .value
                     .toString()
                     .toLong()
@@ -672,7 +667,7 @@ class FirebaseServices @Inject constructor(
             licencesAppTask.await()
             val licencesAppSnapshot = (licencesAppTask.result as? DataSnapshot) ?: throw Exception(licencesAppTask.result.toString())
             val jsonNames = licencesAppSnapshot
-                .child("$DATABASE_APP_LICENCES_DIRECTORY/$DATABASE_LICENCES_NAME")
+                .child("$DATABASE_APP_LICENCES_DIRECTORY/$DATABASE_LICENCES_NAME_KEY")
                 .value
                 .toString()
             val licencesName : List<String> = Gson().fromJson(jsonNames, Array<String>::class.java).toList()
