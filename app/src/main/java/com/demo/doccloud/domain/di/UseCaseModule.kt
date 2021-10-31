@@ -109,4 +109,8 @@ abstract class UseCaseModule {
 
     @Binds
     abstract fun bindGetRemoveTempFileTimeUseCase(getRemoveTempFileTime: GetRemoveTempFileTimeImpl): GetRemoveTempFileTime
+
+    @Binds
+    abstract fun bindGetAppLicencesFromServerUseCase(getAppLicencesFromServer: GetAppLicencesFromServerImpl): GetAppLicencesFromServer
+
 }

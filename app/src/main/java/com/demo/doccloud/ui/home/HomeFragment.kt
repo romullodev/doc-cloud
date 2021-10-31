@@ -134,6 +134,10 @@ class HomeFragment() :
                 homeViewModel.doLogout()
                 return@setOnMenuItemClickListener true
             }
+            if (item?.itemId == R.id.licenses) {
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToLicensesFragment())
+                return@setOnMenuItemClickListener true
+            }
             return@setOnMenuItemClickListener true
         }
 
@@ -254,15 +258,6 @@ class HomeFragment() :
                 )
                 true
             }
-//            R.id.edit -> {
-//                homeViewModel.navigate(
-//                    HomeFragmentDirections.actionHomeFragmentToEditFragment(
-//                        docLocalId = homeViewModel.currDoc?.localId!!,
-//                        docRemoteId = homeViewModel.currDoc?.remoteId!!
-//                    )
-//                )
-//                true
-//            }
             R.id.delete -> {
                 DialogsHelper.showAlertDialog(
                     DialogsHelper.getQuestionDeleteAlertParams(
@@ -274,24 +269,6 @@ class HomeFragment() :
                 )
                 true
             }
-//            R.id.newDoc -> {
-//                val dialog = MaterialAlertDialogBuilder(
-//                    requireContext(),
-//                    R.style.ThemeOverlay_App_MaterialAlertDialog
-//                ).create()//AlertDialog.Builder(requireContext()).create()
-//                val layoutInflater = LayoutInflater.from(requireContext())
-//                val view = HomeDialogNewDocBinding.inflate(layoutInflater, null, false)
-//                view.btnClose.setOnClickListener {
-//                    dialog.dismiss()
-//                }
-//                view.cameraTv.setOnClickListener {
-//                    homeViewModel.navigate(HomeFragmentDirections.actionHomeFragmentToCameraFragment())
-//                    dialog.dismiss()
-//                }
-//                dialog.setView(view.root)
-//                dialog.show()
-//                true
-//            }
             else -> false
         }
     }

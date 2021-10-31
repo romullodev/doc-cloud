@@ -52,3 +52,6 @@ https://medium.com/@vgoyal_1/datastore-android-how-to-use-it-like-a-pro-using-ko
 
 test workmanager with hilt (using workerFactory)
 https://medium.com/@thefallen.class/unit-testing-workmanager-with-dependencies-8ffff7ef5476
+
+many ways of read a txt file
+https://stackoverflow.com/questions/55182578/how-to-read-plain-text-file-in-kotlin

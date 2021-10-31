@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
 import com.demo.doccloud.R
+import com.demo.doccloud.domain.entities.AppLicense
 import com.demo.doccloud.domain.entities.DocStatus
 import com.demo.doccloud.domain.entities.User
 import java.io.File
 
 class Global {
     companion object{
+        var licensesCache : List<AppLicense> = listOf()
         var user = MutableLiveData<User>()
 
         /** Use external media if it is available, our app's file directory otherwise */

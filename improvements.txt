@@ -1,5 +1,3 @@
-- show app's licences
-
 - track progress when sync data
 
 - show message for no doc created yet
@@ -27,6 +25,6 @@
 
 - improve EditScreen layout
 
-
+- move the strategy folder out of users_database
 
 	

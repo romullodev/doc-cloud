@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_homeFragment_to_cropFragment"
             app:destination="@id/cropFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_licensesFragment"
+            app:destination="@id/licensesFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
@@ -107,4 +110,9 @@
             android:label="fragment_edit_crop"
             tools:layout="@layout/fragment_edit_crop" />
     </navigation>
+    <fragment
+        android:id="@+id/licensesFragment"
+        android:name="com.demo.doccloud.ui.licences.LicensesFragment"
+        android:label="@string/licenses_screen_title"
+        tools:layout="@layout/licenses_fragment"/>
 </navigation>

@@ -2,30 +2,17 @@ package com.demo.doccloud.data.repository
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.work.*
-import com.demo.doccloud.R
 import com.demo.doccloud.data.datasource.local.LocalDataSource
 import com.demo.doccloud.data.datasource.remote.RemoteDataSource
-import com.demo.doccloud.di.IoDispatcher
 import com.demo.doccloud.domain.entities.*
-import com.demo.doccloud.utils.AppConstants
-import com.demo.doccloud.utils.Global
-import com.demo.doccloud.utils.Result
+import com.demo.doccloud.idling.IdlingRes
+import com.demo.doccloud.idling.IdlingResImpl
 import com.demo.doccloud.workers.*
-import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,6 +23,9 @@ class RepositoryImpl @Inject constructor(
     private val localDatasource: LocalDataSource,
     @ApplicationContext private val context: Context,
 ) : Repository {
+
+    private val idling: IdlingRes = IdlingResImpl()
+
     override val docs: LiveData<List<Doc>> get() = localDatasource.getSavedDocs()
 
     override suspend fun doLoginWithGoogle(data: Intent?) =
@@ -167,6 +157,13 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getRemoveTempFileTime(): Long {
         return remoteDatasource.getRemoveTempFileTime()
     }
+
+    override suspend fun getAppLicences(): List<AppLicense> {
+        return idling.wrapEspressoIdlingResource {
+            return@wrapEspressoIdlingResource remoteDatasource.getAppLicences()
+        }
+    }
+
 
     override suspend fun updateDocPhoto(localId: Long, photo: Photo) {
         localDatasource.updateDocPhoto(localId = localId, photo = photo)

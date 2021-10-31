@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.demo.doccloud.domain.entities.*
-import com.demo.doccloud.utils.Result
 import java.io.File
 
 interface Repository {
@@ -42,4 +41,5 @@ interface Repository {
     suspend fun generatePDFLink(file: File, customId: Long): Uri
     suspend fun removeTempFile(customId: Long)
     suspend fun getRemoveTempFileTime(): Long
+    suspend fun getAppLicences() : List<AppLicense>
 }

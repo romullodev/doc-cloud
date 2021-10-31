@@ -1,4 +1,4 @@
-package com.demo.doccloud.adapters
+package com.demo.doccloud.utils
 
 import android.graphics.Typeface
 import android.text.Spannable
@@ -11,10 +11,19 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.demo.doccloud.R
+import com.demo.doccloud.domain.entities.AppLicense
 import com.demo.doccloud.domain.entities.Doc
 import com.demo.doccloud.ui.home.adapters.DocAdapter
-import com.demo.doccloud.utils.Global
+import com.demo.doccloud.ui.licences.adapters.AppLicenseAdapter
 
+/**
+ * licenses_fragment.xml
+ */
+@BindingAdapter("licenseData")
+fun setLicenseData(recyclerView: RecyclerView, data: List<AppLicense>?) {
+    val adapter = recyclerView.adapter as AppLicenseAdapter
+    adapter.submitList(data?.toMutableList())
+}
 
 /**
  * camera_fragment.xml

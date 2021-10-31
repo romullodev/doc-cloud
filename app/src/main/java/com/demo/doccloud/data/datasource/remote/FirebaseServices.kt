@@ -12,20 +12,24 @@ import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXCLUDE
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_EXPIRATION_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_SETUP_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LEVEL_STRATEGY_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_APP_LICENCES_DIRECTORY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_CONFIG_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DATE_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOCUMENTS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_DOC_NAME_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_JSON_PAGES_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LAST_UPDATED_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LICENCES_DIRECTORY
+import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_LICENCES_NAME
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_REMOTE_ID_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_SYNC_STRATEGY_KEY
 import com.demo.doccloud.utils.AppConstants.Companion.DATABASE_USERS_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.REMOTE_DATABASE_CUSTOM_ID_KEY
+import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_APP_LICENCES_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_IMAGES_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_TEMP_DIRECTORY
 import com.demo.doccloud.utils.AppConstants.Companion.STORAGE_USERS_DIRECTORY
 import com.demo.doccloud.utils.Global
-import com.demo.doccloud.utils.Result
 import com.demo.doccloud.utils.asDomain
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -645,6 +649,69 @@ class FirebaseServices @Inject constructor(
                     .value
                     .toString()
                     .toLong()
+        }
+    }
+
+    override suspend fun getAppLicences(): List<AppLicense> {
+        return withContext(dispatcher){
+            //Firebase Database
+            val database = database.reference
+            //reference to get list of licences name
+            val refDbLicencesApp = database.child("$DATABASE_CONFIG_DIRECTORY/$DATABASE_LICENCES_DIRECTORY" )
+            val licencesAppSource: TaskCompletionSource<Any> = TaskCompletionSource()
+            refDbLicencesApp.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(p0: DataSnapshot) {
+                    licencesAppSource.setResult(p0)
+                }
+                override fun onCancelled(p0: DatabaseError) {
+                    licencesAppSource.setResult(p0)
+                }
+            })
+            val licencesAppTask = licencesAppSource.task
+            //can throw an exception
+            licencesAppTask.await()
+            val licencesAppSnapshot = (licencesAppTask.result as? DataSnapshot) ?: throw Exception(licencesAppTask.result.toString())
+            val jsonNames = licencesAppSnapshot
+                .child("$DATABASE_APP_LICENCES_DIRECTORY/$DATABASE_LICENCES_NAME")
+                .value
+                .toString()
+            val licencesName : List<String> = Gson().fromJson(jsonNames, Array<String>::class.java).toList()
+            val licencesURL = ArrayList<String>()
+            licencesName.forEach{ name->
+                val url = licencesAppSnapshot
+                    .child("$DATABASE_APP_LICENCES_DIRECTORY/${name}_URL")
+                    .value
+                    .toString()
+                licencesURL.add(url)
+            }
+
+
+            //Firebase Storage
+            val fireStorage = storage.reference
+            val appLicences = ArrayList<AppLicense>()
+            licencesName.forEachIndexed{ index, licenseName ->
+                val refStorageLicences = fireStorage.child(
+                    "$STORAGE_APP_LICENCES_DIRECTORY/$licenseName.txt"
+                )
+
+                val tempLocalFile = File.createTempFile(licenseName, "txt")
+                val task = refStorageLicences.getFile(tempLocalFile)
+                task.await()
+                if (task.isSuccessful) {
+                    val content = tempLocalFile.readText()
+                    appLicences.add(
+                        AppLicense(
+                            name = licenseName,
+                            content = content,
+                            url = licencesURL[index]
+                        )
+                    )
+                    tempLocalFile.delete()
+                } else {
+                    Timber.d("failure on download licence. \nDetails: ${task.result}")
+                }
+            }
+            return@withContext appLicences
         }
     }
 

@@ -15,4 +15,5 @@
 
     <color name="white">#FFFFFFFF</color>
     <color name="a_60_white">#99FFFFFF</color>
+    <color name="a_5_black">#0D000000</color>
 </resources>

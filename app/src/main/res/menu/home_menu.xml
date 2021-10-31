@@ -8,6 +8,11 @@
         android:title="@string/home_menu_logout" />
 
     <item
+        android:id="@+id/licenses"
+        app:showAsAction="never"
+        android:title="@string/licenses_menu_options" />
+
+    <item
         android:id="@+id/search"
         android:icon="@drawable/ic_search_solid"
         android:title="Search"

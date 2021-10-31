@@ -326,6 +326,10 @@ class FakeRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getAppLicences(): List<AppLicense> {
+        TODO("Not yet implemented")
+    }
+
 
     companion object{
         val fakeDoc = Doc(

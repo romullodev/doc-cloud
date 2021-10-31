@@ -34,9 +34,15 @@ class AppConstants {
         const val LIST_PHOTO_ADD_KEY = "list.photo.add.key"
         const val CUSTOM_ID_KEY = "custom.id.key"
         //Firebase directories
+        const val DATABASE_CONFIG_DIRECTORY = "config"
+        const val DATABASE_LICENCES_DIRECTORY = "licences"
+        const val DATABASE_APP_LICENCES_DIRECTORY = "app licences"
+        const val DATABASE_LICENCES_NAME = "licences name"
+
         const val DATABASE_USERS_DIRECTORY = "users_database"
         const val DATABASE_DOCUMENTS_DIRECTORY = "documents"
         const val STORAGE_USERS_DIRECTORY = "users_storage"
+        const val STORAGE_APP_LICENCES_DIRECTORY = "app_licences"
         const val STORAGE_IMAGES_DIRECTORY = "images"
         const val STORAGE_TEMP_DIRECTORY = "temporary"
         //Firebase fields for each doc

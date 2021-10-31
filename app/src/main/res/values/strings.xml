@@ -86,6 +86,10 @@
     <string name="home_search_view_hint">Pesquisar</string>
     <string name="home_screen_title">Início</string>
 
+    <!-- AppLicenses Screen -->
+    <string name="licenses_screen_title">Licensas do Software</string>
+    <string name="licenses_menu_options">Licensas</string>
+    <string name="licenses_screen_error_on_load_licenses">Ocorreu um erro ao carregar as licensas.</string>
 
     <!-- Crop Screen -->
     <string name="crop_screen_title">Recortar</string>
