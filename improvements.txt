@@ -1,3 +1,8 @@
+* improve HomeScreen layout
+	- improve colors
+	- improve doc layout
+	- implement multiple selection
+
 - track progress when sync data
 
 - show message for no doc created yet
@@ -9,11 +14,6 @@
 * update readme
     - about remove temp file time (on release)
     - about test workers
-
-* improve HomeScreen layout
-	- improve colors
-	- improve doc layout
-	- implement multiple selection
 
 - load a failure image on gallery in case of error
 

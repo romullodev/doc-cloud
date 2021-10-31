@@ -39,7 +39,7 @@
                     android:id="@+id/background"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:background="@drawable/profile_background"
+                    android:background="@drawable/bg_appbar_home"
                     android:scaleType="fitCenter" />
 
                 <androidx.appcompat.widget.AppCompatTextView
